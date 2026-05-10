@@ -83,8 +83,8 @@ function DM() {
       </div>
 
       {tab === "log" && (
-        <div className="ornate-card p-3 max-h-[70vh] overflow-y-auto space-y-2">
-          {logs.map((l: LogRow) => (
+        <LogList rows={logs} initial={20} maxH="max-h-[70vh]"
+          renderRow={(l: LogRow) => (
             <div key={l.id} className={`text-sm bg-secondary/40 rounded px-3 py-2 leading-relaxed ${l.undone ? "opacity-50 line-through" : ""}`}>
               <LogSegments segments={l.segments as any}
                 onItem={openItemFromId}
@@ -102,9 +102,7 @@ function DM() {
                 )}
               </div>
             </div>
-          ))}
-          {!logs.length && <p className="text-center text-xs text-muted-foreground py-6">El log está vacío.</p>}
-        </div>
+          )} />
       )}
 
       {tab === "create" && (
