@@ -34,6 +34,8 @@ function Home() {
   const [newCampaignName, setNewCampaignName] = useState("");
   const [search, setSearch] = useState("");
   const [joinCode, setJoinCode] = useState("");
+  const [singleDmOnly, setSingleDmOnly] = useState(false);
+  const [waitingReqId, setWaitingReqId] = useState<string | null>(null);
 
   // character
   const [myChars, setMyChars] = useState<Character[]>([]);
