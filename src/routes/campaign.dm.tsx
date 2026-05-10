@@ -70,12 +70,12 @@ function DM() {
       </header>
       <div className="gem-divider mb-4"/>
 
-      <div className="grid grid-cols-4 gap-1 mb-4">
+      <div className="grid grid-cols-5 gap-1 mb-4">
         {([
-          ["log","📜 Log"],["create","✨ Crear"],["vault","🏛️ Vault"],["players","🛡️ Players"],
+          ["log","📜 Log"],["create","✨ Crear"],["vault","🏛️ Vault"],["boosters","🃏 Pot."],["players","🛡️ Players"],
         ] as const).map(([k, l]) => (
           <button key={k} onClick={() => setTab(k)}
-            className={`text-xs py-2 rounded-md font-display ${tab===k?"bg-[var(--gold)] text-black":"bg-card text-foreground border border-border"}`}>
+            className={`text-[10px] py-2 rounded-md font-display ${tab===k?"bg-[var(--gold)] text-black":"bg-card text-foreground border border-border"}`}>
             {l}
           </button>
         ))}
