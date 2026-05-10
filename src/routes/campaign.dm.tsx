@@ -208,6 +208,15 @@ function DM() {
           onClose={() => setOpenChar(null)}
           onPickItem={(it) => setSelItem(it)} />
       )}
+      {selBooster && (
+        <BoosterActions booster={selBooster} campaignId={campaign.id} players={players} dm={dmCtx}
+          onClose={() => setSelBooster(null)}
+          onEdit={() => { setEditBooster(selBooster); setSelBooster(null); }} />
+      )}
+      {(editBooster || creatingBooster) && (
+        <BoosterEditor booster={editBooster} campaignId={campaign.id}
+          onClose={() => { setEditBooster(null); setCreatingBooster(false); }} />
+      )}
     </PageFrame>
   );
 }
