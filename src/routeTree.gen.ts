@@ -76,11 +76,6 @@ const CampaignAchievementsRoute = CampaignAchievementsRouteImport.update({
   path: '/achievements',
   getParentRoute: () => CampaignRoute,
 } as any)
-const CampaignBoostersRoute = CampaignBoostersRouteImport.update({
-  id: '/boosters',
-  path: '/boosters',
-  getParentRoute: () => CampaignRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
