@@ -424,3 +424,52 @@ function ItemActions({ item, players, dm, campaignId, onClose, onEdit }: {
     </div>
   );
 }
+
+const RARITY_ALIASES: Record<string, Rarity> = {
+  blanca: "white", blanco: "white", comun: "white", común: "white", common: "white", white: "white",
+  azul: "blue", rara: "blue", raro: "blue", blue: "blue",
+  morada: "purple", morado: "purple", purpura: "purple", púrpura: "purple", epica: "purple", épica: "purple", purple: "purple",
+  dorada: "gold", dorado: "gold", oro: "gold", legendaria: "gold", legendario: "gold", gold: "gold",
+};
+
+function BulkBoosterImport({ campaignId }: { campaignId: string }) {
+  const [busy, setBusy] = useState(false);
+  async function handleFile(file: File) {
+    setBusy(true);
+    try {
+      const text = await file.text();
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+      const rows: any[] = [];
+      const errors: string[] = [];
+      lines.forEach((line, idx) => {
+        const parts = line.split("/").map(p => p.trim());
+        if (parts.length < 4) { errors.push(`Línea ${idx + 1}: faltan campos`); return; }
+        const [name, rarityRaw, usesRaw, maxRaw] = parts;
+        const rarity = RARITY_ALIASES[rarityRaw.toLowerCase()];
+        if (!rarity) { errors.push(`Línea ${idx + 1}: rareza inválida "${rarityRaw}"`); return; }
+        const uses = parseInt(usesRaw, 10);
+        const max = parseInt(maxRaw, 10);
+        if (isNaN(uses) || isNaN(max)) { errors.push(`Línea ${idx + 1}: usos inválidos`); return; }
+        rows.push({
+          campaign_id: campaignId, name, rarity,
+          uses: Math.max(0, uses), max_uses: Math.max(1, max),
+          in_dm_vault: true, owner_character_id: null,
+        });
+      });
+      if (rows.length) {
+        const { error } = await (supabase as any).from("boosters").insert(rows);
+        if (error) toast.error(error.message);
+        else toast.success(`Creados ${rows.length} potenciadores`);
+      }
+      if (errors.length) toast.error(errors.slice(0, 3).join(" · "));
+    } finally { setBusy(false); }
+  }
+  return (
+    <div className="space-y-1 pt-2 border-t border-border">
+      <p className="text-[10px] text-muted-foreground">📄 Importar desde .txt — formato por línea: <code>Nombre / Rareza / Usos / Máx</code></p>
+      <input type="file" accept=".txt,text/plain" disabled={busy}
+        onChange={e => { const f = e.target.files?.[0]; if (f) { handleFile(f); e.target.value = ""; } }}
+        className="text-xs text-muted-foreground w-full file:mr-2 file:px-2 file:py-1 file:rounded file:border-0 file:bg-secondary file:text-foreground file:text-xs" />
+    </div>
+  );
+}
