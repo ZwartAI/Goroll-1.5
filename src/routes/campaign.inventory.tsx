@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { SLOTS, RARITY_COLOR, RARITY_BONUS, isWeapon, totals, ITEM_CATEGORIES, type Item, type Rarity } from "@/lib/game";
 import { supabase } from "@/integrations/supabase/client";
 import { pushLog } from "@/lib/log";
+import { clampHpForOwner } from "@/lib/hp";
 import { RarityBadge } from "@/components/app/RarityBadge";
 import { useState } from "react";
 
@@ -76,6 +77,7 @@ function Inventory() {
   async function discard(it: Item) {
     // Tirado va al vault del DM (no se elimina) para que el DM pueda devolverlo.
     await supabase.from("items").update({ owner_character_id: null, equipped: false, in_dm_vault: true }).eq("id", it.id);
+    await clampHpForOwner(character!.id);
     await pushLog(campaign!.id, [
       {t:"char",v:character!.name,color:character!.color,id:character!.id},
       {t:"text",v:"tiró"},
@@ -87,6 +89,7 @@ function Inventory() {
     if (!transferTo) return;
     const target = characters.find(c => c.id === transferTo);
     await supabase.from("items").update({ owner_character_id: transferTo, equipped: false }).eq("id", it.id);
+    await clampHpForOwner(character!.id);
     await pushLog(campaign!.id, [
       {t:"char",v:character!.name,color:character!.color,id:character!.id},{t:"text",v:"entregó"},
       {t:"item",v:it.name,rarity:it.rarity as Rarity,id:it.id},{t:"text",v:"a"},
