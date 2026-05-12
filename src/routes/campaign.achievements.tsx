@@ -112,7 +112,12 @@ function Page() {
   }
 
   async function returnToVault(a: any) {
-    await supabase.from("achievement_templates").insert([{ campaign_id: campaign!.id, label: a.label, color: a.color }]);
+    // Avoid creating duplicate vault entries with same label+color.
+    const { data: existing } = await supabase.from("achievement_templates")
+      .select("id").eq("campaign_id", campaign!.id).eq("label", a.label).eq("color", a.color).limit(1);
+    if (!existing || existing.length === 0) {
+      await supabase.from("achievement_templates").insert([{ campaign_id: campaign!.id, label: a.label, color: a.color }]);
+    }
     await supabase.from("achievements").delete().eq("id", a.id);
     setSelectedAch(null);
   }
