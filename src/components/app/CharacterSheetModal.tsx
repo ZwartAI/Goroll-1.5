@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { pushLog } from "@/lib/log";
-import { totals, fmtMod, modifier, RARITY_COLOR, SLOTS, type Character, type Item, type Rarity } from "@/lib/game";
+import { totals, fmtMod, modifier, RARITY_COLOR, RARITY_LABEL, SLOTS, type Character, type Item, type Rarity } from "@/lib/game";
 import { RarityBadge } from "@/components/app/RarityBadge";
 import { ConditionsPanel } from "@/components/app/ConditionsPanel";
+import { CoinsAdjuster } from "@/components/app/CoinsAdjuster";
+import type { Booster } from "@/components/app/BoosterCard";
 
 type Props = {
   characterId: string;
