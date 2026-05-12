@@ -223,6 +223,34 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
           </div>
         </div>
         <div>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">🃏 Potenciadores</p>
+          <div className="space-y-1">
+            {boosters.length === 0 && <p className="text-[10px] text-muted-foreground">Sin potenciadores.</p>}
+            {boosters.map(b => (
+              <div key={b.id} className="flex items-center justify-between text-xs ornate-card px-2 py-1"
+                style={{ borderColor: RARITY_COLOR[b.rarity as Rarity] }}>
+                <div className="flex-1">
+                  <span style={{ color: RARITY_COLOR[b.rarity as Rarity] }}>🃏 {b.name}</span>
+                  <span className="text-muted-foreground"> · {b.uses}/{b.max_uses}</span>
+                </div>
+                {isEdit && (
+                  <div className="flex gap-2">
+                    <button className="text-[10px] underline opacity-70" onClick={async () => {
+                      await (supabase as any).from("boosters").update({ owner_character_id: null, in_dm_vault: true, uses: b.max_uses }).eq("id", b.id);
+                      reload();
+                    }}>al vault</button>
+                    <button className="text-[10px] underline opacity-70 text-[var(--loss)]" onClick={async () => {
+                      if (!confirm(`¿Eliminar potenciador "${b.name}"?`)) return;
+                      await (supabase as any).from("boosters").delete().eq("id", b.id);
+                      reload();
+                    }}>eliminar</button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Logros</p>
           <div className="flex flex-wrap gap-1">
             {achievements.map(a => (
