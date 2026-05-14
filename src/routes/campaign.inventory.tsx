@@ -61,15 +61,17 @@ function Inventory() {
       await supabase.from("items").update({ owner_character_id: null, in_dm_vault: true, equipped: false, uses: 0 }).eq("id", it.id);
       await pushLog(campaign!.id, [
         {t:"char",v:character!.name,color:character!.color,id:character!.id},
-        {t:"text",v:"usó (último)"},
+        {t:"text",v:"usó"},
         {t:"item",v:it.name,rarity:it.rarity as Rarity,id:it.id},
+        {t:"text",v:"(último)"},
       ], { kind: "item.update", id: it.id, prev: { owner_character_id: character!.id, in_dm_vault: false, equipped: it.equipped, uses: it.uses } });
     } else {
       await supabase.from("items").update({ uses: remaining }).eq("id", it.id);
       await pushLog(campaign!.id, [
         {t:"char",v:character!.name,color:character!.color,id:character!.id},
-        {t:"text",v:`usó (${remaining} restantes)`},
+        {t:"text",v:"usó"},
         {t:"item",v:it.name,rarity:it.rarity as Rarity,id:it.id},
+        {t:"text",v:`(${remaining} restantes)`},
       ], { kind: "item.update", id: it.id, prev: { uses: it.uses } });
     }
     setSel(null);
