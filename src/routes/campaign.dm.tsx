@@ -468,8 +468,6 @@ function ItemActions({ item, players, dm, campaignId, allItems, allCharacters, o
     const ch = allCharacters.find(c => c.id === ownerId);
     if (!ch) return undefined;
     const eq = allItems.filter(i => i.owner_character_id === ownerId && i.equipped);
-    // Lazy import to avoid extra top-level dep cycle
-    const { totals } = require("@/lib/game") as typeof import("@/lib/game");
     return totals(ch, eq).maxHp;
   }
   async function reclaim() {
