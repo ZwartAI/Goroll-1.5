@@ -264,7 +264,22 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
             {!achievements.length && <p className="text-[10px] text-muted-foreground">Sin logros.</p>}
           </div>
         </div>
-        <button className="btn-fantasy w-full" onClick={onClose}>Regresar</button>
+        <div className="grid grid-cols-2 gap-2">
+          <button className="btn-fantasy" onClick={() => setShowNotes(true)}
+            style={{ background: "linear-gradient(135deg, oklch(0.45 0.12 220), oklch(0.30 0.10 220))", color: "white" }}>
+            📝 Ver notas
+          </button>
+          <button className="btn-fantasy" onClick={onClose}>Regresar</button>
+        </div>
+        {showNotes && character && (
+          <NotesEditor
+            characterId={character.id}
+            characterName={character.name}
+            characterColor={character.color}
+            readOnly={!isEdit}
+            onClose={() => setShowNotes(false)}
+          />
+        )}
       </div>
     </div>
   );
