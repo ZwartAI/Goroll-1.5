@@ -262,54 +262,54 @@ function Home() {
     <PageFrame>
       <button
         onClick={() => setShowAppSettings(true)}
-        aria-label="Ajustes"
+        aria-label={t("home.settingsAria")}
         className="fixed top-1.5 left-1.5 z-[200] rounded-md border border-border bg-card/60 backdrop-blur p-1.5 text-muted-foreground hover:text-[var(--gold)] hover:border-[var(--gold)] transition-colors"
       >
         <SettingsIcon size={14} />
       </button>
       <div className="flex flex-col items-center gap-1 pt-4 text-center">
         <div className="text-5xl">🎲</div>
-        <h1 className="font-display text-3xl font-black tracking-wider rune-glow">VAMOS A</h1>
-        <p className="font-display text-4xl font-black tracking-[0.3em] text-[var(--gold)]">ROLEAR</p>
+        <h1 className="font-display text-3xl font-black tracking-wider rune-glow">{t("home.titleTop")}</h1>
+        <p className="font-display text-4xl font-black tracking-[0.3em] text-[var(--gold)]">{t("home.titleBottom")}</p>
       </div>
       <div className="gem-divider my-5" />
       {showAppSettings && <AppSettingsModal onClose={() => setShowAppSettings(false)} />}
       {step === "login" && (
         <div className="ornate-card p-6 space-y-4">
-          <h2 className="text-center font-display text-lg">Entra al códice</h2>
+          <h2 className="text-center font-display text-lg">{t("home.loginTitle")}</h2>
           <p className="text-center text-xs text-muted-foreground">
-            Si es tu primera vez, se creará tu cuenta automáticamente.
+            {t("home.loginHint")}
           </p>
           <input className="w-full rounded-md bg-input border border-border px-3 py-3 text-center font-display text-lg"
-            placeholder="Usuario" value={username} onChange={e => setUsername(e.target.value)} autoFocus />
+            placeholder={t("home.user")} value={username} onChange={e => setUsername(e.target.value)} autoFocus />
           <input className="w-full rounded-md bg-input border border-border px-3 py-3 text-center font-display text-2xl tracking-[0.6em]"
             placeholder="••••" inputMode="numeric" maxLength={4} value={pin}
             onChange={e => setPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
             onKeyDown={e => e.key === "Enter" && login()} />
-          <button className="btn-fantasy w-full" disabled={busy} onClick={login}>Entrar →</button>
+          <button className="btn-fantasy w-full" disabled={busy} onClick={login}>{t("home.enter")}</button>
         </div>
       )}
 
       {step === "role" && user && (
         <div className="ornate-card p-6 space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">Hola, {user.username}</p>
-            <button onClick={logout} className="text-[10px] text-muted-foreground underline">Salir</button>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">{t("home.hello", { name: user.username })}</p>
+            <button onClick={logout} className="text-[10px] text-muted-foreground underline">{t("home.logout")}</button>
           </div>
-          <h2 className="text-center font-display text-lg">¿Quién entra al salón?</h2>
+          <h2 className="text-center font-display text-lg">{t("home.roleQuestion")}</h2>
           <div className="grid grid-cols-3 gap-2">
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
               onClick={() => { setRole("player"); setStep("campaign"); }}>
-              <span className="text-2xl">🗡️</span>Jugador
+              <span className="text-2xl">🗡️</span>{t("home.rolePlayer")}
             </button>
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
               style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
               onClick={() => { setRole("dm"); setStep("campaign"); }}>
-              <span className="text-2xl">👑</span>DM
+              <span className="text-2xl">👑</span>{t("home.roleDM")}
             </button>
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
               onClick={() => { setRole("spectator"); setStep("campaign"); }}>
-              <span className="text-2xl">👁️</span>Espectador
+              <span className="text-2xl">👁️</span>{t("home.roleSpectator")}
             </button>
           </div>
         </div>
@@ -318,12 +318,11 @@ function Home() {
       {waitingReqId && campaign && (
         <div className="ornate-card p-6 space-y-4 text-center">
           <div className="text-5xl">⏳</div>
-          <h2 className="font-display text-lg text-[var(--gold)]">Esperando aprobación</h2>
+          <h2 className="font-display text-lg text-[var(--gold)]">{t("home.waitingTitle")}</h2>
           <p className="text-sm text-muted-foreground">
-            Solicitaste unirte como Dungeon Master a <span className="text-foreground font-display">{campaign.name}</span>.
-            El DM original verá tu petición en cuanto entre.
+            {t("home.waitingBody", { name: campaign.name })}
           </p>
-          <button className="btn-fantasy w-full" onClick={cancelCoDMRequest}>Cancelar solicitud</button>
+          <button className="btn-fantasy w-full" onClick={cancelCoDMRequest}>{t("home.cancelRequest")}</button>
         </div>
       )}
 
