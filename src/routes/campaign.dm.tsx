@@ -420,10 +420,10 @@ function CreateItem({ campaignId, dm, players }: { campaignId: string; dm: { id:
     <div className="ornate-card p-4 space-y-3">
       <select className="w-full bg-input border border-border rounded px-2 py-2 text-sm" value={category} onChange={e => setCategory(e.target.value as any)}>
         {ITEM_CATEGORIES.map(c => <option key={c.key} value={c.key}>{c.icon} {c.label}</option>)}
-        <option value="monedas">🪙 Monedas</option>
+        <option value="monedas">{tr("dm.coins")}</option>
       </select>
       {!isCoins && (
-        <input className="w-full bg-input border border-border rounded px-3 py-2 text-sm" placeholder="Nombre del objeto" value={name} onChange={e => setName(e.target.value)} />
+        <input className="w-full bg-input border border-border rounded px-3 py-2 text-sm" placeholder={tr("dm.itemNamePh")} value={name} onChange={e => setName(e.target.value)} />
       )}
       {category === "equipo" ? (
         <>
@@ -437,33 +437,34 @@ function CreateItem({ campaignId, dm, players }: { campaignId: string; dm: { id:
             </select>
           </div>
           {isWeapon(slot) ? (
-            <label className="flex items-center justify-between text-sm">Daño permanente
+            <label className="flex items-center justify-between text-sm">{tr("dm.damagePermanent")}
               <input type="number" className="w-20 bg-input border border-border rounded px-2 py-1 text-right" value={damage} onChange={e => setDamage(+e.target.value)} />
             </label>
           ) : (
             <p className="text-xs text-muted-foreground text-center">
-              Bonos por rareza: Def +{RARITY_BONUS[rarity].def} · Vida +{RARITY_BONUS[rarity].hp}
+              {tr("dm.rarityHint", { def: RARITY_BONUS[rarity].def, hp: RARITY_BONUS[rarity].hp })}
             </p>
           )}
         </>
       ) : isCoins ? (
-        <label className="flex items-center justify-between text-sm">Cantidad de monedas
+        <label className="flex items-center justify-between text-sm">{tr("dm.coinsAmount")}
           <input type="number" min={1} className="w-24 bg-input border border-border rounded px-2 py-1 text-right" value={coins} onChange={e => setCoins(Math.max(1, +e.target.value))} />
         </label>
       ) : (
-        <label className="flex items-center justify-between text-sm">Número de usos
+        <label className="flex items-center justify-between text-sm">{tr("dm.usesAmount")}
           <input type="number" min={1} className="w-20 bg-input border border-border rounded px-2 py-1 text-right" value={uses} onChange={e => setUses(Math.max(1, +e.target.value))} />
         </label>
       )}
       <div className="gem-divider"/>
       <select className="w-full bg-input border border-border rounded px-2 py-2 text-sm" value={target} onChange={e => setTarget(e.target.value)}>
-        <option value="">{isCoins ? "— elige jugador —" : "— guardar en vault —"}</option>
-        {players.map(p => <option key={p.id} value={p.id}>Enviar a {p.name}</option>)}
+        <option value="">{isCoins ? tr("dm.pickPlayer") : tr("dm.keepVault")}</option>
+        {players.map(p => <option key={p.id} value={p.id}>{tr("dm.sendTo", { name: p.name })}</option>)}
       </select>
       <div className="grid grid-cols-2 gap-2">
-        {!isCoins && <button className="btn-fantasy" onClick={() => create(false)}><Plus size={14} className="inline"/> Vault</button>}
-        <button className={`btn-fantasy ${isCoins ? "col-span-2" : ""}`} style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }} disabled={!target} onClick={() => create(true)}><Send size={14} className="inline"/> Enviar</button>
+        {!isCoins && <button className="btn-fantasy" onClick={() => create(false)}><Plus size={14} className="inline"/> {tr("dm.vault")}</button>}
+        <button className={`btn-fantasy ${isCoins ? "col-span-2" : ""}`} style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }} disabled={!target} onClick={() => create(true)}><Send size={14} className="inline"/> {tr("dm.send")}</button>
       </div>
+
     </div>
   );
 }
