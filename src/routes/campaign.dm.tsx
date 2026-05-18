@@ -353,6 +353,7 @@ async function undoLog(l: LogRow, campaignId: string, dm: { id: string; name: st
 
 
 function CreateItem({ campaignId, dm, players }: { campaignId: string; dm: { id: string; name: string; color: string }; players: Character[] }) {
+  const { t: tr } = useT();
   const [name, setName] = useState("");
   const [category, setCategory] = useState<ItemCategory | "monedas">("equipo");
   const [slot, setSlot] = useState<Slot>("casco");
