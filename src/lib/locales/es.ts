@@ -3,6 +3,14 @@
  * Placeholders use {name} syntax.
  */
 export const es = {
+  attr: {
+    fue: "FUE",
+    des: "DES",
+    con: "CON",
+    int: "INT",
+    wis: "SAB",
+    car: "CAR",
+  },
   common: {
     cancel: "Cancelar",
     close: "Cerrar",
