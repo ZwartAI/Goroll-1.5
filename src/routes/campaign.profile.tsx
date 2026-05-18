@@ -276,6 +276,7 @@ function Profile() {
           onOpenChar={(id) => openCharFromLog(id, true)}
           onOpenItem={(id) => setOpenItem(id)}
           onOpenBooster={(id) => setOpenBooster(id)}
+          speakingIds={voice.speakingIds}
         />
       )}
 
