@@ -272,6 +272,7 @@ function Profile() {
 
 
 function ImageEditor({ character, onClose }: { character: any; onClose: () => void }) {
+  const { t } = useT();
   const [url, setUrl] = useState<string>(character.image_url || "");
   const [scale, setScale] = useState<number>(character.image_scale || 1);
   const [ox, setOx] = useState<number>(character.image_offset_x ?? 50);
@@ -301,7 +302,7 @@ function ImageEditor({ character, onClose }: { character: any; onClose: () => vo
   return (
     <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3" onClick={onClose}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3 max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <h3 className="font-display text-lg text-center">Imagen del personaje</h3>
+        <h3 className="font-display text-lg text-center">{t("profile.imgTitle")}</h3>
         <div className="aspect-[3/4] rounded-lg overflow-hidden bg-[var(--secondary)] relative border border-border">
           {url
             ? <img src={url} alt="preview"
@@ -310,31 +311,31 @@ function ImageEditor({ character, onClose }: { character: any; onClose: () => vo
                   transform: `translate(${(ox - 50)}%, ${(oy - 50)}%) scale(${scale})`,
                   transformOrigin: "center center",
                 }} />
-            : <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">Sin imagen</div>}
+            : <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">{t("profile.imgNone")}</div>}
         </div>
 
         <input ref={fileRef} type="file" accept="image/*" className="hidden"
           onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); }} />
         <button className="btn-fantasy w-full flex items-center justify-center gap-2" disabled={uploading} onClick={() => fileRef.current?.click()}>
-          <Camera size={14}/> {uploading ? "Subiendo..." : "Subir desde galería"}
+          <Camera size={14}/> {uploading ? t("profile.uploading") : t("profile.uploadFromGallery")}
         </button>
         <input className="w-full rounded bg-input border border-border px-3 py-2 text-xs"
-          placeholder="o pega una URL https://..." value={url} onChange={e => setUrl(e.target.value)} />
+          placeholder={t("profile.orPasteUrl")} value={url} onChange={e => setUrl(e.target.value)} />
 
         {url && (
           <>
             <label className="text-xs flex items-center justify-between gap-2">
-              <span className="text-muted-foreground">Zoom</span>
+              <span className="text-muted-foreground">{t("profile.zoom")}</span>
               <input type="range" min={0.5} max={3} step={0.05} value={scale} onChange={e => setScale(+e.target.value)} className="flex-1" />
               <span className="font-mono text-[10px] w-10 text-right">{scale.toFixed(2)}x</span>
             </label>
             <label className="text-xs flex items-center justify-between gap-2">
-              <span className="text-muted-foreground">↔ Pos X</span>
+              <span className="text-muted-foreground">{t("profile.posX")}</span>
               <input type="range" min={-100} max={200} value={ox} onChange={e => setOx(+e.target.value)} className="flex-1" />
               <span className="font-mono text-[10px] w-10 text-right">{ox|0}</span>
             </label>
             <label className="text-xs flex items-center justify-between gap-2">
-              <span className="text-muted-foreground">↕ Pos Y</span>
+              <span className="text-muted-foreground">{t("profile.posY")}</span>
               <input type="range" min={-100} max={200} value={oy} onChange={e => setOy(+e.target.value)} className="flex-1" />
               <span className="font-mono text-[10px] w-10 text-right">{oy|0}</span>
             </label>
@@ -342,10 +343,9 @@ function ImageEditor({ character, onClose }: { character: any; onClose: () => vo
         )}
 
         <div className="flex gap-2">
-          <button className="btn-fantasy flex-1" onClick={onClose}>Cancelar</button>
-          <button className="btn-fantasy flex-1" style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }} onClick={save}>Guardar</button>
+          <button className="btn-fantasy flex-1" onClick={onClose}>{t("common.cancel")}</button>
+          <button className="btn-fantasy flex-1" style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }} onClick={save}>{t("common.save")}</button>
         </div>
-      </div>
     </div>
   );
 }
