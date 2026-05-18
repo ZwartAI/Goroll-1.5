@@ -151,7 +151,8 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
               }} />
           </div>
         )}
-        <div className="grid grid-cols-5 gap-1.5 text-center text-xs">
+        <div className="grid grid-cols-6 gap-1.5 text-center text-xs">
+          <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("level.short")}</p><p className="font-display text-sm text-[var(--gold)]">{(character as any).level ?? 1}</p></div>
           <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("sheet.life")}</p><p className="font-display text-sm">{character.current_hp}/{stats.maxHp}</p></div>
           <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("sheet.def")}</p><p className="font-display text-sm text-[var(--gold)]">{stats.defense}</p></div>
           <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("sheet.vel")}</p><p className="font-display text-sm">{character.velocity}</p></div>
