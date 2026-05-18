@@ -521,9 +521,10 @@ function ItemActions({ item, players, dm, campaignId, allItems, allCharacters, o
     await supabase.from("items").update({ owner_character_id: target, in_dm_vault: false, equipped: false }).eq("id", item.id);
     await clampHpForOwner(prevOwner, oldMax);
     await pushLog(campaignId, [
-      {t:"char",v:dm.name,color:dm.color,id:dm.id},{t:"text",v:"entregó"},
-      {t:"item",v:item.name,rarity:item.rarity as Rarity,id:item.id},{t:"text",v:"a"},
+      {t:"char",v:dm.name,color:dm.color,id:dm.id},{t:"text",v:tr("dm.handedItem")},
+      {t:"item",v:item.name,rarity:item.rarity as Rarity,id:item.id},{t:"text",v:tr("dm.sentTo")},
       {t:"char",v:t?.name||"?",color:t?.color||"#ccc",id:target},
+
     ], { kind: "item.update", id: item.id, prev });
     onClose();
   }
