@@ -100,8 +100,8 @@ function Settings() {
         <div>
           <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">{t("settingsPage.baseAttrs")}</p>
           <div className="grid grid-cols-2 gap-2">
-            {num("fue","FUE")}{num("des","DES")}{num("con","CON")}
-            {num("int_stat","INT")}{num("wis","SAB")}{num("car","CAR")}
+            {num("fue",t("attr.fue"))}{num("des",t("attr.des"))}{num("con",t("attr.con"))}
+            {num("int_stat",t("attr.int"))}{num("wis",t("attr.wis"))}{num("car",t("attr.car"))}
           </div>
         </div>
         <div className="gem-divider"/>

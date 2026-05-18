@@ -201,12 +201,12 @@ function Profile() {
           {/* Atributos */}
           <h2 className="font-display text-xs uppercase tracking-widest text-center mb-1 text-[var(--gold)]">{t("profile.attributes")}</h2>
           <div className="grid grid-cols-3 gap-1 mb-3">
-            {stat("fue", "FUE")}
-            {stat("des", "DES")}
-            {stat("con", "CON")}
-            {stat("int_stat", "INT")}
-            {stat("wis", "SAB")}
-            {stat("car", "CAR")}
+            {stat("fue", t("attr.fue"))}
+            {stat("des", t("attr.des"))}
+            {stat("con", t("attr.con"))}
+            {stat("int_stat", t("attr.int"))}
+            {stat("wis", t("attr.wis"))}
+            {stat("car", t("attr.car"))}
           </div>
           <div className="stat-pill mb-3 !text-[11px]"><span>{t("profile.initiative")}</span><span className="text-[var(--gold)] font-bold">{fmtMod(character.initiative)}</span></div>
 
