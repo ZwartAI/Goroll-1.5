@@ -1,20 +1,50 @@
+import { useRef } from "react";
 import { Mic, MicOff } from "lucide-react";
 
 type Props = {
   enabled: boolean;
   onToggle: () => void;
+  onLongPress?: () => void;
   className?: string;
 };
 
-/** Compact mic toggle for the page header. Green when live, muted when off. */
-export function MicToggle({ enabled, onToggle, className }: Props) {
+/** Compact mic toggle. Tap = toggle, long-press = open settings. */
+export function MicToggle({ enabled, onToggle, onLongPress, className }: Props) {
+  const timerRef = useRef<any>(null);
+  const longFiredRef = useRef(false);
+
+  const start = () => {
+    longFiredRef.current = false;
+    if (!onLongPress) return;
+    timerRef.current = setTimeout(() => {
+      longFiredRef.current = true;
+      onLongPress();
+    }, 500);
+  };
+  const cancel = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = null;
+  };
+  const handleClick = () => {
+    if (longFiredRef.current) { longFiredRef.current = false; return; }
+    onToggle();
+  };
+  const handleContextMenu = (e: React.MouseEvent) => {
+    if (onLongPress) { e.preventDefault(); onLongPress(); }
+  };
+
   return (
     <button
       type="button"
-      onClick={onToggle}
+      onClick={handleClick}
+      onPointerDown={start}
+      onPointerUp={cancel}
+      onPointerLeave={cancel}
+      onPointerCancel={cancel}
+      onContextMenu={handleContextMenu}
       aria-label={enabled ? "Silenciar micrófono" : "Activar micrófono"}
-      title={enabled ? "Silenciar micrófono" : "Activar micrófono"}
-      className={`inline-flex items-center justify-center rounded-md p-1 transition ${
+      title={enabled ? "Silenciar micrófono (mantén pulsado para ajustes)" : "Activar micrófono (mantén pulsado para ajustes)"}
+      className={`inline-flex items-center justify-center rounded-md p-1 transition select-none ${
         enabled
           ? "text-[var(--gain)] hover:opacity-80"
           : "text-muted-foreground hover:text-foreground"
