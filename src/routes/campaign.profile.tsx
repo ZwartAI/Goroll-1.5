@@ -268,6 +268,7 @@ function Profile() {
           selfId={character.id}
           onOpenChar={(id) => openCharFromLog(id, true)}
           onOpenItem={(id) => setOpenItem(id)}
+          onOpenBooster={(id) => setOpenBooster(id)}
         />
       )}
 
