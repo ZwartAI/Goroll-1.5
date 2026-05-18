@@ -536,22 +536,23 @@ function ItemActions({ item, players, dm, campaignId, allItems, allCharacters, o
           {isEq ? SLOTS.find(s=>s.key===item.slot)?.label : ITEM_CATEGORIES.find(c => c.key === item.category)?.label}
         </p>
         {isEq ? (
-          <p className="text-sm">{isWeapon(item.slot as any) ? `Daño +${item.damage_bonus}` : `Def +${item.defense_bonus} · Vida +${item.hp_bonus}`}</p>
+          <p className="text-sm">{isWeapon(item.slot as any) ? tr("equipment.damagePlus", { n: item.damage_bonus }) : tr("equipment.defHpPlus", { def: item.defense_bonus, hp: item.hp_bonus })}</p>
         ) : (item.uses ?? 0) > 0 && (
-          <p className="text-sm">Usos: {item.uses}{item.max_uses ? `/${item.max_uses}` : ""}</p>
+          <p className="text-sm">{tr("inventory.usesRemaining")} {item.uses}{item.max_uses ? `/${item.max_uses}` : ""}</p>
         )}
         {item.description && <p className="text-xs text-muted-foreground italic">"{item.description}"</p>}
         <div className="grid grid-cols-2 gap-2">
-          <button className="btn-fantasy flex items-center justify-center gap-1" onClick={onEdit}><Pencil size={13}/> Editar</button>
-          <button className="btn-fantasy" onClick={reclaim}>Reclamar</button>
+          <button className="btn-fantasy flex items-center justify-center gap-1" onClick={onEdit}><Pencil size={13}/> {tr("common.edit")}</button>
+          <button className="btn-fantasy" onClick={reclaim}>{tr("dm.reclaim")}</button>
         </div>
         <select className="w-full bg-input border border-border rounded px-2 py-2 text-sm" value={target} onChange={e => setTarget(e.target.value)}>
-          <option value="">— enviar a jugador —</option>
+          <option value="">{tr("dm.sendToPlayer")}</option>
           {players.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
-        <button className="btn-fantasy w-full" disabled={!target} onClick={send}>Enviar</button>
-        <button className="btn-fantasy w-full" style={{ background: "var(--gradient-blood)" }} onClick={destroy}>Destruir</button>
-        <button className="text-xs text-muted-foreground underline w-full" onClick={onClose}>Cerrar</button>
+        <button className="btn-fantasy w-full" disabled={!target} onClick={send}>{tr("dm.send")}</button>
+        <button className="btn-fantasy w-full" style={{ background: "var(--gradient-blood)" }} onClick={destroy}>{tr("dm.destroy")}</button>
+        <button className="text-xs text-muted-foreground underline w-full" onClick={onClose}>{tr("common.close")}</button>
+
       </div>
     </div>
   );
