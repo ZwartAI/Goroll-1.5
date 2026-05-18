@@ -110,6 +110,9 @@ function PlayerCard({ c, online, onClick, isSelf, t, speaking }: { c: any; onlin
               style={{ transform: `translate(${((c.image_offset_x ?? 50) - 50)}%, ${((c.image_offset_y ?? 50) - 50)}%) scale(${c.image_scale || 1})` }} />
           : <div className="w-full h-full flex items-center justify-center text-xl bg-[var(--secondary)]">🧙</div>}
         <span className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border border-background ${online ? "bg-[var(--gain)]" : "bg-muted-foreground/60"}`} />
+        <span className="absolute -top-1 -left-1 min-w-[18px] h-[18px] px-1 rounded-full border border-background bg-[var(--card)] text-[9px] font-display font-bold flex items-center justify-center text-[var(--gold)]" title={t("level.label")}>
+          {c.level ?? 1}
+        </span>
       </div>
       <p className="font-display text-xs mt-1 truncate" style={{ color: c.color }}>{c.name}</p>
       <p className="text-[9px] text-muted-foreground truncate">{c.race || "—"} / {c.class || "—"}</p>
