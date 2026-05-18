@@ -74,7 +74,7 @@ function DM() {
         <div className="text-center">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{campaign.name}</p>
           <h1 className="font-display text-xl rune-glow text-[var(--gold)]">👑 {character.name}</h1>
-          <p className="text-xs text-muted-foreground">Dungeon Master</p>
+          <p className="text-xs text-muted-foreground">{t("dm.dungeonMaster")}</p>
         </div>
         <Link to="/campaign/achievements" className="text-muted-foreground"><Trophy size={20}/></Link>
       </header>
