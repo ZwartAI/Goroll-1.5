@@ -331,6 +331,35 @@ function Home() {
               backgroundRepeat: "no-repeat",
             }}
           >
+            {/* Título */}
+            <div
+              className="absolute text-center font-display text-[var(--gold)] tracking-[0.08em]"
+              style={{
+                top: "11%",
+                left: "8%",
+                width: "84%",
+                fontSize: "clamp(20px, 5.4vw, 30px)",
+                textShadow: "0 0 10px color-mix(in oklab, var(--gold) 45%, transparent), 0 2px 4px rgba(0,0,0,0.7)",
+              }}
+            >
+              <span className="text-[color-mix(in_oklab,var(--gold)_85%,#ff5a5a)] mr-2">✦</span>
+              {t("home.loginTitle")}
+              <span className="text-[color-mix(in_oklab,var(--gold)_85%,#ff5a5a)] ml-2">✦</span>
+            </div>
+
+            {/* Subtítulo */}
+            <div
+              className="absolute text-center text-[color-mix(in_oklab,var(--gold)_70%,#e8d9b0)] leading-snug px-2"
+              style={{
+                top: "22%",
+                left: "10%",
+                width: "80%",
+                fontSize: "clamp(11px, 2.8vw, 14px)",
+              }}
+            >
+              {t("home.loginHint")}
+            </div>
+
             {/* Username */}
             <input
               className="absolute bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none font-display text-[var(--gold)] placeholder:text-[color-mix(in_oklab,var(--gold)_55%,transparent)]"
@@ -349,6 +378,20 @@ function Home() {
               onKeyDown={e => { if (e.key === "Enter") pinRefs.current[0]?.focus(); }}
               autoFocus
             />
+
+            {/* Etiqueta CODEX PIN */}
+            <div
+              className="absolute text-center font-display text-[var(--gold)] tracking-[0.18em]"
+              style={{
+                top: "50%",
+                left: "20%",
+                width: "60%",
+                fontSize: "clamp(11px, 2.6vw, 14px)",
+                textShadow: "0 0 6px color-mix(in oklab, var(--gold) 40%, transparent)",
+              }}
+            >
+              ✦ {t("home.codexPin")} ✦
+            </div>
 
             {/* PIN — 4 cuadros */}
             <div
