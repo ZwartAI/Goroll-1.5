@@ -390,6 +390,16 @@ function Home() {
           <button className="text-xs text-muted-foreground underline w-full text-center" onClick={() => setStep("campaign")}>← Otra campaña</button>
         </div>
       )}
+
+      {actionCampaign && user && (
+        <CampaignActionsModal
+          campaign={actionCampaign}
+          currentUserId={user.id}
+          role={role}
+          onPlay={() => { const c = actionCampaign; setActionCampaign(null); pickCampaign(c); }}
+          onClose={() => setActionCampaign(null)}
+        />
+      )}
     </PageFrame>
   );
 }
