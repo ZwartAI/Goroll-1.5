@@ -98,18 +98,19 @@ function DM() {
             className="btn-fantasy w-full text-xs mb-2"
             style={{ background: "var(--gradient-blood, var(--loss))", color: "white" }}
             onClick={async () => {
-              if (!confirm("¿Borrar TODO el historial del log de esta campaña? Esta acción no se puede deshacer.")) return;
+              if (!confirm(t("dm.wipeConfirm"))) return;
               const { error } = await supabase.from("logs").delete().eq("campaign_id", campaign.id);
               if (error) toast.error(error.message);
               else {
-                toast.success("Historial borrado");
+                toast.success(t("dm.wipedToast"));
                 await pushLog(campaign.id, [
                   { t: "char", v: character.name, color: character.color, id: character.id },
-                  { t: "text", v: "limpió el historial del log." },
+                  { t: "text", v: t("dm.wipedLog") },
                 ]);
               }
             }}
-          >🗑️ Borrar historial</button>
+          >{t("dm.wipeLog")}</button>
+
         <LogList rows={logs} initial={20} maxH="max-h-[70vh]"
           renderRow={(l: LogRow) => (
             <div key={l.id} className={`text-sm bg-secondary/40 rounded px-3 py-2 leading-relaxed ${l.undone ? "opacity-50 line-through" : ""}`}>
