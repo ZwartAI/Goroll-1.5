@@ -66,6 +66,6 @@ export const es = {
     notFoundTitle: "Página no encontrada",
     notFoundDesc: "La página que buscas no existe o fue movida.",
   },
-} as const;
+};
 
 export type Dict = typeof es;
