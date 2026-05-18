@@ -271,6 +271,14 @@ function Profile() {
       {imgModal && (
         <ImageEditor character={character} onClose={() => setImgModal(false)} />
       )}
+      {hpModal && (
+        <HpModal
+          current={character.current_hp}
+          max={stats.maxHp}
+          onApply={async (d) => { await changeHp(d); }}
+          onClose={() => setHpModal(false)}
+        />
+      )}
       {openChar && (
         <CharacterSheetModal characterId={openChar} campaignId={campaign.id}
           editor={openCharReadOnly ? null : null}
