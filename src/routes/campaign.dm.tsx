@@ -65,6 +65,11 @@ function DM() {
     const it = items.find(i => i.id === id);
     if (it) setSelItem(it);
   };
+  const openBoosterFromId = (id: string) => {
+    const b = boosters.find(x => x.id === id);
+    if (b) setSelBooster(b);
+    else toast.error(t("dm.playerNotFound"));
+  };
 
   return (
     <PageFrame>
