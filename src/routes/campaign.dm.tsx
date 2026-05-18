@@ -300,6 +300,7 @@ function DM() {
             nameOverrides={dmLabels}
             onOpenChar={(id) => setOpenChar(id)}
             onOpenItem={openItemFromId}
+            onOpenBooster={openBoosterFromId}
           />
         </>
       )}
