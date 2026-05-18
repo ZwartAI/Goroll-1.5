@@ -17,6 +17,7 @@ import { type Booster } from "@/components/app/BoosterCard";
 import { DMRequestGate } from "@/components/app/DMRequestGate";
 import { Escenario } from "@/components/app/Escenario";
 import { MicToggle } from "@/components/app/MicToggle";
+import { MicSettingsModal } from "@/components/app/MicSettingsModal";
 import { useVoice } from "@/lib/useVoice";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -41,6 +42,7 @@ function DM() {
   const [boosterSel, setBoosterSel] = useState<Set<string>>(new Set());
   const [boosterSelectMode, setBoosterSelectMode] = useState(false);
   const voice = useVoice(campaign?.id, character?.id);
+  const [micSettingsOpen, setMicSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (!campaign) return;
@@ -85,7 +87,8 @@ function DM() {
           <p className="text-xs text-muted-foreground">{t("dm.dungeonMaster")}</p>
         </div>
         <div className="flex items-center gap-1.5">
-          <MicToggle enabled={voice.enabled} onToggle={voice.toggle} />
+          <MicToggle enabled={voice.enabled} onToggle={voice.toggle} onLongPress={() => setMicSettingsOpen(true)} />
+          <MicSettingsModal open={micSettingsOpen} onOpenChange={setMicSettingsOpen} />
           <Link to="/campaign/achievements" className="text-muted-foreground"><Trophy size={20}/></Link>
         </div>
       </header>

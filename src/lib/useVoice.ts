@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useMicSettings, sensitivityToThreshold } from "@/lib/micSettings";
 
 /**
  * Voice-activity presence over Supabase realtime broadcast.
@@ -16,6 +17,15 @@ export function useVoice(campaignId: string | undefined, characterId: string | u
   const speakingRef = useRef(false);
   const lastSentRef = useRef(0);
   const timersRef = useRef<Map<string, any>>(new Map());
+  const { settings: micSettings } = useMicSettings();
+  const thresholdRef = useRef(sensitivityToThreshold(micSettings.sensitivity));
+  const gainNodeRef = useRef<GainNode | null>(null);
+
+  // Live-update threshold and gain without restarting the stream.
+  useEffect(() => {
+    thresholdRef.current = sensitivityToThreshold(micSettings.sensitivity);
+    if (gainNodeRef.current) gainNodeRef.current.gain.value = micSettings.gain;
+  }, [micSettings.sensitivity, micSettings.gain]);
 
   // Subscribe to the campaign voice channel.
   useEffect(() => {
@@ -64,16 +74,23 @@ export function useVoice(campaignId: string | undefined, characterId: string | u
     (async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+          audio: {
+            echoCancellation: micSettings.echoCancellation,
+            noiseSuppression: micSettings.noiseSuppression,
+            autoGainControl: micSettings.autoGainControl,
+          },
         });
         if (cancelled) { stream.getTracks().forEach(t => t.stop()); return; }
         ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
         const src = ctx.createMediaStreamSource(stream);
+        const gainNode = ctx.createGain();
+        gainNode.gain.value = micSettings.gain;
+        gainNodeRef.current = gainNode;
         const analyser = ctx.createAnalyser();
         analyser.fftSize = 512;
-        src.connect(analyser);
+        src.connect(gainNode);
+        gainNode.connect(analyser);
         const data = new Uint8Array(analyser.fftSize);
-        const THRESHOLD = 0.045;
         let lastChange = 0;
 
         const tick = () => {
@@ -84,7 +101,7 @@ export function useVoice(campaignId: string | undefined, characterId: string | u
             sum += v * v;
           }
           const rms = Math.sqrt(sum / data.length);
-          const isSpeaking = rms > THRESHOLD;
+          const isSpeaking = rms > thresholdRef.current;
           const now = performance.now();
 
           // Hysteresis: switch off only after 350ms of silence.
@@ -119,6 +136,7 @@ export function useVoice(campaignId: string | undefined, characterId: string | u
       if (raf) cancelAnimationFrame(raf);
       stream?.getTracks().forEach(t => t.stop());
       ctx?.close().catch(() => {});
+      gainNodeRef.current = null;
       if (speakingRef.current) {
         channelRef.current?.send({
           type: "broadcast",
@@ -129,7 +147,8 @@ export function useVoice(campaignId: string | undefined, characterId: string | u
         speakingRef.current = false;
       }
     };
-  }, [enabled, characterId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, characterId, micSettings.noiseSuppression, micSettings.echoCancellation, micSettings.autoGainControl]);
 
   const setEnabled = useCallback((v: boolean) => setEnabledState(v), []);
   const toggle = useCallback(() => setEnabledState(v => !v), []);

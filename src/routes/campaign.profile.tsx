@@ -15,6 +15,7 @@ import { Escenario } from "@/components/app/Escenario";
 import { User, LogOut, Minus, Plus, Camera, HeartPulse, Sword, Backpack, Trophy, Sparkles, NotebookPen } from "lucide-react";
 import { FullscreenButton } from "@/components/app/AppShell";
 import { MicToggle } from "@/components/app/MicToggle";
+import { MicSettingsModal } from "@/components/app/MicSettingsModal";
 import { useVoice } from "@/lib/useVoice";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -38,6 +39,7 @@ function Profile() {
   const [openCharReadOnly, setOpenCharReadOnly] = useState(false);
 
   const voice = useVoice(campaign?.id, character?.id);
+  const [micSettingsOpen, setMicSettingsOpen] = useState(false);
 
   if (loading || !character || !campaign) return <PageFrame><p className="text-center text-muted-foreground">{t("profile.loading")}</p></PageFrame>;
 
@@ -109,7 +111,8 @@ function Profile() {
           <p className="text-xs text-muted-foreground">{character.race || t("profile.defaultRace")} / {character.class || t("profile.defaultClass")}</p>
         </div>
         <div className="flex items-center gap-1.5">
-          <MicToggle enabled={voice.enabled} onToggle={voice.toggle} />
+          <MicToggle enabled={voice.enabled} onToggle={voice.toggle} onLongPress={() => setMicSettingsOpen(true)} />
+          <MicSettingsModal open={micSettingsOpen} onOpenChange={setMicSettingsOpen} />
           <Link to="/campaign/settings" className="text-muted-foreground hover:text-foreground" aria-label={t("profile.statsAria")}><User size={20} /></Link>
         </div>
       </header>
