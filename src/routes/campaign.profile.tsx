@@ -39,6 +39,7 @@ function Profile() {
   const [openCharReadOnly, setOpenCharReadOnly] = useState(false);
 
   const voice = useVoice(campaign?.id, character?.id);
+  const [micSettingsOpen, setMicSettingsOpen] = useState(false);
 
   if (loading || !character || !campaign) return <PageFrame><p className="text-center text-muted-foreground">{t("profile.loading")}</p></PageFrame>;
 
