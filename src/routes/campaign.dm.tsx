@@ -281,13 +281,10 @@ function DM() {
             onlineIds={onlineIds}
             logs={logs}
             selfId={null}
+            dmCharacterIds={dmCharacterIds}
+            nameOverrides={dmLabels}
             onOpenChar={(id) => setOpenChar(id)}
             onOpenItem={openItemFromId}
-          />
-          <DeleteCampaignButton
-            campaignId={campaign.id}
-            campaignName={campaign.name}
-            isOwner={!!(campaign as any).owner_user_id && (campaign as any).owner_user_id === getStoredUser()?.id}
           />
         </>
       )}
