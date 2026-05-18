@@ -11,6 +11,8 @@ type GameData = {
   logs: LogRow[];
   achievements: Achievement[];
   loading: boolean;
+  /** Set of character ids currently connected (via Realtime presence). */
+  onlineIds: Set<string>;
   reload: () => Promise<void>;
 };
 
