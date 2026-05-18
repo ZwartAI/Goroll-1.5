@@ -138,6 +138,33 @@ function Home() {
     await pickCampaign(data as Campaign);
   }
 
+  async function checkBan(cid: string): Promise<boolean> {
+    if (!user) return false;
+    const { data } = await (supabase as any).from("campaign_bans")
+      .select("id").eq("campaign_id", cid).eq("user_id", user.id).maybeSingle();
+    return !!data;
+  }
+
+  async function requestRejoin(c: Campaign) {
+    if (!user) return;
+    const { data: existing } = await (supabase as any).from("dm_join_requests")
+      .select("*").eq("campaign_id", c.id).eq("requester_user_id", user.id)
+      .eq("status", "pending").maybeSingle();
+    let reqId = existing?.id as string | undefined;
+    if (!reqId) {
+      const { data: ins, error } = await (supabase as any).from("dm_join_requests")
+        .insert({ campaign_id: c.id, requester_user_id: user.id, requester_username: user.username, status: "pending", kind: "player_rejoin" })
+        .select().single();
+      if (error) { toast.error(error.message); return; }
+      reqId = ins.id as string;
+    } else {
+      toast.info(t("rejoin.alreadyPending"));
+    }
+    setCampaign(c);
+    setWaitingKind("player_rejoin");
+    setWaitingReqId(reqId!);
+  }
+
   async function joinByCode() {
     if (!user || !joinCode.trim()) return;
     const code = joinCode.trim();
@@ -147,8 +174,17 @@ function Home() {
       data = r.data;
     }
     if (!data) return toast.error(t("home.errCampaignNotFound"));
-    // For DM joins, gate via request flow (don't pre-create membership)
-    if (role !== "dm") {
+    // For player joins: check ban first; if banned, request rejoin instead of auto-joining.
+    if (role === "player") {
+      const banned = await checkBan(data.id);
+      if (banned) {
+        setJoinCode("");
+        await requestRejoin(data as Campaign);
+        return;
+      }
+      await (supabase as any).from("campaign_members")
+        .upsert({ campaign_id: data.id, user_id: user.id, role }, { onConflict: "campaign_id,user_id" });
+    } else if (role === "spectator") {
       await (supabase as any).from("campaign_members")
         .upsert({ campaign_id: data.id, user_id: user.id, role }, { onConflict: "campaign_id,user_id" });
     }
