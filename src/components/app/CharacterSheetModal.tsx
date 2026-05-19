@@ -238,10 +238,10 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
             {boosters.map(b => (
               <div key={b.id} className="flex items-center justify-between text-xs ornate-card px-2 py-1"
                 style={{ borderColor: RARITY_COLOR[b.rarity as Rarity] }}>
-                <div className="flex-1">
+                <button className="flex-1 text-left" onClick={() => setPeekBooster(b)}>
                   <span style={{ color: RARITY_COLOR[b.rarity as Rarity] }}>🃏 {b.name}</span>
                   <span className="text-muted-foreground"> · {b.uses}/{b.max_uses}</span>
-                </div>
+                </button>
                 {isEdit && (
                   <div className="flex gap-2">
                     <button className="text-[10px] underline opacity-70" onClick={() => setVaultConfirm(b)}>{t("sheet.toVault")}</button>
