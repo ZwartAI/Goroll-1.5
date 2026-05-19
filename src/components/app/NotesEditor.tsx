@@ -48,11 +48,13 @@ export function NotesEditor({ characterId, characterName, characterColor, readOn
       const { data } = await (supabase as any).from("character_notes")
         .select("content").eq("character_id", characterId).maybeSingle();
       if (cancel) return;
-      const html = (data?.content as string) || "";
+      const raw = (data?.content as string) || "";
+      const html = DOMPurify.sanitize(raw, { USE_PROFILES: { html: true } });
       initialRef.current = html;
       if (ref.current) ref.current.innerHTML = html;
       setLoading(false);
     })();
+
     return () => { cancel = true; };
   }, [characterId]);
 
