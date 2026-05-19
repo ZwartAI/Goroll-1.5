@@ -443,16 +443,16 @@ function Home() {
 
             {/* PIN — 4 cuadros */}
             <div
-              className="absolute flex justify-between items-center"
-              style={{ top: "59%", left: "16.5%", width: "67%", height: "13%" }}
+              className="absolute flex justify-center items-center"
+              style={{ top: "59%", left: "18%", width: "64%", height: "13%", gap: "3%" }}
             >
               {[0, 1, 2, 3].map(i => (
                 <input
                   key={i}
                   type="text"
                   ref={el => { pinRefs.current[i] = el; }}
-                  className="bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-center font-display text-[var(--gold)] caret-[var(--gold)]"
-                  style={{ width: "21%", height: "100%", fontSize: "clamp(20px, 5.2vw, 30px)" }}
+                  className="bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-center p-0 m-0 font-display text-[var(--gold)] caret-[var(--gold)]"
+                  style={{ width: "18%", height: "100%", fontSize: "clamp(20px, 5.2vw, 30px)" }}
                   inputMode="numeric"
                   maxLength={1}
                   value={pinDigits[i]}
