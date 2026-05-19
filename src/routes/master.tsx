@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { PageFrame } from "@/components/app/Frame";
 import { getStoredUser, setStoredUser, type StoredUser } from "@/lib/game";
@@ -8,6 +9,11 @@ import { toastSaved } from "@/lib/saved";
 import { setGlobalBackground } from "@/lib/background";
 import { Trash2, LogIn, Image as ImageIcon, LogOut } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import {
+  listAppUsers, deleteAppUserById, listLoginAttempts,
+  clearAllBlocks, clearBlockByIp,
+} from "@/lib/master.functions";
+
 
 export const Route = createFileRoute("/master")({
   head: () => ({ meta: [{ title: "Panel Maestro" }] }),
