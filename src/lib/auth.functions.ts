@@ -83,6 +83,7 @@ export const attemptLogin = createServerFn({ method: "POST" })
       const next_try_at = blocked ? null : new Date(now.getTime() + COOLDOWN_MS).toISOString();
       await supabaseAdmin.from("login_attempts" as any).upsert({
         ip,
+        username: uname,
         failed_count: failed,
         last_failed_at: now.toISOString(),
         next_try_at,
