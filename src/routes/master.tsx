@@ -15,7 +15,7 @@ export const Route = createFileRoute("/master")({
 });
 
 type AppUser = { id: string; username: string; pin: string; created_at: string };
-type Attempt = { ip: string; failed_count: number; blocked_until: string | null; next_try_at: string | null };
+type Attempt = { ip: string; username: string | null; failed_count: number; blocked_until: string | null; next_try_at: string | null };
 
 function Master() {
   const { t } = useT();
@@ -36,6 +36,12 @@ function Master() {
       const { data } = await (supabase as any).from("app_settings").select("value").eq("key", "background_url").maybeSingle();
       setBgUrl(data?.value || "");
     })();
+    const ch = (supabase as any)
+      .channel("master:login_attempts")
+      .on("postgres_changes", { event: "*", schema: "public", table: "login_attempts" }, () => reload())
+      .on("postgres_changes", { event: "*", schema: "public", table: "app_users" }, () => reload())
+      .subscribe();
+    return () => { (supabase as any).removeChannel(ch); };
   }, []);
 
   async function reload() {
@@ -148,14 +154,17 @@ function Master() {
         </div>
         {attempts.length === 0 && <p className="text-xs text-muted-foreground">{t("master.noAttempts")}</p>}
         {attempts.map(a => (
-          <div key={a.ip} className="flex items-center justify-between text-xs bg-secondary/40 rounded px-2 py-1">
-            <span className="font-mono">{a.ip}</span>
-            <span className="text-muted-foreground">
+          <div key={a.ip} className="flex items-center justify-between text-xs bg-secondary/40 rounded px-2 py-1 gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="font-mono truncate">{a.ip}</p>
+              {a.username && <p className="text-[10px] text-muted-foreground truncate">👤 {a.username}</p>}
+            </div>
+            <span className="text-muted-foreground whitespace-nowrap">
               {a.blocked_until && new Date(a.blocked_until) > new Date()
                 ? t("master.blocked", { n: a.failed_count })
                 : t("master.failed", { n: a.failed_count })}
             </span>
-            <button className="text-[var(--gold)] underline" onClick={() => unblockOne(a.ip)}>{t("master.unblock")}</button>
+            <button className="text-[var(--gold)] underline whitespace-nowrap" onClick={() => unblockOne(a.ip)}>{t("master.unblock")}</button>
           </div>
         ))}
       </section>
