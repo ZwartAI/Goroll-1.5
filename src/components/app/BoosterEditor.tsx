@@ -642,9 +642,8 @@ export function BoosterActions({
     if (!character) return;
     const remaining = booster.uses - 1;
     if (remaining <= 0) {
-      await (supabase as any).from("boosters").update({
-        uses: booster.max_uses, owner_character_id: null, in_dm_vault: true,
-      }).eq("id", booster.id);
+      // Final use: remove this copy from the player's vault.
+      await (supabase as any).from("boosters").delete().eq("id", booster.id);
       await pushBoosterLog(character, t("boosters.usedBoosterLog"), t("boosters.lastSuffix"));
     } else {
       await (supabase as any).from("boosters").update({ uses: remaining }).eq("id", booster.id);
