@@ -154,14 +154,17 @@ function Master() {
         </div>
         {attempts.length === 0 && <p className="text-xs text-muted-foreground">{t("master.noAttempts")}</p>}
         {attempts.map(a => (
-          <div key={a.ip} className="flex items-center justify-between text-xs bg-secondary/40 rounded px-2 py-1">
-            <span className="font-mono">{a.ip}</span>
-            <span className="text-muted-foreground">
+          <div key={a.ip} className="flex items-center justify-between text-xs bg-secondary/40 rounded px-2 py-1 gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="font-mono truncate">{a.ip}</p>
+              {a.username && <p className="text-[10px] text-muted-foreground truncate">👤 {a.username}</p>}
+            </div>
+            <span className="text-muted-foreground whitespace-nowrap">
               {a.blocked_until && new Date(a.blocked_until) > new Date()
                 ? t("master.blocked", { n: a.failed_count })
                 : t("master.failed", { n: a.failed_count })}
             </span>
-            <button className="text-[var(--gold)] underline" onClick={() => unblockOne(a.ip)}>{t("master.unblock")}</button>
+            <button className="text-[var(--gold)] underline whitespace-nowrap" onClick={() => unblockOne(a.ip)}>{t("master.unblock")}</button>
           </div>
         ))}
       </section>
