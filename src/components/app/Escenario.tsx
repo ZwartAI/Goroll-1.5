@@ -7,6 +7,8 @@ import { useT } from "@/lib/i18n";
 
 type Props = {
   characters: Character[];
+  /** All items in the campaign — used to compute live maxHp per character (equipment changes). */
+  items?: Item[];
   onlineIds: Set<string>;
   logs: LogRow[];
   selfId?: string | null;
@@ -27,13 +29,24 @@ type Props = {
  * Shared "Escenario" view: shows the party (online first, offline collapsible)
  * and an optional log of the scene below. Used by Player profile, DM, and Spectator.
  */
-export function Escenario({ characters, onlineIds, logs, selfId, onOpenChar, onOpenItem, onOpenBooster, dmCharacterIds, nameOverrides, showLog = true, speakingIds }: Props) {
+export function Escenario({ characters, items, onlineIds, logs, selfId, onOpenChar, onOpenItem, onOpenBooster, dmCharacterIds, nameOverrides, showLog = true, speakingIds }: Props) {
   const [openOffline, setOpenOffline] = useState(false);
   const { t } = useT();
   const dmSet = dmCharacterIds || new Set<string>();
   const players = characters.filter(c => c.role !== "dm" && !dmSet.has(c.id));
   const online = players.filter(p => (onlineIds.has(p.id) || p.id === selfId));
   const offline = players.filter(p => !onlineIds.has(p.id) && p.id !== selfId);
+
+  // Compute live maxHp for each character based on currently equipped items.
+  const maxHpById = useMemo(() => {
+    const map: Record<string, number> = {};
+    const all = items || [];
+    for (const c of characters) {
+      const equipped = all.filter(i => i.owner_character_id === c.id && i.equipped);
+      map[c.id] = totals(c, equipped).maxHp;
+    }
+    return map;
+  }, [characters, items]);
 
   return (
     <>
