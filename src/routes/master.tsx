@@ -61,7 +61,7 @@ function Master() {
       const u = await callList({ data: { callerUserId: me.id } });
       setUsers((u.users || []) as AppUser[]);
       const a = await callAttempts({ data: { callerUserId: me.id } });
-      setAttempts((a.attempts || []) as Attempt[]);
+      setAttempts(((a.attempts || []) as unknown) as Attempt[]);
     } catch (e: any) {
       // Silently fail if not master (defense in depth).
     }
