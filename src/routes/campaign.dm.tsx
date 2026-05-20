@@ -108,6 +108,7 @@ function DM() {
         <div className="flex items-center gap-1.5">
           <MicToggle enabled={voice.enabled} onToggle={voice.toggle} onLongPress={() => setMicSettingsOpen(true)} />
           <MicSettingsModal open={micSettingsOpen} onOpenChange={setMicSettingsOpen} />
+          <Link to="/campaign/bestiary" className="text-muted-foreground" title={t("bestiary.title")}><Skull size={20}/></Link>
           <Link to="/campaign/achievements" className="text-muted-foreground"><Trophy size={20}/></Link>
         </div>
       </header>
