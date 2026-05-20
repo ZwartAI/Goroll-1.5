@@ -90,18 +90,41 @@ export function Escenario({ characters, items, onlineIds, logs, selfId, onOpenCh
 
       {showLog && (
         <div className="ornate-card p-3">
-          <h2 className="font-display text-sm uppercase tracking-widest text-center mb-2 text-[var(--gold)]">{t("escenario.logTitle")}</h2>
-          <LogList rows={logs} initial={30} maxH="max-h-[50vh]" empty={t("escenario.noActivity")}
-            renderRow={(l: any) => (
-              <div key={l.id} className={`text-xs bg-secondary/40 rounded px-2 py-1.5 leading-relaxed ${l.undone ? "opacity-50 line-through" : ""}`}>
-                <LogSegments segments={l.segments as any}
-                  nameOverrides={nameOverrides}
-                  onItem={(id) => onOpenItem?.(id)}
-                  onBooster={(id) => onOpenBooster?.(id)}
-                  onChar={(id) => onOpenChar(id)} />
-                <p className="text-[9px] text-muted-foreground mt-0.5">{new Date(l.created_at).toLocaleTimeString()}</p>
-              </div>
-            )} />
+          {combat.encounter && combat.encounter.status === "active" ? (
+            <div className="grid grid-cols-2 gap-1 mb-2">
+              <button onClick={() => setLogTab("log")}
+                className={`text-[10px] py-1.5 rounded-md font-display uppercase tracking-widest ${logTab === "log" ? "bg-[var(--gold)] text-black" : "bg-card border border-border text-foreground"}`}>
+                {t("combat.tabLog")}
+              </button>
+              <button onClick={() => setLogTab("combat")}
+                className={`text-[10px] py-1.5 rounded-md font-display uppercase tracking-widest ${logTab === "combat" ? "bg-[var(--gold)] text-black" : "bg-card border border-border text-foreground"}`}>
+                {t("combat.tabCombat")}
+              </button>
+            </div>
+          ) : (
+            <h2 className="font-display text-sm uppercase tracking-widest text-center mb-2 text-[var(--gold)]">{t("escenario.logTitle")}</h2>
+          )}
+          {logTab === "combat" && combat.encounter ? (
+            <CombatList
+              encounter={combat.encounter}
+              participants={combat.participants}
+              groups={combat.groups}
+              selfCharacterId={selfId}
+              onOpenChar={onOpenChar}
+            />
+          ) : (
+            <LogList rows={logs} initial={30} maxH="max-h-[50vh]" empty={t("escenario.noActivity")}
+              renderRow={(l: any) => (
+                <div key={l.id} className={`text-xs bg-secondary/40 rounded px-2 py-1.5 leading-relaxed ${l.undone ? "opacity-50 line-through" : ""}`}>
+                  <LogSegments segments={l.segments as any}
+                    nameOverrides={nameOverrides}
+                    onItem={(id) => onOpenItem?.(id)}
+                    onBooster={(id) => onOpenBooster?.(id)}
+                    onChar={(id) => onOpenChar(id)} />
+                  <p className="text-[9px] text-muted-foreground mt-0.5">{new Date(l.created_at).toLocaleTimeString()}</p>
+                </div>
+              )} />
+          )}
         </div>
       )}
 
