@@ -301,7 +301,10 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
                 <button className="btn-fantasy" onClick={async () => {
                   const b = vaultConfirm;
                   setVaultConfirm(null);
-                  await (supabase as any).from("boosters").update({ owner_character_id: null, in_dm_vault: true, uses: b.max_uses }).eq("id", b.id);
+                  const aid = (b as any)._assignmentId;
+                  if (aid) {
+                    await (supabase as any).from("booster_assignments").delete().eq("id", aid);
+                  }
                   reload();
                 }}>{t("common.confirm")}</button>
               </div>
