@@ -8,7 +8,8 @@ import { RarityBadge } from "./RarityBadge";
 import { SkillDetailModal } from "./SkillDetailModal";
 import type { CharacterSkill } from "./SkillCard";
 import { SKILL_RARITY_COST, skillNameKey, parseSkillFile } from "@/lib/skillImport";
-import { Sparkles, Upload, Plus, Trophy } from "lucide-react";
+import { Sparkles, Upload, Plus, Trophy, Dices, AlertTriangle } from "lucide-react";
+import { SkillIconMedallion, SKILL_ICON_OPTIONS } from "./SkillIconMedallion";
 
 type Props = {
   campaignId: string;
