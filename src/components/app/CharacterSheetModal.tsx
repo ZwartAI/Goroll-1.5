@@ -73,6 +73,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
       .on("postgres_changes", { event: "*", schema: "public", table: "booster_assignments", filter: `campaign_id=eq.${campaignId}` }, () => reload())
       .on("postgres_changes", { event: "*", schema: "public", table: "boosters", filter: `campaign_id=eq.${campaignId}` }, () => reload())
       .on("postgres_changes", { event: "*", schema: "public", table: "achievements", filter: `character_id=eq.${characterId}` }, () => reload())
+      .on("postgres_changes", { event: "*", schema: "public", table: "character_skills", filter: `character_id=eq.${characterId}` }, () => reload())
       .subscribe();
     return () => { (supabase as any).removeChannel(ch); };
     // eslint-disable-next-line
