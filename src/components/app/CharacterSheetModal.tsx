@@ -361,6 +361,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
             } : undefined}
           />
         )}
+        {peekBooster && (
           <BoosterPeek
             boosterId={peekBooster.id}
             campaignId={campaignId}
