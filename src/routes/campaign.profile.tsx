@@ -252,6 +252,17 @@ function Profile() {
           </div>
           <div className="stat-pill mb-3 !text-[11px]"><span>{t("profile.initiative")}</span><span className="text-[var(--gold)] font-bold">{fmtMod(character.initiative)}</span></div>
 
+          <div className="mb-3">
+            <InitiativeButton
+              character={character}
+              encounter={combat.encounter}
+              participants={combat.participants}
+              groups={combat.groups}
+              online={characters.filter(c => onlineIds.has(c.id))}
+            />
+          </div>
+
+
           <ConditionsPanel character={character} campaignId={campaign.id} canEdit={true} />
 
           {/* Quick links — icon left, text right */}
