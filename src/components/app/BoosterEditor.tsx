@@ -269,9 +269,9 @@ function BoosterDetails({ b }: { b: Booster }) {
         </div>
       </SectionFrame>
 
-      {b.template_id && (
+      {b.id && (
         <SectionFrame icon="👥" title={t("boosters.holders")} color={color}>
-          <BoosterHolders templateId={b.template_id} campaignId={b.campaign_id} excludeId={b.owner_character_id || undefined} />
+          <BoosterHolders boosterId={b.id} campaignId={b.campaign_id} excludeId={b.owner_character_id || undefined} />
         </SectionFrame>
       )}
 
