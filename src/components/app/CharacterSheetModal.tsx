@@ -273,6 +273,20 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
           </div>
         </div>
         <div>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("skills.skillsList")}</p>
+            {isEdit && (
+              <span className="text-[10px] text-[var(--gold)]">SP: {(character as any).skill_points ?? 0}</span>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {skills.length === 0 && <p className="text-[10px] text-muted-foreground col-span-2">{t("skills.charHasNone")}</p>}
+            {skills.map(s => (
+              <SkillCard key={s.id} s={s} locked={!s.is_unlocked} onClick={() => setSkillPeek(s)} />
+            ))}
+          </div>
+        </div>
+        <div>
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{t("sheet.achievements")}</p>
           <div className="flex flex-wrap gap-1">
             {achievements.map(a => (
