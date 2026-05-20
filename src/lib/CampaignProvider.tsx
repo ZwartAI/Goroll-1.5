@@ -47,10 +47,30 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
 
   const [members, setMembers] = useState<Array<{ user_id: string; role: string; created_at: string }>>([]);
 
+  const [combat, setCombat] = useState<CombatState>({ encounter: null, participants: [], groups: [] });
+
+  const loadCombat = useCallback(async (campaignId: string) => {
+    const { data: encs } = await (supabase as any)
+      .from("combat_encounters")
+      .select("*")
+      .eq("campaign_id", campaignId)
+      .neq("status", "ended")
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const enc = (encs && encs[0]) as CombatEncounter | undefined;
+    if (!enc) { setCombat({ encounter: null, participants: [], groups: [] }); return; }
+    const [{ data: parts }, { data: grps }] = await Promise.all([
+      (supabase as any).from("combat_participants").select("*").eq("encounter_id", enc.id),
+      (supabase as any).from("combat_turn_groups").select("*").eq("encounter_id", enc.id),
+    ]);
+    setCombat({
+      encounter: enc,
+      participants: (parts || []) as CombatParticipant[],
+      groups: (grps || []) as CombatTurnGroup[],
+    });
+  }, []);
+
   const load = useCallback(async () => {
-    const s = getSession();
-    if (!s) { nav({ to: "/" }); return; }
-    const [c1, c2, c3, c4, c5, c6] = await Promise.all([
       supabase.from("campaigns").select("*").eq("id", s.campaignId).single(),
       s.characterId ? supabase.from("characters").select("*").eq("id", s.characterId).single() : Promise.resolve({ data: null }),
       supabase.from("characters").select("*").eq("campaign_id", s.campaignId),
