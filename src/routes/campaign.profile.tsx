@@ -266,28 +266,28 @@ function Profile() {
 
           {/* Quick links — icon left, text right */}
           <div className="grid grid-cols-3 gap-2 mb-2">
-            <Link to="/campaign/equipment" className="btn-fantasy flex items-center justify-center gap-1.5">
-              <Sword size={14} /><span>{t("profile.quickEquip")}</span>
+            <Link to="/campaign/equipment" className="btn-fantasy flex items-center justify-center gap-1.5 overflow-hidden min-w-0 px-2">
+              <Sword size={14} className="shrink-0" /><span className="min-w-0 text-center leading-tight break-words line-clamp-2 text-[11px]">{t("profile.quickEquip")}</span>
             </Link>
-            <Link to="/campaign/inventory" className="btn-fantasy flex items-center justify-center gap-1.5" style={{ background: "linear-gradient(135deg, oklch(0.5 0.15 195), oklch(0.3 0.1 195))" }}>
-              <Backpack size={14} /><span>{t("profile.quickInv")}</span>
+            <Link to="/campaign/inventory" className="btn-fantasy flex items-center justify-center gap-1.5 overflow-hidden min-w-0 px-2" style={{ background: "linear-gradient(135deg, oklch(0.5 0.15 195), oklch(0.3 0.1 195))" }}>
+              <Backpack size={14} className="shrink-0" /><span className="min-w-0 text-center leading-tight break-words line-clamp-2 text-[11px]">{t("profile.quickInv")}</span>
             </Link>
-            <Link to="/campaign/achievements" className="btn-fantasy flex items-center justify-center gap-1.5" style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}>
-              <Trophy size={14} /><span>{t("profile.quickAch")}</span>
+            <Link to="/campaign/achievements" className="btn-fantasy flex items-center justify-center gap-1.5 overflow-hidden min-w-0 px-2" style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}>
+              <Trophy size={14} className="shrink-0" /><span className="min-w-0 text-center leading-tight break-words line-clamp-2 text-[11px]">{t("profile.quickAch")}</span>
             </Link>
           </div>
           <div className="grid grid-cols-3 gap-2 mb-4">
-            <Link to="/campaign/boosters" className="btn-fantasy flex items-center justify-center gap-1.5"
+            <Link to="/campaign/boosters" className="btn-fantasy flex items-center justify-center gap-1.5 overflow-hidden min-w-0 px-2 tracking-normal"
               style={{ background: "linear-gradient(135deg, var(--rarity-purple), oklch(0.35 0.18 300))", color: "white" }}>
-              <Sparkles size={14} /><span>{t("profile.quickBoost")}</span>
+              <Sparkles size={14} className="shrink-0" /><span className="min-w-0 text-center leading-tight break-words line-clamp-2 text-[10px]">{t("profile.quickBoost")}</span>
             </Link>
-            <Link to="/campaign/skills" className="btn-fantasy flex items-center justify-center gap-1.5"
+            <Link to="/campaign/skills" className="btn-fantasy flex items-center justify-center gap-1.5 overflow-hidden min-w-0 px-2"
               style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}>
-              <Sparkles size={14} /><span>{t("skills.title")}</span>
+              <Sparkles size={14} className="shrink-0" /><span className="min-w-0 text-center leading-tight break-words line-clamp-2 text-[11px]">{t("skills.title")}</span>
             </Link>
-            <Link to="/campaign/notes" className="btn-fantasy flex items-center justify-center gap-1.5"
+            <Link to="/campaign/notes" className="btn-fantasy flex items-center justify-center gap-1.5 overflow-hidden min-w-0 px-2"
               style={{ background: "linear-gradient(135deg, oklch(0.45 0.12 220), oklch(0.30 0.10 220))", color: "white" }}>
-              <NotebookPen size={14} /><span>{t("profile.quickNotes")}</span>
+              <NotebookPen size={14} className="shrink-0" /><span className="min-w-0 text-center leading-tight break-words line-clamp-2 text-[11px]">{t("profile.quickNotes")}</span>
             </Link>
           </div>
 
