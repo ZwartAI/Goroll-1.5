@@ -31,7 +31,7 @@ function DM() {
   const { character, characters, items, logs, campaign, onlineIds, loading, dmLabels, dmCharacterIds } = useGameData();
 
   const nav = useNavigate();
-  const [tab, setTab] = useState<"log" | "create" | "vault" | "boosters" | "escenario">("log");
+  const [tab, setTab] = useState<"log" | "create" | "vault" | "boosters" | "skills" | "escenario">("log");
   const [selItem, setSelItem] = useState<Item | null>(null);
   const [editItem, setEditItem] = useState<Item | null>(null);
   const [openChar, setOpenChar] = useState<string | null>(null);
