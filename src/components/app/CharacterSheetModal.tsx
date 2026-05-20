@@ -9,6 +9,8 @@ import { NotesEditor } from "@/components/app/NotesEditor";
 import { useT } from "@/lib/i18n";
 import type { Booster } from "@/components/app/BoosterCard";
 import { BoosterPeek } from "@/components/app/BoosterEditor";
+import { SkillCard, type CharacterSkill } from "@/components/app/SkillCard";
+import { SkillDetailModal } from "@/components/app/SkillDetailModal";
 
 type Props = {
   characterId: string;
@@ -27,18 +29,22 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   const [items, setItems] = useState<Item[]>([]);
   const [achievements, setAchievements] = useState<{id:string;label:string;color:string}[]>([]);
   const [boosters, setBoosters] = useState<Booster[]>([]);
+  const [skills, setSkills] = useState<CharacterSkill[]>([]);
+  const [skillPeek, setSkillPeek] = useState<CharacterSkill | null>(null);
   const [showNotes, setShowNotes] = useState(false);
   const [vaultConfirm, setVaultConfirm] = useState<Booster | null>(null);
   const [peekBooster, setPeekBooster] = useState<Booster | null>(null);
 
   async function reload() {
-    const [a, b, c, d] = await Promise.all([
+    const [a, b, c, d, e] = await Promise.all([
       supabase.from("characters").select("*").eq("id", characterId).single(),
       supabase.from("items").select("*").eq("owner_character_id", characterId),
       supabase.from("achievements").select("*").eq("character_id", characterId),
       (supabase as any).from("booster_assignments")
         .select("id, uses, max_uses, booster:boosters(*)")
         .eq("character_id", characterId),
+      (supabase as any).from("character_skills")
+        .select("*").eq("character_id", characterId).order("order_index", { ascending: true }),
     ]);
     if (a.data) setCharacter(a.data as Character);
     setItems((b.data || []) as Item[]);
@@ -54,6 +60,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
         _assignmentId: row.id,
       }));
     setBoosters(list);
+    setSkills((e.data || []) as CharacterSkill[]);
   }
   useEffect(() => { reload(); /* eslint-disable-next-line */ }, [characterId]);
 
@@ -66,6 +73,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
       .on("postgres_changes", { event: "*", schema: "public", table: "booster_assignments", filter: `campaign_id=eq.${campaignId}` }, () => reload())
       .on("postgres_changes", { event: "*", schema: "public", table: "boosters", filter: `campaign_id=eq.${campaignId}` }, () => reload())
       .on("postgres_changes", { event: "*", schema: "public", table: "achievements", filter: `character_id=eq.${characterId}` }, () => reload())
+      .on("postgres_changes", { event: "*", schema: "public", table: "character_skills", filter: `character_id=eq.${characterId}` }, () => reload())
       .subscribe();
     return () => { (supabase as any).removeChannel(ch); };
     // eslint-disable-next-line
@@ -265,6 +273,20 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
           </div>
         </div>
         <div>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("skills.skillsList")}</p>
+            {isEdit && (
+              <span className="text-[10px] text-[var(--gold)]">SP: {(character as any).skill_points ?? 0}</span>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {skills.length === 0 && <p className="text-[10px] text-muted-foreground col-span-2">{t("skills.charHasNone")}</p>}
+            {skills.map(s => (
+              <SkillCard key={s.id} s={s} locked={!s.is_unlocked} onClick={() => setSkillPeek(s)} />
+            ))}
+          </div>
+        </div>
+        <div>
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{t("sheet.achievements")}</p>
           <div className="flex flex-wrap gap-1">
             {achievements.map(a => (
@@ -310,6 +332,34 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
               </div>
             </div>
           </div>
+        )}
+        {skillPeek && character && (
+          <SkillDetailModal
+            skill={skillPeek}
+            onClose={() => setSkillPeek(null)}
+            dmActions={isEdit ? {
+              onUnlockFree: async () => {
+                await (supabase as any).from("character_skills")
+                  .update({ is_unlocked: true, unlocked_at: new Date().toISOString() })
+                  .eq("id", skillPeek.id);
+                if (editor) await pushLog(campaignId, [
+                  { t: "char", v: editor.name, color: editor.color, id: editor.id },
+                  { t: "text", v: t("skills.logDmUnlocked") },
+                  { t: "char", v: character.name, color: character.color, id: character.id },
+                  { t: "text", v: ":" },
+                  { t: "item", v: skillPeek.name, rarity: skillPeek.rarity, id: skillPeek.id },
+                ]);
+                setSkillPeek(null);
+                reload();
+              },
+              onDelete: async () => {
+                if (!confirm(t("skills.deleteConfirm", { name: skillPeek.name }))) return;
+                await (supabase as any).from("character_skills").delete().eq("id", skillPeek.id);
+                setSkillPeek(null);
+                reload();
+              },
+            } : undefined}
+          />
         )}
         {peekBooster && (
           <BoosterPeek
