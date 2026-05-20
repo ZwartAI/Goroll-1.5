@@ -38,7 +38,7 @@ function Bestiary() {
   const [viewing, setViewing] = useState<EnemyTemplate | null>(null);
   const [spawning, setSpawning] = useState<EnemyTemplate | null>(null);
 
-  const isDM = character?.role === "dm" || character?.role === "codm";
+  const isDM = character?.role === "dm";
 
   useEffect(() => {
     if (!campaign) return;
