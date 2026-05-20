@@ -628,13 +628,18 @@ export function BoosterActions({
 
   async function useBooster() {
     if (!character) return;
+    const assignmentId = (booster as any)._assignmentId as string | undefined;
     const remaining = booster.uses - 1;
+    if (!assignmentId) {
+      // Legacy/catalog booster with no assignment — nothing to consume.
+      onClose();
+      return;
+    }
     if (remaining <= 0) {
-      // Final use: remove this copy from the player's vault.
-      await (supabase as any).from("boosters").delete().eq("id", booster.id);
+      await (supabase as any).from("booster_assignments").delete().eq("id", assignmentId);
       await pushBoosterLog(character, t("boosters.usedBoosterLog"), t("boosters.lastSuffix"));
     } else {
-      await (supabase as any).from("boosters").update({ uses: remaining }).eq("id", booster.id);
+      await (supabase as any).from("booster_assignments").update({ uses: remaining }).eq("id", assignmentId);
       await pushBoosterLog(character, t("boosters.usedBoosterLog"), t("boosters.remainingSuffix", { n: remaining }));
     }
     onClose();
@@ -642,9 +647,16 @@ export function BoosterActions({
 
   async function transferTo(targetId: string) {
     if (!character) return;
-    await (supabase as any).from("boosters").update({
-      owner_character_id: targetId, in_dm_vault: false,
-    }).eq("id", booster.id);
+    const assignmentId = (booster as any)._assignmentId as string | undefined;
+    if (!assignmentId) return;
+    // Move my assignment to the target. If the target already has an assignment
+    // for this booster, the unique constraint fires — fall back to deleting
+    // mine (the target keeps the copy they already had).
+    const { error } = await (supabase as any).from("booster_assignments")
+      .update({ character_id: targetId }).eq("id", assignmentId);
+    if (error) {
+      await (supabase as any).from("booster_assignments").delete().eq("id", assignmentId);
+    }
     const target = members.find(p => p.id === targetId);
     await pushBoosterLog(character, t("boosters.yieldedLog", { name: target?.name ?? "?" }));
     toastSaved();
@@ -661,9 +673,10 @@ export function BoosterActions({
   async function discardToVault() {
     if (!character) return;
     if (!confirm(t("boosters.discardConfirm"))) return;
-    await (supabase as any).from("boosters").update({
-      owner_character_id: null, in_dm_vault: true,
-    }).eq("id", booster.id);
+    const assignmentId = (booster as any)._assignmentId as string | undefined;
+    if (assignmentId) {
+      await (supabase as any).from("booster_assignments").delete().eq("id", assignmentId);
+    }
     await pushBoosterLog(character, t("boosters.discardedLog"));
     toastSaved();
     onClose();
