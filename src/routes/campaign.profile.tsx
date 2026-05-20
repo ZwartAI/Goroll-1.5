@@ -12,6 +12,7 @@ import { BoosterPeek } from "@/components/app/BoosterEditor";
 import { ConditionsPanel } from "@/components/app/ConditionsPanel";
 import { CoinsAdjuster } from "@/components/app/CoinsAdjuster";
 import { Escenario } from "@/components/app/Escenario";
+import { InitiativeButton } from "@/components/app/InitiativeButton";
 import { User, LogOut, Minus, Plus, Camera, HeartPulse, Sword, Backpack, Trophy, Sparkles, NotebookPen } from "lucide-react";
 import { FullscreenButton } from "@/components/app/AppShell";
 import { MailboxButton } from "@/components/app/MailboxButton";
