@@ -113,9 +113,12 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "character_conditions" }, () => load())
       .on("postgres_changes", { event: "*", schema: "public", table: "campaign_members", filter: `campaign_id=eq.${s.campaignId}` }, () => load())
       .on("postgres_changes", { event: "*", schema: "public", table: "campaigns", filter: `id=eq.${s.campaignId}` }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "combat_encounters", filter: `campaign_id=eq.${s.campaignId}` }, () => loadCombat(s.campaignId))
+      .on("postgres_changes", { event: "*", schema: "public", table: "combat_participants", filter: `campaign_id=eq.${s.campaignId}` }, () => loadCombat(s.campaignId))
+      .on("postgres_changes", { event: "*", schema: "public", table: "combat_turn_groups", filter: `campaign_id=eq.${s.campaignId}` }, () => loadCombat(s.campaignId))
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [load]);
+  }, [load, loadCombat]);
 
   // Presence: track which characters are currently connected.
   // Spectators (no characterId) still subscribe so they can SEE who is online,
