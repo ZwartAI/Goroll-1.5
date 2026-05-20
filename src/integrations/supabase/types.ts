@@ -539,6 +539,7 @@ export type Database = {
           ended_at: string | null
           id: string
           requested_by_character_id: string | null
+          round_number: number
           started_at: string | null
           status: string
         }
@@ -549,6 +550,7 @@ export type Database = {
           ended_at?: string | null
           id?: string
           requested_by_character_id?: string | null
+          round_number?: number
           started_at?: string | null
           status?: string
         }
@@ -559,6 +561,7 @@ export type Database = {
           ended_at?: string | null
           id?: string
           requested_by_character_id?: string | null
+          round_number?: number
           started_at?: string | null
           status?: string
         }
@@ -567,15 +570,27 @@ export type Database = {
       combat_participants: {
         Row: {
           campaign_id: string
-          character_id: string
+          character_id: string | null
           color: string | null
           created_at: string
           display_name: string
           encounter_id: string
+          enemy_color: string | null
+          enemy_defense: number | null
+          enemy_hp: number | null
+          enemy_icon: string | null
+          enemy_instance_number: number | null
+          enemy_max_hp: number | null
+          enemy_name: string | null
+          enemy_notes: string | null
+          enemy_speed: string | null
+          enemy_template_id: string | null
           has_ended_turn: boolean
           id: string
           image_url: string | null
           initiative: number
+          is_defeated: boolean
+          is_enemy_visible: boolean
           is_leader: boolean
           order_index: number
           participant_type: string
@@ -583,15 +598,27 @@ export type Database = {
         }
         Insert: {
           campaign_id: string
-          character_id: string
+          character_id?: string | null
           color?: string | null
           created_at?: string
           display_name?: string
           encounter_id: string
+          enemy_color?: string | null
+          enemy_defense?: number | null
+          enemy_hp?: number | null
+          enemy_icon?: string | null
+          enemy_instance_number?: number | null
+          enemy_max_hp?: number | null
+          enemy_name?: string | null
+          enemy_notes?: string | null
+          enemy_speed?: string | null
+          enemy_template_id?: string | null
           has_ended_turn?: boolean
           id?: string
           image_url?: string | null
           initiative?: number
+          is_defeated?: boolean
+          is_enemy_visible?: boolean
           is_leader?: boolean
           order_index?: number
           participant_type?: string
@@ -599,15 +626,27 @@ export type Database = {
         }
         Update: {
           campaign_id?: string
-          character_id?: string
+          character_id?: string | null
           color?: string | null
           created_at?: string
           display_name?: string
           encounter_id?: string
+          enemy_color?: string | null
+          enemy_defense?: number | null
+          enemy_hp?: number | null
+          enemy_icon?: string | null
+          enemy_instance_number?: number | null
+          enemy_max_hp?: number | null
+          enemy_name?: string | null
+          enemy_notes?: string | null
+          enemy_speed?: string | null
+          enemy_template_id?: string | null
           has_ended_turn?: boolean
           id?: string
           image_url?: string | null
           initiative?: number
+          is_defeated?: boolean
+          is_enemy_visible?: boolean
           is_leader?: boolean
           order_index?: number
           participant_type?: string
