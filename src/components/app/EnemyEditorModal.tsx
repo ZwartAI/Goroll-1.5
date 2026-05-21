@@ -30,9 +30,17 @@ export function EnemyEditorModal({ encounter, dm, editing, onClose }: Props) {
   const [defense, setDefense] = useState(editing?.enemy_defense ?? 0);
   const [speed, setSpeed] = useState(editing?.enemy_speed || "30");
   const [notes, setNotes] = useState(editing?.enemy_notes || "");
+  const [role, setRole] = useState<string>((editing as any)?.enemy_role || "damage");
+  const initialBiome = (editing as any)?.enemy_biome || "";
+  const isPreset = BIOME_PRESETS.includes(initialBiome);
+  const [biomeChoice, setBiomeChoice] = useState<string>(initialBiome ? (isPreset ? initialBiome : CUSTOM_BIOME) : "");
+  const [biomeCustom, setBiomeCustom] = useState(isPreset ? "" : initialBiome);
+  const [baseDamage, setBaseDamage] = useState<string>((editing as any)?.enemy_base_damage || "");
+  const [behavior, setBehavior] = useState<string>((editing as any)?.enemy_behavior || "");
   const [count, setCount] = useState(1);
   const [position, setPosition] = useState<InsertPosition>("byInitiative");
   const [busy, setBusy] = useState(false);
+
 
   const submit = async () => {
     const trimmed = name.trim();
