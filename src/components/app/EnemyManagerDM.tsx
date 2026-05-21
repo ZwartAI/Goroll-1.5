@@ -23,6 +23,7 @@ import { EnemyEditorModal } from "@/components/app/EnemyEditorModal";
 import { EnemyDamageModal } from "@/components/app/EnemyDamageModal";
 import { EnemyCombatSheetModal } from "@/components/app/EnemyCombatSheetModal";
 import { useLongPress } from "@/hooks/useLongPress";
+import { ConfirmDialog } from "@/components/app/ConfirmDialog";
 
 type Props = {
   encounter: CombatEncounter;
