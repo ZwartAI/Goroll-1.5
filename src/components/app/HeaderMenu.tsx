@@ -294,16 +294,20 @@ export function useStandardHeaderItems(opts: {
     if (opts.bestiary) {
       items.push({
         key: "bestiary", label: t("headerMenu.bestiary"),
-        icon: Skull, to: "/campaign/bestiary", color: "oklch(0.65 0.10 20)",
+        icon: Skull, to: "/campaign/bestiary", color: "oklch(0.72 0.18 50)",
       });
     }
     if (opts.mailbox) {
+      const hasPending = pending > 0;
       items.push({
         key: "mailbox", label: t("mailbox.title"),
         icon: Mail, onClick: opts.mailbox.onOpen,
-        color: "oklch(0.72 0.10 250)",
-        trailing: pending > 0 ? (
-          <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--loss)] text-white text-[10px] font-bold flex items-center justify-center">
+        color: hasPending ? "#ffffff" : "oklch(0.65 0.02 260)",
+        trailing: hasPending ? (
+          <span
+            className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--loss)] text-white text-[10px] font-bold flex items-center justify-center"
+            style={{ boxShadow: "0 0 10px 1px rgba(255,255,255,0.55)" }}
+          >
             {pending}
           </span>
         ) : undefined,
