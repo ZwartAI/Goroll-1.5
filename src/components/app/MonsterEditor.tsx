@@ -352,7 +352,7 @@ export function MonsterEditor({ campaignId, dm, editing, onClose, onSaved }: Pro
           <button className="btn-fantasy" disabled={busy}
             style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
             onClick={submit}>
-            {isEdit ? t("common.save") : t("bestiary.createMonster")}
+            {isEdit ? t("common.save") : t("bestiary.createEnemyOrMonster")}
           </button>
         </div>
       </div>
