@@ -73,9 +73,23 @@ export function isEnemy(p: CombatParticipant): boolean {
 }
 
 
+export type CombatTurnPin = {
+  id: string;
+  encounter_id: string;
+  campaign_id: string;
+  linked_participant_id: string;
+  label: string | null;
+  order_index: number;
+  initiative: number;
+  is_active: boolean;
+  created_at: string;
+};
+
 export type TurnBlock =
   | { kind: "solo"; key: string; initiative: number; participant: CombatParticipant }
-  | { kind: "group"; key: string; initiative: number; group: CombatTurnGroup; members: CombatParticipant[] };
+  | { kind: "group"; key: string; initiative: number; group: CombatTurnGroup; members: CombatParticipant[] }
+  | { kind: "pin"; key: string; initiative: number; pin: CombatTurnPin; linked: CombatParticipant };
+
 
 /** Build the ordered turn blocks (high → low initiative). */
 export function buildOrderedTurns(
