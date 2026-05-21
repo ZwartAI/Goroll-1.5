@@ -3,6 +3,7 @@ import { ChevronDown, Dices, Crosshair, Users, Eye, Sparkles } from "lucide-reac
 import { RARITY_COLOR, type Rarity } from "@/lib/game";
 import { RarityBadge } from "./RarityBadge";
 import { SkillIconMedallion } from "./SkillIconMedallion";
+import { StatText } from "./StatText";
 
 export type CharacterSkill = {
   id: string;
