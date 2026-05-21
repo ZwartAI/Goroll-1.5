@@ -245,7 +245,7 @@ function EnemyRow({
           {/* Single row: 5 compact icon-only action buttons */}
           <div className="grid grid-cols-5 gap-1.5">
             <IconBtn label={t("combat.damage")} icon={<Sword size={16} />} bg="var(--loss)" onClick={onDamage} />
-            <IconBtn label={t("combat.heal")} icon={<Heart size={16} />} bg="var(--gain)" onClick={onDamage} />
+            <IconBtn label={t("combat.heal")} icon={<Heart size={16} />} bg="var(--gain)" onClick={onHeal} />
             <IconBtn label={t("combat.edit")} icon={<Edit3 size={16} />} bg="color-mix(in oklab, oklch(0.55 0.18 240) 55%, var(--card))" onClick={onEdit} />
             <IconBtn label={t("combat.duplicate")} icon={<Copy size={16} />} bg="color-mix(in oklab, oklch(0.45 0.15 240) 65%, var(--card))" onClick={onDuplicate} />
             <IconBtn label={t("combat.remove")} icon={<Trash2 size={16} />} bg="color-mix(in oklab, var(--loss) 75%, black)" onClick={onRemove} />
