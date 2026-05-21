@@ -48,11 +48,17 @@ export function EnemyEditorModal({ encounter, dm, editing, onClose }: Props) {
     if (maxHp <= 0) { toast.error(t("combat.errMaxHp")); return; }
     if (initiative < 1 || initiative > 20) { toast.error(t("combat.invalidInitiative")); return; }
     setBusy(true);
+    const biome = biomeChoice === CUSTOM_BIOME ? biomeCustom.trim() : (biomeChoice || "");
     const draft: EnemyDraft = {
       name: trimmed, icon, color, initiative,
       max_hp: maxHp, current_hp: curHp,
       defense, speed, notes,
+      role: role || null,
+      biome: biome || null,
+      base_damage: baseDamage.trim() || null,
+      behavior: behavior.trim() || null,
     };
+
     if (isEdit && editing) {
       const r = await updateEnemy(editing, draft);
       if (!r.ok) toast.error(t("combat.saveError"));
