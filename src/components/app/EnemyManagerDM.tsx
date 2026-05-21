@@ -73,7 +73,8 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
               encounter={encounter}
               blocks={blocks}
               onEdit={() => setEditing(p)}
-              onDamage={() => setDamaging(p)}
+              onDamage={() => setAttacking(p)}
+              onHeal={() => setHealing(p)}
               onSheet={() => setSheet(p)}
               onDuplicate={async () => {
                 const r = await duplicateEnemy(p, encounter, dm);
