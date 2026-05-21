@@ -498,6 +498,7 @@ function CreateItem({ campaignId, dm, players }: { campaignId: string; dm: { id:
   const [damage, setDamage] = useState(0);
   const [uses, setUses] = useState(1);
   const [coins, setCoins] = useState(10);
+  const [description, setDescription] = useState("");
   const [target, setTarget] = useState<string>("");
 
   async function create(send: boolean) {
@@ -536,6 +537,7 @@ function CreateItem({ campaignId, dm, players }: { campaignId: string; dm: { id:
       max_uses: isEquipo ? null : Math.max(1, uses),
       owner_character_id: send && target ? target : null,
       in_dm_vault: !send,
+      description: description.trim() || null,
     };
     const { data: it } = await supabase.from("items").insert(payload).select().single();
     if (it) {
@@ -548,7 +550,7 @@ function CreateItem({ campaignId, dm, players }: { campaignId: string; dm: { id:
       ] as any, { kind: "item.recreate", item: it as any });
     }
 
-    setName(""); setDamage(0); setUses(1);
+    setName(""); setDamage(0); setUses(1); setDescription("");
   }
 
   const isCoins = category === "monedas";
@@ -591,6 +593,15 @@ function CreateItem({ campaignId, dm, players }: { campaignId: string; dm: { id:
         <label className="flex items-center justify-between text-sm">{tr("dm.usesAmount")}
           <input type="number" min={1} className="w-20 bg-input border border-border rounded px-2 py-1 text-right" value={uses} onChange={e => setUses(Math.max(1, +e.target.value))} />
         </label>
+      )}
+      {!isCoins && (
+        <textarea
+          className="w-full bg-input border border-border rounded px-3 py-2 text-sm"
+          rows={2}
+          placeholder={tr("itemEditor.description")}
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
       )}
       <div className="gem-divider"/>
       <select className="w-full bg-input border border-border rounded px-2 py-2 text-sm" value={target} onChange={e => setTarget(e.target.value)}>
