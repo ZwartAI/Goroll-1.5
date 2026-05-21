@@ -59,6 +59,7 @@ function Spectator() {
           logs={logs}
           selfId={null}
           onOpenChar={(id) => setOpenChar(id)}
+          onOpenImage={(id) => setImageViewerCharId(id)}
           onOpenItem={openItemFromId}
           onOpenBooster={(id) => setOpenBoosterId(id)}
           speakingIds={voice.speakingIds}
