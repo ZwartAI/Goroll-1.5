@@ -356,6 +356,13 @@ function Profile() {
         <BoosterPeek boosterId={openBooster} character={character} campaignId={campaign.id}
           hideDiscard onClose={() => setOpenBooster(null)} />
       )}
+      {purseOpen && (
+        <CoinsPurseModal
+          current={character.coins}
+          onApply={changeCoins}
+          onClose={() => setPurseOpen(false)}
+        />
+      )}
     </PageFrame>
   );
 }
