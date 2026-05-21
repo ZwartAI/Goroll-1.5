@@ -163,13 +163,13 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
 
 function EnemyRow({
   p, isActive, encounter, blocks,
-  onEdit, onDamage, onSheet, onDuplicate, onRemove, onAddPin,
+  onEdit, onDamage, onHeal, onSheet, onDuplicate, onRemove, onAddPin,
 }: {
   p: CombatParticipant;
   isActive: boolean;
   encounter: CombatEncounter;
   blocks: ReturnType<typeof buildOrderedTurns>;
-  onEdit: () => void; onDamage: () => void; onSheet: () => void;
+  onEdit: () => void; onDamage: () => void; onHeal: () => void; onSheet: () => void;
   onDuplicate: () => void; onRemove: () => void; onAddPin: () => void;
 }) {
   const { t } = useT();
