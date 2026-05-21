@@ -166,6 +166,8 @@ export const en: Dict = {
     strangled: "Strangled",
   },
   campaign: {
+    loadingTitle: "Entering the campaign",
+    loadingBody: "Hold on while we load the table. If it takes too long, you can cancel.",
     actionTitle: "What would you like to do?",
     play: "▶️ Play campaign",
     edit: "⚙️ Edit campaign",
