@@ -172,9 +172,20 @@ export function EnemyEditorModal({ encounter, dm, editing, onClose }: Props) {
           )}
         </div>
 
+        <Field label={t("bestiary.baseDamage")}>
+          <input className="w-full bg-secondary/40 border border-border rounded-md px-2 py-1.5 outline-none focus:border-[var(--gold)] text-sm"
+            placeholder="1d6 + mod" value={baseDamage} onChange={e => setBaseDamage(e.target.value)} maxLength={60} />
+        </Field>
+
+        <Field label={t("bestiary.behavior")}>
+          <textarea className="w-full bg-secondary/40 border border-border rounded-md px-2 py-1.5 outline-none focus:border-[var(--gold)] text-sm" rows={2}
+            value={behavior} onChange={e => setBehavior(e.target.value)} />
+        </Field>
+
         <Field label={t("combat.notes")}>
           <textarea className="w-full bg-secondary/40 border border-border rounded-md px-2 py-1.5 outline-none focus:border-[var(--gold)] text-sm w-full" rows={2} value={notes} onChange={e => setNotes(e.target.value)} />
         </Field>
+
 
         {!isEdit && (
           <Field label={t("combat.insertPosition")}>
