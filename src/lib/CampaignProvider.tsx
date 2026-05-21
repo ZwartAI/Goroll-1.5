@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback, u
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { getSession, setSession, type Campaign, type Character, type Item, type LogRow, type Achievement } from "./game";
-import type { CombatEncounter, CombatParticipant, CombatTurnGroup } from "./combat";
+import type { CombatEncounter, CombatParticipant, CombatTurnGroup, CombatTurnPin } from "./combat";
 import { useT } from "./i18n";
 
 export type DmLabel = { name: string; color: string };
@@ -11,6 +11,7 @@ export type CombatState = {
   encounter: CombatEncounter | null;
   participants: CombatParticipant[];
   groups: CombatTurnGroup[];
+  pins: CombatTurnPin[];
 };
 
 const LOGS_INITIAL_LIMIT = 50;
