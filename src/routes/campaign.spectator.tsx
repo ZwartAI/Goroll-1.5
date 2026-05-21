@@ -126,6 +126,19 @@ function Spectator() {
         <BoosterPeek boosterId={openBoosterId} character={null} campaignId={campaign.id}
           onClose={() => setOpenBoosterId(null)} />
       )}
+      {imageViewerCharId && (() => {
+        const c = characters.find(ch => ch.id === imageViewerCharId);
+        if (!c) return null;
+        return (
+          <CharacterImageViewer
+            character={c}
+            canEdit={false}
+            onClose={() => setImageViewerCharId(null)}
+            onEditFace={() => {}}
+            onEditBody={() => {}}
+          />
+        );
+      })()}
     </PageFrame>
   );
 }
