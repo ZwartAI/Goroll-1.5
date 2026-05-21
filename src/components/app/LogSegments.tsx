@@ -58,7 +58,7 @@ export function LogSegments({
             </span>
             <strong style={{ color }}>{p.enemyName}:</strong>
           </span>
-          <span className="ml-1 italic text-foreground/90">"{p.text}"</span>
+          <span className="ml-1 italic text-foreground/90">"<StatText>{p.text}</StatText>"</span>
         </span>
       );
     }
