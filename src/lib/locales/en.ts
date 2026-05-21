@@ -972,6 +972,7 @@ export const en: Dict = {
     defeated: "Defeated",
     endEnemyTurn: "End Enemy Turn",
     confirmRemoveEnemy: "Remove this enemy from combat?",
+    confirmRemoveEnemyTitle: "Remove enemy",
     errNameRequired: "Name required",
     errMaxHp: "Max HP must be greater than 0",
     saveError: "Could not save",
