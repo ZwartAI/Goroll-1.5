@@ -109,8 +109,11 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
       {editing && (
         <EnemyEditorModal encounter={encounter} dm={dm} editing={editing} onClose={() => setEditing(null)} />
       )}
-      {damaging && (
-        <EnemyDamageModal participant={damaging} onClose={() => setDamaging(null)} />
+      {attacking && (
+        <EnemyAttackPlayersModal enemy={attacking} onClose={() => setAttacking(null)} />
+      )}
+      {healing && (
+        <EnemyDamageModal participant={healing} mode="heal" onClose={() => setHealing(null)} />
       )}
       {sheet && (
         <EnemyCombatSheetModal
