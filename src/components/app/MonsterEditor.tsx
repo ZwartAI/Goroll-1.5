@@ -164,7 +164,7 @@ export function MonsterEditor({ campaignId, dm, editing, onClose, onSaved }: Pro
                   <button key={k} type="button" onClick={() => setIcon(sel ? "skull" : key)}
                     className={`aspect-square rounded-md border overflow-hidden ${sel ? "border-[var(--gold)] ring-2 ring-[var(--gold)]/50" : "border-border hover:border-[var(--gold)]/50"}`}
                     title={t(`bestiary.asset_${k}`)}>
-                    <img src={require("@/components/app/EnemyIconPicker").ENEMY_ASSETS[k]} alt={k} className="w-full h-full object-cover" />
+                    <img src={ENEMY_ASSETS[k]} alt={k} className="w-full h-full object-cover" />
                   </button>
                 );
               })}
