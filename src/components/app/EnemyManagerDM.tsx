@@ -182,7 +182,7 @@ function EnemyRow({
         </span>
         <div className="w-9 h-9 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card relative"
           style={{ borderColor: baseColor, color: baseColor }}>
-          <EnemyIcon name={p.enemy_icon} size={18} fill={!!getEnemyAssetUrl(p.enemy_icon)} />
+          <EnemyIcon name={p.enemy_icon} size={18} fill={!!getEnemyAssetUrl(p.enemy_icon)} assetScale={getEnemyAssetUrl(p.enemy_icon) ? 4 : 1} />
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-display text-sm truncate" style={{ color: baseColor }}>{p.display_name}</p>
