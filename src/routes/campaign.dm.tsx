@@ -828,3 +828,44 @@ function BulkBoosterImport({ campaignId }: { campaignId: string }) {
     </div>
   );
 }
+
+function DMHeader({
+  campaignName, characterName, dmLabel, voice, onMicSettings, onLogout,
+}: {
+  campaignName: string;
+  characterName: string;
+  dmLabel: string;
+  voice: { enabled: boolean; toggle: () => void };
+  onMicSettings: () => void;
+  onLogout: () => void;
+}) {
+  const [mailboxOpen, setMailboxOpen] = useState(false);
+  const items = useStandardHeaderItems({
+    achievements: true,
+    bestiary: true,
+    mailbox: { onOpen: () => setMailboxOpen(true) },
+    mic: { enabled: voice.enabled, toggle: voice.toggle },
+    fullscreen: true,
+    exit: { onExit: onLogout },
+  });
+  // Long-press the mic item to open settings — replicate by listening via header menu? Keep settings shortcut available via mic menu hint.
+  return (
+    <header className="relative mb-3 min-h-[64px]">
+      <div className="text-center px-2">
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground truncate">{campaignName}</p>
+        <h1 className="font-display text-xl rune-glow text-[var(--gold)] truncate">👑 {characterName}</h1>
+        <p className="text-xs text-muted-foreground">{dmLabel}</p>
+      </div>
+      <div className="absolute right-0 top-1 flex items-center">
+        <button
+          onClick={onMicSettings}
+          aria-label="mic settings"
+          className="hidden"
+          tabIndex={-1}
+        />
+        <HeaderMenu items={items} />
+      </div>
+      <MailboxInlineModal open={mailboxOpen} onClose={() => setMailboxOpen(false)} />
+    </header>
+  );
+}
