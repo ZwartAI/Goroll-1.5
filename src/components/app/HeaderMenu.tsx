@@ -83,44 +83,46 @@ export function HeaderMenu({ items }: { items: HeaderMenuItem[] }) {
               </button>
             </header>
             <nav className="flex-1 overflow-y-auto py-2">
-              {items.map(it => {
+              {items.map((it, idx) => {
+                const isExit = it.key === "exit";
                 const cls =
-                  "w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm text-foreground/90 hover:bg-[var(--secondary)]/60 transition-colors";
+                  "w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm text-white hover:bg-[var(--secondary)]/60 transition-colors";
+                const wrapperCls = isExit ? "mt-4 pt-3 border-t border-border/60" : "";
+                const iconStyle = it.color ? { color: it.color } : undefined;
                 const inner = (
                   <>
-                    <it.icon size={20} strokeWidth={1.75} className="shrink-0" />
+                    <it.icon size={20} strokeWidth={1.75} className="shrink-0" style={iconStyle as any} />
                     <span className="flex-1 truncate">{it.label}</span>
                     {it.trailing}
                     <ChevronRight size={14} className="text-muted-foreground/60" />
                   </>
                 );
-                const style = it.color ? { color: it.color } : undefined;
                 if (it.to) {
                   return (
-                    <Link
-                      key={it.key}
-                      to={it.to as any}
-                      onClick={() => setOpen(false)}
-                      className={cls}
-                      style={style as any}
-                    >
-                      {inner}
-                    </Link>
+                    <div key={it.key} className={wrapperCls}>
+                      <Link
+                        to={it.to as any}
+                        onClick={() => setOpen(false)}
+                        className={cls}
+                      >
+                        {inner}
+                      </Link>
+                    </div>
                   );
                 }
                 return (
-                  <button
-                    key={it.key}
-                    type="button"
-                    onClick={() => {
-                      it.onClick?.();
-                      if (!it.keepOpen) setOpen(false);
-                    }}
-                    className={cls}
-                    style={style as any}
-                  >
-                    {inner}
-                  </button>
+                  <div key={it.key} className={wrapperCls}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        it.onClick?.();
+                        if (!it.keepOpen) setOpen(false);
+                      }}
+                      className={cls}
+                    >
+                      {inner}
+                    </button>
+                  </div>
                 );
               })}
             </nav>
