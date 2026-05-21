@@ -14,6 +14,7 @@ import {
   type CombatEncounter,
   type CombatParticipant,
   type CombatTurnGroup,
+  type CombatTurnPin,
 } from "@/lib/combat";
 import { CombatList } from "@/components/app/CombatList";
 import { Crown, Link as LinkIcon } from "lucide-react";
@@ -26,9 +27,10 @@ type Props = {
   encounter: CombatEncounter | null;
   participants: CombatParticipant[];
   groups: CombatTurnGroup[];
+  pins?: CombatTurnPin[];
 };
 
-export function CombatDMPanel({ campaignId, dm, encounter, participants, groups }: Props) {
+export function CombatDMPanel({ campaignId, dm, encounter, participants, groups, pins = [] }: Props) {
   const { t } = useT();
   const status = encounter?.status ?? null;
   const [addingEnemy, setAddingEnemy] = useState(false);
@@ -118,8 +120,8 @@ export function CombatDMPanel({ campaignId, dm, encounter, participants, groups 
         <>
 
           <p className="text-[11px] text-muted-foreground">{t("combat.collectingHint", { n: participants.length })}</p>
-          <CombatList encounter={encounter} participants={participants} groups={groups} />
-          <EnemyManagerDM encounter={encounter} participants={participants} groups={groups} dm={dm} />
+          <CombatList encounter={encounter} participants={participants} groups={groups} pins={pins} />
+          <EnemyManagerDM encounter={encounter} participants={participants} groups={groups} pins={pins} dm={dm} />
           <div className="grid grid-cols-2 gap-2 pt-1">
             <button className="btn-fantasy" style={{ background: "var(--loss)", color: "white" }}
               onClick={() => setConfirmState({
@@ -145,16 +147,16 @@ export function CombatDMPanel({ campaignId, dm, encounter, participants, groups 
 
       {status === "active" && encounter && (
         <>
-          <CombatList encounter={encounter} participants={participants} groups={groups} />
-          <EnemyManagerDM encounter={encounter} participants={participants} groups={groups} dm={dm} />
+          <CombatList encounter={encounter} participants={participants} groups={groups} pins={pins} />
+          <EnemyManagerDM encounter={encounter} participants={participants} groups={groups} pins={pins} dm={dm} />
           <div className="grid grid-cols-3 gap-2 pt-1">
             <button className="btn-fantasy text-xs"
-              onClick={() => dmShiftTurn(encounter, buildOrderedTurns(participants, groups), -1)}>
+              onClick={() => dmShiftTurn(encounter, buildOrderedTurns(participants, groups, pins), -1)}>
               <ChevronLeft size={14} className="inline" /> {t("combat.prevTurn")}
             </button>
             <button className="btn-fantasy text-xs"
               style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
-              onClick={() => dmShiftTurn(encounter, buildOrderedTurns(participants, groups), 1)}>
+              onClick={() => dmShiftTurn(encounter, buildOrderedTurns(participants, groups, pins), 1)}>
               {t("combat.nextTurn")} <ChevronRight size={14} className="inline" />
             </button>
             <button className="btn-fantasy text-xs"

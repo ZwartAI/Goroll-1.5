@@ -27,18 +27,20 @@ type Props = {
   showLog?: boolean;
   /** Character IDs currently speaking (mic activity). */
   speakingIds?: Set<string>;
+  /** Hide the Combat tab in the log card (DM has its own combat panel below). */
+  hideCombatTab?: boolean;
 };
 
 /**
  * Shared "Escenario" view: shows the party (online first, offline collapsible)
  * and an optional log of the scene below. Used by Player profile, DM, and Spectator.
  */
-export function Escenario({ characters, items, onlineIds, logs, selfId, onOpenChar, onOpenItem, onOpenBooster, onOpenImage, dmCharacterIds, nameOverrides, showLog = true, speakingIds }: Props) {
+export function Escenario({ characters, items, onlineIds, logs, selfId, onOpenChar, onOpenItem, onOpenBooster, onOpenImage, dmCharacterIds, nameOverrides, showLog = true, speakingIds, hideCombatTab }: Props) {
   const [openOffline, setOpenOffline] = useState(false);
   const { t } = useT();
   const { combat } = useGameData();
   const combatActive = combat.encounter?.status === "active";
-  const [logTab, setLogTab] = useState<"log" | "combat">(combatActive ? "combat" : "log");
+  const [logTab, setLogTab] = useState<"log" | "combat">(combatActive && !hideCombatTab ? "combat" : "log");
   const dmSet = dmCharacterIds || new Set<string>();
   const players = characters.filter(c => c.role !== "dm" && !dmSet.has(c.id));
   const online = players.filter(p => (onlineIds.has(p.id) || p.id === selfId));
@@ -92,7 +94,7 @@ export function Escenario({ characters, items, onlineIds, logs, selfId, onOpenCh
 
       {showLog && (
         <div className="ornate-card p-3">
-          {combat.encounter && combat.encounter.status === "active" ? (
+          {combat.encounter && combat.encounter.status === "active" && !hideCombatTab ? (
             <div className="grid grid-cols-2 gap-1 mb-2">
               <button onClick={() => setLogTab("log")}
                 className={`text-[10px] py-1.5 rounded-md font-display uppercase tracking-widest ${logTab === "log" ? "bg-[var(--gold)] text-black" : "bg-card border border-border text-foreground"}`}>

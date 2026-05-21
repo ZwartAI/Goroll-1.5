@@ -457,6 +457,7 @@ function DM() {
             onOpenItem={openItemFromId}
             onOpenBooster={openBoosterFromId}
             speakingIds={voice.speakingIds}
+            hideCombatTab
           />
 
           <div className="mt-3">
@@ -466,6 +467,7 @@ function DM() {
               encounter={combat.encounter}
               participants={combat.participants}
               groups={combat.groups}
+              pins={combat.pins}
             />
           </div>
         </>

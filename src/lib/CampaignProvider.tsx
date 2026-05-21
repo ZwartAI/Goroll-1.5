@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback, u
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { getSession, setSession, type Campaign, type Character, type Item, type LogRow, type Achievement } from "./game";
-import type { CombatEncounter, CombatParticipant, CombatTurnGroup } from "./combat";
+import type { CombatEncounter, CombatParticipant, CombatTurnGroup, CombatTurnPin } from "./combat";
 import { useT } from "./i18n";
 
 export type DmLabel = { name: string; color: string };
@@ -11,6 +11,7 @@ export type CombatState = {
   encounter: CombatEncounter | null;
   participants: CombatParticipant[];
   groups: CombatTurnGroup[];
+  pins: CombatTurnPin[];
 };
 
 const LOGS_INITIAL_LIMIT = 50;
@@ -69,7 +70,7 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
 
   const [members, setMembers] = useState<Array<{ user_id: string; role: string; created_at: string }>>([]);
 
-  const [combat, setCombat] = useState<CombatState>({ encounter: null, participants: [], groups: [] });
+  const [combat, setCombat] = useState<CombatState>({ encounter: null, participants: [], groups: [], pins: [] });
   const logsLimitRef = useRef(LOGS_INITIAL_LIMIT);
   const charIdsRef = useRef<string[]>([]);
 
@@ -84,15 +85,17 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
       .order("created_at", { ascending: false })
       .limit(1);
     const enc = (encs && encs[0]) as CombatEncounter | undefined;
-    if (!enc) { setCombat({ encounter: null, participants: [], groups: [] }); return; }
-    const [{ data: parts }, { data: grps }] = await Promise.all([
+    if (!enc) { setCombat({ encounter: null, participants: [], groups: [], pins: [] }); return; }
+    const [{ data: parts }, { data: grps }, { data: pins }] = await Promise.all([
       (supabase as any).from("combat_participants").select("*").eq("encounter_id", enc.id),
       (supabase as any).from("combat_turn_groups").select("*").eq("encounter_id", enc.id),
+      (supabase as any).from("combat_turn_pins").select("*").eq("encounter_id", enc.id),
     ]);
     setCombat({
       encounter: enc,
       participants: (parts || []) as CombatParticipant[],
       groups: (grps || []) as CombatTurnGroup[],
+      pins: (pins || []) as CombatTurnPin[],
     });
   }, []);
 
@@ -205,6 +208,9 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "combat_turn_groups", filter: `campaign_id=eq.${campaignId}` }, (payload: any) => {
         setCombat(prev => ({ ...prev, groups: applyChange(prev.groups, payload) as CombatTurnGroup[] }));
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "combat_turn_pins", filter: `campaign_id=eq.${campaignId}` }, (payload: any) => {
+        setCombat(prev => ({ ...prev, pins: applyChange(prev.pins, payload) as CombatTurnPin[] }));
+      })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [loadCombat]);
@@ -307,7 +313,7 @@ export function useGameData(): GameData {
   return {
     campaign: null, character: null, characters: [], items: [], logs: [], achievements: [],
     loading: true, onlineIds: new Set(), dmLabels: {}, dmCharacterIds: new Set(),
-    combat: { encounter: null, participants: [], groups: [] },
+    combat: { encounter: null, participants: [], groups: [], pins: [] },
     reload: async () => {}, loadMoreLogs: async () => {},
   };
 }

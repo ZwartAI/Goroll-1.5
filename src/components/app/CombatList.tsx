@@ -7,6 +7,7 @@ import {
   type CombatEncounter,
   type CombatParticipant,
   type CombatTurnGroup,
+  type CombatTurnPin,
   type TurnBlock,
 } from "@/lib/combat";
 import { Crown } from "lucide-react";
@@ -16,13 +17,14 @@ type Props = {
   encounter: CombatEncounter;
   participants: CombatParticipant[];
   groups: CombatTurnGroup[];
+  pins?: CombatTurnPin[];
   selfCharacterId?: string | null;
   onOpenChar?: (id: string) => void;
 };
 
-export function CombatList({ encounter, participants, groups, selfCharacterId, onOpenChar }: Props) {
+export function CombatList({ encounter, participants, groups, pins, selfCharacterId, onOpenChar }: Props) {
   const { t } = useT();
-  const blocks = buildOrderedTurns(participants, groups);
+  const blocks = buildOrderedTurns(participants, groups, pins || []);
   const active = activeBlock(encounter, blocks);
 
   if (blocks.length === 0) {
