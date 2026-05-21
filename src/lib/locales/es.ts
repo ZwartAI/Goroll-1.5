@@ -168,6 +168,8 @@ export const es = {
     strangled: "Estrangulamiento",
   },
   campaign: {
+    loadingTitle: "Entrando a la campaña",
+    loadingBody: "Espera un momento mientras cargamos la mesa. Si tarda demasiado, puedes cancelar.",
     actionTitle: "¿Qué deseas hacer?",
     play: "▶️ Jugar campaña",
     edit: "⚙️ Editar campaña",
