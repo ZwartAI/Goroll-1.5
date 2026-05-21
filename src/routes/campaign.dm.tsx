@@ -1,7 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useGameData } from "@/lib/useGame";
 import { PageFrame } from "@/components/app/Frame";
-import { LogOut, Plus, Send, Trophy, Pencil, Undo2, Search, Skull, ScrollText, Hammer, Sparkles, Wand2, Theater, Upload, Package } from "lucide-react";
+import { LogOut, Plus, Send, Trophy, Pencil, Undo2, Search, Skull, ScrollText, Hammer, Sparkles, Wand2, Theater, Upload } from "lucide-react";
+
+function ChestIcon({ size = 24, color = "currentColor", strokeWidth = 1.75 }: { size?: number; color?: string; strokeWidth?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 11a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
+      <path d="M3 13h18"/>
+      <rect x="10" y="11" width="4" height="5" rx="0.5"/>
+      <circle cx="12" cy="13.5" r="0.6" fill={color}/>
+    </svg>
+  );
+}
 import { SLOTS, RARITY_BONUS, RARITY_COLOR, ITEM_CATEGORIES, isWeapon, totals, setSession, type Item, type ItemCategory, type Rarity, type Slot, type Character, type LogRow } from "@/lib/game";
 import { supabase } from "@/integrations/supabase/client";
 import { pushLog, type UndoAction } from "@/lib/log";
