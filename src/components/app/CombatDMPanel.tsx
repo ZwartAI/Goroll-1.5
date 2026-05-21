@@ -114,7 +114,9 @@ export function CombatDMPanel({ campaignId, dm, encounter, participants, groups 
       )}
 
 
+      {status === "collecting" && encounter && (
         <>
+
           <p className="text-[11px] text-muted-foreground">{t("combat.collectingHint", { n: participants.length })}</p>
           <CombatList encounter={encounter} participants={participants} groups={groups} />
           <EnemyManagerDM encounter={encounter} participants={participants} groups={groups} dm={dm} />
