@@ -21,6 +21,7 @@ import {
 import { EnemyIcon, getEnemyAssetUrl } from "@/components/app/EnemyIconPicker";
 import { EnemyEditorModal } from "@/components/app/EnemyEditorModal";
 import { EnemyDamageModal } from "@/components/app/EnemyDamageModal";
+import { EnemyAttackPlayersModal } from "@/components/app/EnemyAttackPlayersModal";
 import { EnemyCombatSheetModal } from "@/components/app/EnemyCombatSheetModal";
 import { useLongPress } from "@/hooks/useLongPress";
 import { ConfirmDialog } from "@/components/app/ConfirmDialog";
@@ -40,7 +41,8 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
   const active = activeBlock(encounter, blocks);
 
   const [editing, setEditing] = useState<CombatParticipant | null>(null);
-  const [damaging, setDamaging] = useState<CombatParticipant | null>(null);
+  const [attacking, setAttacking] = useState<CombatParticipant | null>(null);
+  const [healing, setHealing] = useState<CombatParticipant | null>(null);
   const [sheet, setSheet] = useState<CombatParticipant | null>(null);
   const [removing, setRemoving] = useState<CombatParticipant | null>(null);
   const [removingPin, setRemovingPin] = useState<CombatTurnPin | null>(null);
@@ -71,7 +73,8 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
               encounter={encounter}
               blocks={blocks}
               onEdit={() => setEditing(p)}
-              onDamage={() => setDamaging(p)}
+              onDamage={() => setAttacking(p)}
+              onHeal={() => setHealing(p)}
               onSheet={() => setSheet(p)}
               onDuplicate={async () => {
                 const r = await duplicateEnemy(p, encounter, dm);
@@ -106,8 +109,11 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
       {editing && (
         <EnemyEditorModal encounter={encounter} dm={dm} editing={editing} onClose={() => setEditing(null)} />
       )}
-      {damaging && (
-        <EnemyDamageModal participant={damaging} onClose={() => setDamaging(null)} />
+      {attacking && (
+        <EnemyAttackPlayersModal enemy={attacking} onClose={() => setAttacking(null)} />
+      )}
+      {healing && (
+        <EnemyDamageModal participant={healing} mode="heal" onClose={() => setHealing(null)} />
       )}
       {sheet && (
         <EnemyCombatSheetModal
@@ -157,13 +163,13 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
 
 function EnemyRow({
   p, isActive, encounter, blocks,
-  onEdit, onDamage, onSheet, onDuplicate, onRemove, onAddPin,
+  onEdit, onDamage, onHeal, onSheet, onDuplicate, onRemove, onAddPin,
 }: {
   p: CombatParticipant;
   isActive: boolean;
   encounter: CombatEncounter;
   blocks: ReturnType<typeof buildOrderedTurns>;
-  onEdit: () => void; onDamage: () => void; onSheet: () => void;
+  onEdit: () => void; onDamage: () => void; onHeal: () => void; onSheet: () => void;
   onDuplicate: () => void; onRemove: () => void; onAddPin: () => void;
 }) {
   const { t } = useT();
@@ -239,7 +245,7 @@ function EnemyRow({
           {/* Single row: 5 compact icon-only action buttons */}
           <div className="grid grid-cols-5 gap-1.5">
             <IconBtn label={t("combat.damage")} icon={<Sword size={16} />} bg="var(--loss)" onClick={onDamage} />
-            <IconBtn label={t("combat.heal")} icon={<Heart size={16} />} bg="var(--gain)" onClick={onDamage} />
+            <IconBtn label={t("combat.heal")} icon={<Heart size={16} />} bg="var(--gain)" onClick={onHeal} />
             <IconBtn label={t("combat.edit")} icon={<Edit3 size={16} />} bg="color-mix(in oklab, oklch(0.55 0.18 240) 55%, var(--card))" onClick={onEdit} />
             <IconBtn label={t("combat.duplicate")} icon={<Copy size={16} />} bg="color-mix(in oklab, oklch(0.45 0.15 240) 65%, var(--card))" onClick={onDuplicate} />
             <IconBtn label={t("combat.remove")} icon={<Trash2 size={16} />} bg="color-mix(in oklab, var(--loss) 75%, black)" onClick={onRemove} />

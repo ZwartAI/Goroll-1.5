@@ -213,7 +213,7 @@ function TurnRow({
           borderStyle: "dashed",
         }}>
         {dragHandle}
-        <div className="w-7 h-7 rounded-full border-2 flex-shrink-0 flex items-center justify-center bg-card overflow-hidden"
+        <div className="w-7 h-7 rounded-full border-2 flex-shrink-0 flex items-center justify-center bg-card overflow-hidden relative"
           style={{ borderColor: baseColor, color: baseColor }}>
           <EnemyIcon name={l.enemy_icon} size={14} fill={!!getEnemyAssetUrl(l.enemy_icon)} assetScale={getEnemyAssetUrl(l.enemy_icon) ? 4 : 1} />
         </div>
