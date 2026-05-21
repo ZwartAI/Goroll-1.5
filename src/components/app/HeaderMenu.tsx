@@ -13,7 +13,7 @@ export type HeaderMenuItem = {
   key: string;
   label: string;
   /** Lucide-style icon component. */
-  icon: ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
+  icon: ComponentType<{ size?: number; strokeWidth?: number; className?: string; style?: any }>;
   /** Optional accent color for the icon (subtle). */
   color?: string;
   /** Navigate to a route, or run an action. */
@@ -83,44 +83,46 @@ export function HeaderMenu({ items }: { items: HeaderMenuItem[] }) {
               </button>
             </header>
             <nav className="flex-1 overflow-y-auto py-2">
-              {items.map(it => {
+              {items.map((it, idx) => {
+                const isExit = it.key === "exit";
                 const cls =
-                  "w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm text-foreground/90 hover:bg-[var(--secondary)]/60 transition-colors";
+                  "w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm text-white hover:bg-[var(--secondary)]/60 transition-colors";
+                const wrapperCls = isExit ? "mt-4 pt-3 border-t border-border/60" : "";
+                const iconStyle = it.color ? { color: it.color } : undefined;
                 const inner = (
                   <>
-                    <it.icon size={20} strokeWidth={1.75} className="shrink-0" />
+                    <it.icon size={20} strokeWidth={1.75} className="shrink-0" style={iconStyle as any} />
                     <span className="flex-1 truncate">{it.label}</span>
                     {it.trailing}
                     <ChevronRight size={14} className="text-muted-foreground/60" />
                   </>
                 );
-                const style = it.color ? { color: it.color } : undefined;
                 if (it.to) {
                   return (
-                    <Link
-                      key={it.key}
-                      to={it.to as any}
-                      onClick={() => setOpen(false)}
-                      className={cls}
-                      style={style as any}
-                    >
-                      {inner}
-                    </Link>
+                    <div key={it.key} className={wrapperCls}>
+                      <Link
+                        to={it.to as any}
+                        onClick={() => setOpen(false)}
+                        className={cls}
+                      >
+                        {inner}
+                      </Link>
+                    </div>
                   );
                 }
                 return (
-                  <button
-                    key={it.key}
-                    type="button"
-                    onClick={() => {
-                      it.onClick?.();
-                      if (!it.keepOpen) setOpen(false);
-                    }}
-                    className={cls}
-                    style={style as any}
-                  >
-                    {inner}
-                  </button>
+                  <div key={it.key} className={wrapperCls}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        it.onClick?.();
+                        if (!it.keepOpen) setOpen(false);
+                      }}
+                      className={cls}
+                    >
+                      {inner}
+                    </button>
+                  </div>
                 );
               })}
             </nav>
@@ -292,16 +294,20 @@ export function useStandardHeaderItems(opts: {
     if (opts.bestiary) {
       items.push({
         key: "bestiary", label: t("headerMenu.bestiary"),
-        icon: Skull, to: "/campaign/bestiary", color: "oklch(0.65 0.10 20)",
+        icon: Skull, to: "/campaign/bestiary", color: "oklch(0.72 0.18 50)",
       });
     }
     if (opts.mailbox) {
+      const hasPending = pending > 0;
       items.push({
         key: "mailbox", label: t("mailbox.title"),
         icon: Mail, onClick: opts.mailbox.onOpen,
-        color: "oklch(0.72 0.10 250)",
-        trailing: pending > 0 ? (
-          <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--loss)] text-white text-[10px] font-bold flex items-center justify-center">
+        color: hasPending ? "#ffffff" : "oklch(0.65 0.02 260)",
+        trailing: hasPending ? (
+          <span
+            className="min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--loss)] text-white text-[10px] font-bold flex items-center justify-center"
+            style={{ boxShadow: "0 0 10px 1px rgba(255,255,255,0.55)" }}
+          >
             {pending}
           </span>
         ) : undefined,
