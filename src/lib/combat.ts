@@ -801,13 +801,16 @@ export async function reorderParticipantTo(
   for (const b of reordered) {
     if (b.kind === "solo") {
       await (supabase as any).from("combat_participants").update({ order_index: order }).eq("id", b.participant.id);
-    } else {
+    } else if (b.kind === "group") {
       for (const m of b.members) {
         await (supabase as any).from("combat_participants").update({ order_index: order }).eq("id", m.id);
       }
+    } else {
+      await (supabase as any).from("combat_turn_pins").update({ order_index: order }).eq("id", b.pin.id);
     }
     order++;
   }
+
 
   if (encounter.status === "active") {
     let newCurrent = encounter.current_turn_index;
