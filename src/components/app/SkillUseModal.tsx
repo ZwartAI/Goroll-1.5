@@ -78,6 +78,19 @@ export function SkillUseModal({ encounter, participants, groups, source, allChar
   }
 
   async function submit() {
+    // Validate link synergy if requested.
+    const linkSize = linkInfo ? linkInfo.members.length : 0;
+    const synergyCount = linkBonusMembers.size; // members other than source
+    if (linkBonus === 2 && synergyCount < 1) { toast.error(t("combat.linkBonusNeed2")); return; }
+    if (linkBonus === 3) {
+      if (linkSize < 3) { toast.error(t("combat.linkMax")); return; }
+      if (synergyCount < 2) { toast.error(t("combat.linkBonusNeed3")); return; }
+    }
+    if ((linkBonus === 2 || linkBonus === 3) && !linkJust.trim()) {
+      toast.error(t("combat.linkBonusNeedJust"));
+      return;
+    }
+
     setBusy(true);
     const targets: SkillTarget[] = [];
     for (const id of selectedEnemies) {
@@ -90,6 +103,17 @@ export function SkillUseModal({ encounter, participants, groups, source, allChar
     }
     if (selfChosen) targets.push({ kind: "self", character: source });
     if (targets.length === 0) targets.push({ kind: "none" });
+
+    // Resolve link member names (source always counts as a participant when bonus > 0).
+    const linkMemberNames: string[] = [];
+    if (linkBonus > 0 && linkInfo) {
+      linkMemberNames.push(source.name);
+      for (const m of linkInfo.members) {
+        if (m.character_id && m.character_id !== source.id && linkBonusMembers.has(m.character_id)) {
+          linkMemberNames.push(m.display_name);
+        }
+      }
+    }
 
     const r = await useSkill({
       encounter,
@@ -114,6 +138,9 @@ export function SkillUseModal({ encounter, participants, groups, source, allChar
         applyDefense,
         rollResult: rollResult.trim() || undefined,
         note: note.trim() || undefined,
+        linkBonus: linkBonus || undefined,
+        linkBonusMembers: linkMemberNames.length ? linkMemberNames : undefined,
+        linkBonusJustification: linkJust.trim() || undefined,
       },
     });
     setBusy(false);
