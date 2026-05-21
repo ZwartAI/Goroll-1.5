@@ -70,7 +70,7 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
 
   const [members, setMembers] = useState<Array<{ user_id: string; role: string; created_at: string }>>([]);
 
-  const [combat, setCombat] = useState<CombatState>({ encounter: null, participants: [], groups: [] });
+  const [combat, setCombat] = useState<CombatState>({ encounter: null, participants: [], groups: [], pins: [] });
   const logsLimitRef = useRef(LOGS_INITIAL_LIMIT);
   const charIdsRef = useRef<string[]>([]);
 
@@ -85,15 +85,17 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
       .order("created_at", { ascending: false })
       .limit(1);
     const enc = (encs && encs[0]) as CombatEncounter | undefined;
-    if (!enc) { setCombat({ encounter: null, participants: [], groups: [] }); return; }
-    const [{ data: parts }, { data: grps }] = await Promise.all([
+    if (!enc) { setCombat({ encounter: null, participants: [], groups: [], pins: [] }); return; }
+    const [{ data: parts }, { data: grps }, { data: pins }] = await Promise.all([
       (supabase as any).from("combat_participants").select("*").eq("encounter_id", enc.id),
       (supabase as any).from("combat_turn_groups").select("*").eq("encounter_id", enc.id),
+      (supabase as any).from("combat_turn_pins").select("*").eq("encounter_id", enc.id),
     ]);
     setCombat({
       encounter: enc,
       participants: (parts || []) as CombatParticipant[],
       groups: (grps || []) as CombatTurnGroup[],
+      pins: (pins || []) as CombatTurnPin[],
     });
   }, []);
 
