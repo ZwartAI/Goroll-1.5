@@ -154,6 +154,15 @@ function Skills() {
         </button>
       </div>
 
+      <PlayerCombatSkillsPanel
+        encounter={combat.encounter}
+        participants={combat.participants}
+        groups={combat.groups}
+        character={character}
+        allCharacters={characters}
+        skills={unlocked}
+      />
+
       {/* Owned skills (scrollable area, 2 columns when there's room) */}
       <div
         className="mt-3 grid gap-2.5"
