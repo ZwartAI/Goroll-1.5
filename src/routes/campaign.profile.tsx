@@ -35,7 +35,9 @@ function Profile() {
   const { campaign, character, characters, items, logs, onlineIds, loading, combat } = useGameData();
   const nav = useNavigate();
   const { t } = useT();
-  const [imgModal, setImgModal] = useState(false);
+  const [imgModal, setImgModal] = useState<null | "face" | "body">(null);
+  const [imgViewer, setImgViewer] = useState(false);
+
   const [hpModal, setHpModal] = useState(false);
   const [purseOpen, setPurseOpen] = useState(false);
   const [openChar, setOpenChar] = useState<string | null>(null);
