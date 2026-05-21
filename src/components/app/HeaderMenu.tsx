@@ -284,13 +284,13 @@ export function useStandardHeaderItems(opts: {
     const items: HeaderMenuItem[] = [];
     if (opts.achievements) {
       items.push({
-        key: "achievements", label: t("dm.tabAchievements") || "Achievements",
+        key: "achievements", label: t("headerMenu.achievements"),
         icon: Trophy, to: "/campaign/achievements", color: "oklch(0.75 0.12 90)",
       });
     }
     if (opts.bestiary) {
       items.push({
-        key: "bestiary", label: t("bestiary.title"),
+        key: "bestiary", label: t("headerMenu.bestiary"),
         icon: Skull, to: "/campaign/bestiary", color: "oklch(0.65 0.10 20)",
       });
     }
