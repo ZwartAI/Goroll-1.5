@@ -136,7 +136,7 @@ export function LogSegments({
             </span>
           )}
           {p.defeated.length > 0 && <span className="block text-[10px] text-muted-foreground">💀 {p.defeated.join(", ")}</span>}
-          {p.note && <span className="block mt-0.5 text-[10px] italic text-foreground/80">{p.note}</span>}
+          {p.note && <span className="block mt-0.5 text-[10px] italic text-foreground/80"><StatText>{p.note}</StatText></span>}
         </span>
       );
     }
