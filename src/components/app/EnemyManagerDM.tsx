@@ -41,34 +41,58 @@ export function EnemyManagerDM({ encounter, participants, groups, dm }: Props) {
   const [damaging, setDamaging] = useState<CombatParticipant | null>(null);
   const [sheet, setSheet] = useState<CombatParticipant | null>(null);
 
+  const [dragKey, setDragKey] = useState<string | null>(null);
+  const [overKey, setOverKey] = useState<string | null>(null);
+
   if (enemies.length === 0) return null;
+
+  const onDrop = async (toEnemy: CombatParticipant) => {
+    if (!dragKey) return;
+    const toBlockKey = `s:${toEnemy.id}`;
+    if (toBlockKey === dragKey) { setDragKey(null); setOverKey(null); return; }
+    const toIdx = blocks.findIndex(b => b.key === toBlockKey);
+    setDragKey(null);
+    setOverKey(null);
+    if (toIdx < 0) return;
+    const r = await reorderParticipantTo(encounter, blocks, dragKey, toIdx);
+    if (!r.ok) toast.error(t("combat.saveError"));
+  };
 
   return (
     <div className="space-y-2">
       <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">
         {t("combat.enemies")}
       </p>
-      {enemies.map(p => (
-        <EnemyRow
-          key={p.id}
-          p={p}
-          isActive={active?.kind === "solo" && active.participant.id === p.id}
-          encounter={encounter}
-          blocks={blocks}
-          onEdit={() => setEditing(p)}
-          onDamage={() => setDamaging(p)}
-          onSheet={() => setSheet(p)}
-          onDuplicate={async () => {
-            const r = await duplicateEnemy(p, encounter, dm);
-            if (!r.ok) toast.error(t("combat.saveError"));
-          }}
-          onRemove={async () => {
-            if (!confirm(t("combat.confirmRemoveEnemy"))) return;
-            const r = await removeEnemy(p, encounter, dm);
-            if (!r.ok) toast.error(t("combat.saveError"));
-          }}
-        />
-      ))}
+      {enemies.map(p => {
+        const key = `s:${p.id}`;
+        return (
+          <EnemyRow
+            key={p.id}
+            p={p}
+            isActive={active?.kind === "solo" && active.participant.id === p.id}
+            encounter={encounter}
+            blocks={blocks}
+            isDragging={dragKey === key}
+            isDragOver={overKey === key && dragKey !== key}
+            onDragStart={() => setDragKey(key)}
+            onDragOver={() => setOverKey(key)}
+            onDragEnd={() => { setDragKey(null); setOverKey(null); }}
+            onDropOn={() => onDrop(p)}
+            onEdit={() => setEditing(p)}
+            onDamage={() => setDamaging(p)}
+            onSheet={() => setSheet(p)}
+            onDuplicate={async () => {
+              const r = await duplicateEnemy(p, encounter, dm);
+              if (!r.ok) toast.error(t("combat.saveError"));
+            }}
+            onRemove={async () => {
+              if (!confirm(t("combat.confirmRemoveEnemy"))) return;
+              const r = await removeEnemy(p, encounter, dm);
+              if (!r.ok) toast.error(t("combat.saveError"));
+            }}
+          />
+        );
+      })}
 
       {editing && (
         <EnemyEditorModal encounter={encounter} dm={dm} editing={editing} onClose={() => setEditing(null)} />
