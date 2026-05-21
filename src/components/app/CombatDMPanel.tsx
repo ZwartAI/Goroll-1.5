@@ -14,6 +14,7 @@ import {
   type CombatEncounter,
   type CombatParticipant,
   type CombatTurnGroup,
+  type CombatTurnPin,
 } from "@/lib/combat";
 import { CombatList } from "@/components/app/CombatList";
 import { Crown, Link as LinkIcon } from "lucide-react";
@@ -26,9 +27,10 @@ type Props = {
   encounter: CombatEncounter | null;
   participants: CombatParticipant[];
   groups: CombatTurnGroup[];
+  pins?: CombatTurnPin[];
 };
 
-export function CombatDMPanel({ campaignId, dm, encounter, participants, groups }: Props) {
+export function CombatDMPanel({ campaignId, dm, encounter, participants, groups, pins = [] }: Props) {
   const { t } = useT();
   const status = encounter?.status ?? null;
   const [addingEnemy, setAddingEnemy] = useState(false);
