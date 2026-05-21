@@ -702,8 +702,6 @@ function ProfileHeader({
   const [mailboxOpen, setMailboxOpen] = useState(false);
   const items = useStandardHeaderItems({
     achievements: true,
-    bestiary: true,
-    mailbox: { onOpen: () => setMailboxOpen(true) },
     mic: { enabled: voice.enabled, toggle: voice.toggle },
     fullscreen: true,
     exit: { onExit: onLogout },
