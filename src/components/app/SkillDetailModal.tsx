@@ -2,6 +2,7 @@ import { RARITY_COLOR, type Rarity } from "@/lib/game";
 import { RarityBadge } from "./RarityBadge";
 import { useT } from "@/lib/i18n";
 import type { CharacterSkill } from "./SkillCard";
+import { StatText } from "./StatText";
 
 type Props = {
   skill: CharacterSkill;
