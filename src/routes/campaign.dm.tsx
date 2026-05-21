@@ -489,6 +489,19 @@ function DM() {
           onClose={() => setOpenChar(null)}
           onPickItem={(it) => setSelItem(it)} />
       )}
+      {imageViewerCharId && (() => {
+        const c = characters.find(ch => ch.id === imageViewerCharId);
+        if (!c) return null;
+        return (
+          <CharacterImageViewer
+            character={c}
+            canEdit={false}
+            onClose={() => setImageViewerCharId(null)}
+            onEditFace={() => {}}
+            onEditBody={() => {}}
+          />
+        );
+      })()}
       {selBooster && (
         <BoosterEditor booster={selBooster} campaignId={campaign.id}
           players={players} dm={dmCtx}
