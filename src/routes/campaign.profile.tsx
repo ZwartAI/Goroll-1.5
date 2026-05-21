@@ -258,17 +258,20 @@ function Profile() {
               return (
                 <div
                   key={k}
-                  className="ornate-card !p-1.5 text-center flex flex-col items-center justify-center gap-0.5 transition-shadow"
+                  className="ornate-card !p-1.5 text-center flex flex-col items-center justify-center gap-0.5 transition-all select-none active:scale-95"
                   style={{
                     borderColor: `color-mix(in oklab, ${color} 55%, transparent)`,
                     background: `linear-gradient(180deg, color-mix(in oklab, ${color} 10%, var(--card)), var(--card))`,
                     boxShadow: `inset 0 0 12px color-mix(in oklab, ${color} 12%, transparent)`,
+                    WebkitUserSelect: "none",
+                    WebkitTapHighlightColor: "transparent",
+                    touchAction: "manipulation",
                   }}
                 >
-                  <span className="text-[10px] font-display tracking-wide whitespace-nowrap" style={{ color }}>
+                  <span className="text-[10px] font-display tracking-wide whitespace-nowrap pointer-events-none" style={{ color }}>
                     {label}: {v}
                   </span>
-                  <span className="font-display font-bold leading-none text-lg" style={{ color, textShadow: `0 0 8px color-mix(in oklab, ${color} 45%, transparent)` }}>
+                  <span className="font-display font-bold leading-none text-lg pointer-events-none" style={{ color, textShadow: `0 0 8px color-mix(in oklab, ${color} 45%, transparent)` }}>
                     {mod}
                   </span>
                 </div>
