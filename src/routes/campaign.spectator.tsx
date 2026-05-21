@@ -34,14 +34,8 @@ function Spectator() {
 
   return (
     <PageFrame>
-      <header className="flex items-start justify-between gap-2 mb-3">
-        <button onClick={logout} className="text-muted-foreground"><LogOut size={18}/></button>
-        <div className="text-center">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{campaign.name}</p>
-          <h1 className="font-display text-xl rune-glow">{t("spectator.title")}</h1>
-        </div>
-        <div className="w-5"/>
-      </header>
+      <SpectatorHeader campaignName={campaign.name} title={t("spectator.title")} onLogout={logout} voice={voice} />
+
       <div className="gem-divider mb-4"/>
 
       <div className="grid grid-cols-3 gap-1 mb-4">
