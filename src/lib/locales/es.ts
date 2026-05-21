@@ -914,7 +914,7 @@ export const es = {
     round: "Ronda",
     addEnemy: "Añadir enemigo",
     editEnemy: "Editar enemigo",
-    enemy: "Enemigo",
+    enemyLabel: "Enemigo",
     enemies: "Enemigos",
     name: "Nombre",
     icon: "Icono",

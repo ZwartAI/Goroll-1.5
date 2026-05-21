@@ -912,7 +912,7 @@ export const en: Dict = {
     round: "Round",
     addEnemy: "Add Enemy",
     editEnemy: "Edit Enemy",
-    enemy: "Enemy",
+    enemyLabel: "Enemy",
     enemies: "Enemies",
     name: "Name",
     icon: "Icon",
