@@ -305,18 +305,16 @@ function Profile() {
             </Link>
           </div>
 
-          {/* Log */}
-          <h2 className="font-display text-xs uppercase tracking-widest text-center mb-2 text-[var(--gold)]">{t("profile.sessionLog")}</h2>
-          <LogList rows={logs} initial={20} maxH="max-h-[40vh]" empty={t("escenario.noActivity")}
-            renderRow={(l: any) => (
-              <div key={l.id} className={`text-xs bg-secondary/40 rounded px-2 py-1.5 leading-relaxed ${l.undone ? "opacity-50 line-through" : ""}`}>
-                <LogSegments segments={l.segments as any}
-                  onItem={(id) => setOpenItem(id)}
-                  onBooster={(id) => setOpenBooster(id)}
-                  onChar={(id) => openCharFromLog(id, false)} />
-                <p className="text-[9px] text-muted-foreground mt-0.5">{new Date(l.created_at).toLocaleTimeString()}</p>
-              </div>
-            )} />
+          {/* Log + Combat tab (mirrors Escenario behavior) */}
+          <ProfileLogPanel
+            logs={logs}
+            combat={combat}
+            selfId={character.id}
+            onOpenChar={(id) => openCharFromLog(id, false)}
+            onOpenItem={(id) => setOpenItem(id)}
+            onOpenBooster={(id) => setOpenBooster(id)}
+            t={t}
+          />
         </>
       )}
 
