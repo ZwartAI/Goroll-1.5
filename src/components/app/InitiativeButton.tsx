@@ -67,7 +67,13 @@ export function InitiativeButton({ character, encounter, participants, groups, o
     }
   }
 
-  const linkCandidates = online.filter(c => c.id !== character.id && c.role === "player");
+  // Exclude self, non-players, and characters already in a link in this encounter.
+  const linkedIds = new Set(
+    participants.filter(p => p.turn_group_id && p.character_id).map(p => p.character_id as string),
+  );
+  const linkCandidates = online.filter(
+    c => c.id !== character.id && c.role === "player" && !linkedIds.has(c.id),
+  );
 
   return (
     <>
