@@ -594,6 +594,15 @@ function CreateItem({ campaignId, dm, players }: { campaignId: string; dm: { id:
           <input type="number" min={1} className="w-20 bg-input border border-border rounded px-2 py-1 text-right" value={uses} onChange={e => setUses(Math.max(1, +e.target.value))} />
         </label>
       )}
+      {!isCoins && (
+        <textarea
+          className="w-full bg-input border border-border rounded px-3 py-2 text-sm"
+          rows={2}
+          placeholder={tr("itemEditor.description")}
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
+      )}
       <div className="gem-divider"/>
       <select className="w-full bg-input border border-border rounded px-2 py-2 text-sm" value={target} onChange={e => setTarget(e.target.value)}>
         <option value="">{isCoins ? tr("dm.pickPlayer") : tr("dm.keepVault")}</option>
