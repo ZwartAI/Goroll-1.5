@@ -159,8 +159,10 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-2 overflow-y-auto" onClick={onClose}>
-      <div className="ornate-card p-4 max-w-md w-full max-h-[92vh] overflow-y-auto space-y-3" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-2" onClick={onClose}>
+      <div className="ornate-card max-w-md w-full max-h-[92vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+        <div className="p-4 space-y-3 max-h-[92vh] overflow-y-auto">
+
         <div className="text-center">
           <h3 className="font-display text-xl rune-glow" style={{ color: character.color }}>{character.name}</h3>
           <p className="text-xs text-muted-foreground">{character.race || "—"} / {character.class || "—"} · {character.role === "dm" ? t("sheet.dungeonMaster") : t("sheet.player")}</p>
