@@ -8,6 +8,7 @@ import {
 } from "@/lib/bestiary";
 import { EnemyIcon } from "@/components/app/EnemyIconPicker";
 import { RarityBadge } from "@/components/app/RarityBadge";
+import { StatText } from "@/components/app/StatText";
 
 type Props = {
   template: EnemyTemplate;
