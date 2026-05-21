@@ -61,6 +61,11 @@ export type CombatParticipant = {
   enemy_template_id: string | null;
   is_enemy_visible: boolean;
   is_defeated: boolean;
+  enemy_role: string | null;
+  enemy_biome: string | null;
+  enemy_base_damage: string | null;
+  enemy_behavior: string | null;
+
 };
 
 export function isEnemy(p: CombatParticipant): boolean {
