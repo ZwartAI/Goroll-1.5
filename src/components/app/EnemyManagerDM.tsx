@@ -243,10 +243,11 @@ function HpBtn({ label, onClick, positive }: { label: string; onClick: () => voi
   );
 }
 
-function IconBtn({ icon, onClick, danger }: { icon: React.ReactNode; onClick: () => void; danger?: boolean }) {
+function IconBtn({ icon, onClick, danger, bg }: { icon: React.ReactNode; onClick: () => void; danger?: boolean; bg?: string }) {
+  const background = danger ? "color-mix(in oklab, var(--loss) 35%, var(--card))" : bg;
   return (
     <button className="btn-fantasy text-[10px] py-1 flex items-center justify-center"
-      style={danger ? { background: "color-mix(in oklab, var(--loss) 35%, var(--card))" } : undefined}
+      style={background ? { background, color: "white" } : undefined}
       onClick={onClick}>
       {icon}
     </button>
