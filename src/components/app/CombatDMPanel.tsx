@@ -10,6 +10,7 @@ import {
   dmShiftTurn,
   endCombat,
   requestInitiative,
+  reorderBlockWithAutoInitiative,
   startCombat,
   type CombatEncounter,
   type CombatParticipant,
