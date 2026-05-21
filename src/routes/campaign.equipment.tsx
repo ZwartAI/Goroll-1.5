@@ -6,6 +6,7 @@ import { SLOTS, RARITY_COLOR, RARITY_BONUS, isWeapon, totals, type Slot, type It
 import { supabase } from "@/integrations/supabase/client";
 import { pushLog } from "@/lib/log";
 import { RarityBadge } from "@/components/app/RarityBadge";
+import { ItemView } from "@/components/app/ItemView";
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
 
