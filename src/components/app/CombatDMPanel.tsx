@@ -80,11 +80,13 @@ export function CombatDMPanel({ campaignId, dm, encounter, participants, groups 
           <EnemyManagerDM encounter={encounter} participants={participants} groups={groups} dm={dm} />
           <div className="grid grid-cols-2 gap-2 pt-1">
             <button className="btn-fantasy" style={{ background: "var(--loss)", color: "white" }}
-              onClick={async () => {
-                if (!confirm(t("combat.confirmCancel"))) return;
-                const r = await cancelInitiative(encounter, dm);
-                if (!r.ok) toast.error(t("combat.cancelError"));
-              }}>
+              onClick={() => setConfirmState({
+                message: t("combat.confirmCancel"),
+                onConfirm: async () => {
+                  const r = await cancelInitiative(encounter, dm);
+                  if (!r.ok) toast.error(t("combat.cancelError"));
+                },
+              })}>
               <X size={14} className="inline mr-1" /> {t("combat.cancel")}
             </button>
             <button className="btn-fantasy" disabled={participants.length === 0}
