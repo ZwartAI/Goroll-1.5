@@ -6,7 +6,7 @@ import { pushLog } from "@/lib/log";
 import type { CombatEncounter } from "@/lib/combat";
 import { clampInitiative } from "@/lib/combat";
 
-export type EnemyTier = "normal" | "elite" | "boss" | "minion" | "summon" | "hazard" | "special";
+export type EnemyTier = "normal" | "elite" | "boss" | "god" | "minion" | "summon" | "hazard" | "special";
 export type EnemyRole =
   | "damage" | "tank" | "support" | "control" | "skirmisher"
   | "summoner" | "terrain" | "hunter" | "protector";
