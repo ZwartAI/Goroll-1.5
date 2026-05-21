@@ -493,8 +493,8 @@ function ImageEditor({
   return (
     <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3" onClick={onClose}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3 max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <h3 className="font-display text-lg text-center">{title}</h3>
-        <p className="text-[11px] text-muted-foreground text-center -mt-1">{hint}</p>
+        {isFace && <h3 className="font-display text-lg text-center">{title}</h3>}
+        {isFace && <p className="text-[11px] text-muted-foreground text-center -mt-1">{hint}</p>}
         <div className={`${previewAspect} rounded-lg overflow-hidden bg-[var(--secondary)] relative border border-border`}>
           {url
             ? <img src={url} alt="preview"
@@ -506,13 +506,13 @@ function ImageEditor({
             : <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">{t("profile.imgNone")}</div>}
         </div>
 
-        <input ref={fileRef} type="file" accept="image/*" className="hidden"
-          onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); }} />
-        <button className="btn-fantasy w-full flex items-center justify-center gap-2" disabled={uploading} onClick={() => fileRef.current?.click()}>
+        {isFace && <input ref={fileRef} type="file" accept="image/*" className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); }} />}
+        {isFace && <button className="btn-fantasy w-full flex items-center justify-center gap-2" disabled={uploading} onClick={() => fileRef.current?.click()}>
           <Camera size={14}/> {uploading ? t("profile.uploading") : t("profile.uploadFromGallery")}
-        </button>
-        <input className="w-full rounded bg-input border border-border px-3 py-2 text-xs"
-          placeholder={t("profile.orPasteUrl")} value={url} onChange={e => setUrl(e.target.value)} />
+        </button>}
+        {isFace && <input className="w-full rounded bg-input border border-border px-3 py-2 text-xs"
+          placeholder={t("profile.orPasteUrl")} value={url} onChange={e => setUrl(e.target.value)} />}
 
         {url && (
           <>
