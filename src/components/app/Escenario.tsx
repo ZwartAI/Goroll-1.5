@@ -138,13 +138,18 @@ export function Escenario({ characters, items, onlineIds, logs, selfId, onOpenCh
   );
 }
 
-function PlayerCard({ c, maxHp, online, onClick, isSelf, t, speaking }: { c: any; maxHp?: number; online: boolean; onClick: () => void; isSelf?: boolean; t: (p: string) => string; speaking?: boolean }) {
+function PlayerCard({ c, maxHp, online, onClick, onImageClick, isSelf, t, speaking }: { c: any; maxHp?: number; online: boolean; onClick: () => void; onImageClick?: () => void; isSelf?: boolean; t: (p: string) => string; speaking?: boolean }) {
   const max = maxHp ?? c.max_hp ?? c.base_hp ?? 1;
   const pct = Math.max(0, Math.min(100, (c.current_hp / max) * 100));
   return (
     <button onClick={onClick}
       className={`ornate-card !p-2 text-center transition hover:border-[var(--gold)]/70 ${online ? "" : "opacity-50 grayscale"} ${speaking ? "voice-speaking" : ""}`}>
-      <div className="relative mx-auto w-14 h-14 rounded-full overflow-hidden border-2 transition-shadow"
+      <span
+        role={onImageClick ? "button" : undefined}
+        tabIndex={onImageClick ? 0 : undefined}
+        onClick={onImageClick ? (e) => { e.stopPropagation(); onImageClick(); } : undefined}
+        onKeyDown={onImageClick ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onImageClick(); } } : undefined}
+        className="relative mx-auto w-16 aspect-square rounded-md overflow-hidden border-2 transition-shadow block cursor-pointer"
         style={{
           borderColor: speaking ? "var(--gain)" : (c.color || "var(--gold)"),
           boxShadow: speaking ? "0 0 0 2px var(--gain), 0 0 14px var(--gain)" : undefined,
@@ -157,7 +162,7 @@ function PlayerCard({ c, maxHp, online, onClick, isSelf, t, speaking }: { c: any
         <span className="absolute -top-1 -left-1 min-w-[18px] h-[18px] px-1 rounded-full border border-background bg-[var(--card)] text-[9px] font-display font-bold flex items-center justify-center text-[var(--gold)]" title={t("level.label")}>
           {c.level ?? 1}
         </span>
-      </div>
+      </span>
       <p className="font-display text-xs mt-1 truncate" style={{ color: c.color }}>{c.name}</p>
       <p className="text-[9px] text-muted-foreground truncate">{c.race || "—"} / {c.class || "—"}</p>
       <p className="text-[10px] mt-0.5">❤️ {c.current_hp}/{max}</p>
