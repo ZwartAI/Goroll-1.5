@@ -22,6 +22,7 @@ function Spectator() {
   const nav = useNavigate();
   const [tab, setTab] = useState<"escenario" | "log" | "achievements">("escenario");
   const [openChar, setOpenChar] = useState<string | null>(null);
+  const [imageViewerCharId, setImageViewerCharId] = useState<string | null>(null);
   const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [openBoosterId, setOpenBoosterId] = useState<string | null>(null);
   const [achPlayerId, setAchPlayerId] = useState<string | null>(null);
