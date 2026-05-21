@@ -12,6 +12,7 @@ import { attemptLogin } from "@/lib/auth.functions";
 import { CampaignActionsModal } from "@/components/app/CampaignActionsModal";
 import { AppSettingsModal } from "@/components/app/AppSettingsModal";
 import { Settings as SettingsIcon } from "lucide-react";
+import { CharacterPortrait } from "@/components/app/CharacterPortrait";
 import { useT } from "@/lib/i18n";
 import goRollLogo from "@/assets/go-roll-logo.png";
 import loginFrame from "@/assets/login-frame.png";
