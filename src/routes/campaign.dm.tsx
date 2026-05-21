@@ -39,6 +39,7 @@ function DM() {
   const [selItem, setSelItem] = useState<Item | null>(null);
   const [editItem, setEditItem] = useState<Item | null>(null);
   const [openChar, setOpenChar] = useState<string | null>(null);
+  const [imageViewerCharId, setImageViewerCharId] = useState<string | null>(null);
   const [boosters, setBoosters] = useState<Booster[]>([]);
   const [holdersByBooster, setHoldersByBooster] = useState<Map<string, string[]>>(new Map());
   const [boosterSearch, setBoosterSearch] = useState("");
