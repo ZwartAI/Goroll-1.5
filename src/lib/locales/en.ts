@@ -882,6 +882,7 @@ export const en: Dict = {
     },
   },
   combat: {
+    cancelRollHint: "Opened this by mistake? Press Cancel to go back.",
     dmTitle: "Combat",
     requestInitiative: "Request initiative",
     requested: "Initiative requested",
