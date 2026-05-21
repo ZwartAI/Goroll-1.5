@@ -221,6 +221,8 @@ export async function endCombat(
     .update({ status: "ended", ended_at: new Date().toISOString() })
     .eq("id", encounter.id);
   if (error) return { ok: false, error: error.message };
+  // Phase 5 cleanup: drop ephemeral skill-use counters and temporary effects.
+  await clearEncounterSkillState(encounter.id);
   await pushLog(encounter.campaign_id, [
     { t: "char", v: dm.name, color: dm.color, id: dm.id },
     { t: "text", v: " terminó el combate." },
