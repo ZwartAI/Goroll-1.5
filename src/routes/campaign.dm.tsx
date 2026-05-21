@@ -453,6 +453,7 @@ function DM() {
             dmCharacterIds={dmCharacterIds}
             nameOverrides={dmLabels}
             onOpenChar={(id) => setOpenChar(id)}
+            onOpenImage={(id) => setImageViewerCharId(id)}
             onOpenItem={openItemFromId}
             onOpenBooster={openBoosterFromId}
             speakingIds={voice.speakingIds}
