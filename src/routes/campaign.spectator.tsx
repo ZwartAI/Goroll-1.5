@@ -126,3 +126,35 @@ function Spectator() {
     </PageFrame>
   );
 }
+
+function SpectatorHeader({
+  campaignName, title, onLogout, voice,
+}: {
+  campaignName: string;
+  title: string;
+  onLogout: () => void;
+  voice: { enabled: boolean; toggle: () => void };
+}) {
+  const [mailboxOpen, setMailboxOpen] = useState(false);
+  const items = useStandardHeaderItems({
+    achievements: true,
+    bestiary: true,
+    mailbox: { onOpen: () => setMailboxOpen(true) },
+    mic: { enabled: voice.enabled, toggle: voice.toggle },
+    fullscreen: true,
+    exit: { onExit: onLogout },
+  });
+  return (
+    <header className="relative mb-3 min-h-[56px]">
+      <div className="text-center px-2">
+        <p className="text-[10px] uppercase tracking-widest text-muted-foreground truncate">{campaignName}</p>
+        <h1 className="font-display text-xl rune-glow">{title}</h1>
+      </div>
+      <div className="absolute right-0 top-1 flex items-center">
+        <HeaderMenu items={items} />
+      </div>
+      <MailboxInlineModal open={mailboxOpen} onClose={() => setMailboxOpen(false)} />
+    </header>
+  );
+}
+
