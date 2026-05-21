@@ -34,12 +34,15 @@ function Profile() {
   const { t } = useT();
   const [imgModal, setImgModal] = useState(false);
   const [hpModal, setHpModal] = useState(false);
+  const [purseOpen, setPurseOpen] = useState(false);
   const [openChar, setOpenChar] = useState<string | null>(null);
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [openBooster, setOpenBooster] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"personaje" | "escenario">("personaje");
   // When opened from Escenario tab (or from the log), force read-only sheet.
   const [openCharReadOnly, setOpenCharReadOnly] = useState(false);
+
+  const coinsPress = useLongPress(() => setPurseOpen(true), 500);
 
   const voice = useVoice(campaign?.id, character?.id);
   const [micSettingsOpen, setMicSettingsOpen] = useState(false);
