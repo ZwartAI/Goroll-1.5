@@ -13,6 +13,7 @@ import {
   ChevronDown, X, Search, Gem, Zap, FileSpreadsheet, Settings2,
 } from "lucide-react";
 import { SkillIconMedallion, SKILL_ICON_OPTIONS } from "./SkillIconMedallion";
+import { CharacterPortrait } from "./CharacterPortrait";
 
 type Props = {
   campaignId: string;
