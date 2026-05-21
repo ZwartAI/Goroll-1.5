@@ -20,7 +20,7 @@ export function LogSegments({
 }) {
   const out: ReactNode[] = [];
   segments.forEach((s, i) => {
-    if (i > 0 && s.t !== "enemy_skill" && s.t !== "enemy_speech") out.push(<span key={`sp${i}`}> </span>);
+    if (i > 0 && s.t !== "enemy_skill" && s.t !== "enemy_speech" && s.t !== "player_skill") out.push(<span key={`sp${i}`}> </span>);
     if (s.t === "text") out.push(<span key={i} className="text-foreground/85">{s.v}</span>);
     else if (s.t === "char") {
       const clickable = onChar && s.id;
