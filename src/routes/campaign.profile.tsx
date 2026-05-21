@@ -274,6 +274,7 @@ function Profile() {
           </div>
           <div className="stat-pill mb-3 !text-[11px]"><span>{t("profile.initiative")}</span><span className="text-[var(--gold)] font-bold">{fmtMod(character.initiative)}</span></div>
 
+          <ConditionsPanel character={character} campaignId={campaign.id} canEdit={true} />
 
           {/* Quick links — icon left, text right */}
           <div className="grid grid-cols-3 gap-2 mb-2">
