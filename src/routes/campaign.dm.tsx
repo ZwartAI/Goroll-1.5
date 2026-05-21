@@ -9,6 +9,7 @@ import { clampHpForOwner } from "@/lib/hp";
 import { LogSegments } from "@/components/app/LogSegments";
 import { LogList } from "@/components/app/LogList";
 import { RarityBadge } from "@/components/app/RarityBadge";
+import { StatText } from "@/components/app/StatText";
 import { ItemEditor } from "@/components/app/ItemEditor";
 import { CharacterSheetModal } from "@/components/app/CharacterSheetModal";
 import { DMConditionsCreator } from "@/components/app/ConditionsPanel";
