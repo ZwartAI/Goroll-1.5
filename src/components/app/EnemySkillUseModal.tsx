@@ -8,6 +8,7 @@ import {
   type EnemySkillVisibility,
 } from "@/lib/combat";
 import { EnemyIcon } from "@/components/app/EnemyIconPicker";
+import { StatText } from "@/components/app/StatText";
 
 export function EnemySkillUseModal({
   participant, skill, onClose,
