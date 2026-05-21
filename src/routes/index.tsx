@@ -402,13 +402,14 @@ function Home() {
           >
             {/* Título */}
             <div
-              className="absolute text-center font-display text-[var(--gold)] tracking-[0.08em] whitespace-nowrap flex items-center justify-center gap-2 mt-[10px]"
+              className="absolute text-center font-display tracking-[0.08em] whitespace-nowrap flex items-center justify-center gap-2 mt-[10px]"
               style={{
                 top: "12%",
                 left: "0",
                 right: "0",
                 fontSize: "clamp(14px, 3.4vw, 20px)",
-                textShadow: "0 0 10px color-mix(in oklab, var(--gold) 45%, transparent), 0 2px 4px rgba(0,0,0,0.7)",
+                color: "color-mix(in oklab, white 78%, transparent)",
+                textShadow: "0 0 10px rgba(0,0,0,0.55), 0 2px 4px rgba(0,0,0,0.8)",
               }}
             >
               <span className="text-[color-mix(in_oklab,var(--gold)_85%,#ff5a5a)]">✦</span>
