@@ -144,7 +144,7 @@ function Inventory() {
             ) : (
               (sel.uses ?? 0) > 0 && <p className="text-sm">{t("inventory.usesRemaining")} <strong className="text-[var(--gold)]">{sel.uses}{sel.max_uses ? `/${sel.max_uses}` : ""}</strong></p>
             )}
-            {sel.description && <p className="text-xs text-muted-foreground italic">"{sel.description}"</p>}
+            {sel.description && <p className="text-xs text-muted-foreground italic">"<StatText>{sel.description}</StatText>"</p>}
             <div className="grid grid-cols-2 gap-2">
               {sel.category === "equipo" ? (
                 sel.equipped
