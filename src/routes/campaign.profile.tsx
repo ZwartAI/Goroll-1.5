@@ -493,8 +493,8 @@ function ImageEditor({
   return (
     <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3" onClick={onClose}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3 max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <h3 className="font-display text-lg text-center">{title}</h3>
-        <p className="text-[11px] text-muted-foreground text-center -mt-1">{hint}</p>
+        {isFace && <h3 className="font-display text-lg text-center">{title}</h3>}
+        {isFace && <p className="text-[11px] text-muted-foreground text-center -mt-1">{hint}</p>}
         <div className={`${previewAspect} rounded-lg overflow-hidden bg-[var(--secondary)] relative border border-border`}>
           {url
             ? <img src={url} alt="preview"
