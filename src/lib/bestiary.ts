@@ -60,6 +60,40 @@ export const PRIMARY_TIERS: EnemyTier[] = ["normal", "elite", "boss", "god"];
 export const BIOME_PRESETS = [
   "Praivell", "Ignivar", "Saavakar", "Arboris", "Snofell", "Silvamyr", "Pilar del pulso",
 ];
+/** Visual defaults applied when a tier is selected (asset + border color). */
+export const TIER_VISUALS: Record<string, { assetKey: string; border: string }> = {
+  normal:      { assetKey: "asset:normal",      border: "#e5e7eb" }, // white/light
+  elite:       { assetKey: "asset:elite",       border: "#16a34a" }, // green
+  boss:        { assetKey: "asset:boss",        border: "#ef4444" }, // red
+  god:         { assetKey: "asset:god",         border: "#eab308" }, // gold
+  hero_female: { assetKey: "asset:hero_female", border: "#ec4899" }, // pink
+  hero_male:   { assetKey: "asset:hero_male",   border: "#a855f7" }, // purple
+};
+export function getTierVisual(tier: string | null | undefined) {
+  return (tier && TIER_VISUALS[tier]) || null;
+}
+/** Returns true when biome is one of the curated presets. */
+export function isPresetBiome(b: string | null | undefined): boolean {
+  if (!b) return false;
+  return BIOME_PRESETS.some(x => x.toLowerCase() === String(b).toLowerCase());
+}
+/** Heuristic icon picker for enemies without tier/icon — uses keywords from name/role. */
+export function pickAutoIcon(name: string, role?: string | null): string {
+  const s = `${name || ""} ${role || ""}`.toLowerCase();
+  const has = (...keys: string[]) => keys.some(k => s.includes(k));
+  if (has("rey", "king", "jefe", "boss", "líder", "lider")) return "crown";
+  if (has("lobo", "wolf", "bestia", "beast", "garra", "claw", "fauna", "fiera")) return "paw";
+  if (has("guardia", "guard", "soldado", "soldier", "caballero", "knight", "milicia")) return "shield";
+  if (has("espada", "sword", "duelo", "guerrero", "warrior")) return "sword";
+  if (has("mago", "wizard", "hechicero", "sorcerer", "bruj", "witch", "runa", "rune")) return "flame";
+  if (has("ojo", "eye", "testigo", "watcher", "vidente")) return "eye";
+  if (has("veneno", "poison", "araña", "spider", "insecto", "insect", "bug", "escarabajo")) return "bug";
+  if (has("sombra", "shadow", "espectro", "ghost", "fantasma", "specter", "wraith", "alma")) return "ghost";
+  if (has("máscara", "mascara", "mask", "actor", "drama")) return "mask";
+  if (has("dos espadas", "dual", "swords", "espadas")) return "swords";
+  if (has("niebla", "nube", "cloud", "fog", "humo")) return "shadow";
+  return "skull";
+}
 export const ROLE_OPTIONS: EnemyRole[] = [
   "damage", "tank", "support", "control", "skirmisher", "summoner", "terrain", "hunter", "protector",
 ];
@@ -69,6 +103,7 @@ export const IMMUNITIES = [
   "poison", "burn", "freeze", "bleed", "stun", "fear", "sleep",
   "push", "knockdown", "blind", "silence", "mindControl", "defenseReduction", "movementRestriction",
 ];
+
 
 export type EnemyTemplateDraft = Omit<EnemyTemplate, "id" | "created_at" | "updated_at" | "campaign_id">;
 export type EnemyTemplateSkillDraft = Omit<EnemyTemplateSkill, "id" | "created_at" | "updated_at" | "campaign_id" | "enemy_template_id">;
