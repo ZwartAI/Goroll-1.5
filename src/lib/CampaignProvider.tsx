@@ -310,7 +310,7 @@ export function useGameData(): GameData {
   return {
     campaign: null, character: null, characters: [], items: [], logs: [], achievements: [],
     loading: true, onlineIds: new Set(), dmLabels: {}, dmCharacterIds: new Set(),
-    combat: { encounter: null, participants: [], groups: [] },
+    combat: { encounter: null, participants: [], groups: [], pins: [] },
     reload: async () => {}, loadMoreLogs: async () => {},
   };
 }
