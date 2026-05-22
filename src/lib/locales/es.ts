@@ -585,6 +585,15 @@ export const es = {
     deleteEffect: 'eliminar',
     deleteConfirm: '¿Eliminar efecto "{label}"?',
     deletedToast: "Efecto eliminado",
+    // Phase 6 — Aplicar a enemigo en combate
+    applyToHeading: "Aplicar a",
+    applyToSelfAlly: "Personaje",
+    applyToEnemy: "Enemigo en combate",
+    pickEnemy: "Elige enemigo(s)",
+    appliedToEnemyToast: "Efecto aplicado al enemigo",
+    noEnemiesCombat: "Sin enemigos en combate.",
+    noActiveCombat: "Sin combate activo.",
+    appliedToEnemyLog: "aplica {icon} {label} a {target} ({turns}t).",
   },
   coins: {
     receive: "🪙 Recibir monedas",
