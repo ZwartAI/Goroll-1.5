@@ -693,8 +693,7 @@ export async function tickEnemyEffect(effectId: string): Promise<void> {
     const label = fx.label || fx.effect_type || "";
     const segs: any[] = [];
     if (participantName) {
-      segs.push({ t: "enemy", v: participantName, color: participantColor, id: participantId });
-      segs.push({ t: "text", v: " " });
+      segs.push({ t: "text", v: participantName + " " });
     }
     if (appliedDmg > 0) {
       segs.push({ t: "text", v: `${label} → ` });
