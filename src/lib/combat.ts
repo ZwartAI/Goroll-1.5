@@ -612,14 +612,17 @@ export async function addEnemies(
     });
   }
 
-  const { error } = await (supabase as any).from("combat_participants").insert(rows);
-  if (error) return { ok: false, error: error.message };
+  const { data: inserted, error } = await (supabase as any)
+    .from("combat_participants")
+    .insert(rows)
+    .select("id");
+  if (error) return { ok: false as const, error: error.message };
 
   await pushLog(encounter.campaign_id, [
     { t: "char", v: dm.name, color: dm.color, id: dm.id },
     { t: "text", v: qty > 1 ? ` añadió ${qty} enemigos al combate: ${name}.` : ` añadió enemigo al combate: ${name}.` },
   ]);
-  return { ok: true };
+  return { ok: true as const, ids: ((inserted as any[]) || []).map(r => r.id as string) };
 }
 
 export async function updateEnemy(participant: CombatParticipant, patch: Partial<EnemyDraft>) {
@@ -1010,6 +1013,76 @@ export async function listEnemySkills(participantId: string): Promise<CombatEnem
     .eq("combat_participant_id", participantId)
     .order("order_index", { ascending: true });
   return (data as any) || [];
+}
+
+export type CombatEnemySkillDraft = {
+  name: string;
+  rarity?: string;
+  skill_type?: string | null;
+  target_shape?: string | null;
+  targets?: string | null;
+  dice?: string | null;
+  range_text?: string | null;
+  effect?: string | null;
+  visual_brief?: string | null;
+  order_index?: number;
+};
+
+/** Add a skill snapshot to one or more combat participants (enemies). */
+export async function addEnemySkillToParticipants(
+  participantIds: string[],
+  encounterId: string,
+  campaignId: string,
+  draft: CombatEnemySkillDraft,
+) {
+  if (!participantIds.length) return { ok: false as const, error: "no_participants" };
+  const rows = participantIds.map(pid => ({
+    combat_participant_id: pid,
+    encounter_id: encounterId,
+    campaign_id: campaignId,
+    template_skill_id: null,
+    name: draft.name.trim(),
+    rarity: (draft.rarity as any) || "white",
+    skill_type: draft.skill_type ?? null,
+    target_shape: draft.target_shape ?? null,
+    targets: draft.targets ?? null,
+    dice: draft.dice ?? null,
+    range_text: draft.range_text ?? null,
+    effect: draft.effect ?? null,
+    visual_brief: draft.visual_brief ?? null,
+    order_index: draft.order_index ?? 0,
+  }));
+  const { error } = await (supabase as any).from("combat_enemy_skills").insert(rows);
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+export async function updateEnemySkill(skill: CombatEnemySkill, patch: Partial<CombatEnemySkillDraft>) {
+  const upd: any = {};
+  for (const k of ["name","rarity","skill_type","target_shape","targets","dice","range_text","effect","visual_brief","order_index"] as const) {
+    if ((patch as any)[k] !== undefined) upd[k] = (patch as any)[k];
+  }
+  const { error } = await (supabase as any).from("combat_enemy_skills").update(upd).eq("id", skill.id);
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+export async function deleteEnemySkill(skill: CombatEnemySkill) {
+  const { error } = await (supabase as any).from("combat_enemy_skills").delete().eq("id", skill.id);
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+export async function reorderEnemySkill(skill: CombatEnemySkill, direction: "up" | "down", siblings: CombatEnemySkill[]) {
+  const sorted = [...siblings].sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
+  const idx = sorted.findIndex(s => s.id === skill.id);
+  if (idx < 0) return { ok: false as const };
+  const swap = direction === "up" ? idx - 1 : idx + 1;
+  if (swap < 0 || swap >= sorted.length) return { ok: false as const };
+  const a = sorted[idx], b = sorted[swap];
+  await (supabase as any).from("combat_enemy_skills").update({ order_index: b.order_index }).eq("id", a.id);
+  await (supabase as any).from("combat_enemy_skills").update({ order_index: a.order_index }).eq("id", b.id);
+  return { ok: true as const };
 }
 
 export type EnemySkillVisibility = "private" | "nameAndEffect" | "full";
