@@ -17,6 +17,7 @@ import { InitiativeButton } from "@/components/app/InitiativeButton";
 import { User, Minus, Plus, Camera, Heart, HeartPulse, Coins, RotateCw } from "lucide-react";
 import tabActiveBg from "@/assets/tab-active.png";
 import hpFrameBg from "@/assets/hp-frame.png";
+import hpButtonImg from "@/assets/hp-button.png";
 import tabInactiveBg from "@/assets/tab-inactive.png";
 import navEquipo from "@/assets/nav/equipo.png";
 import navMochila from "@/assets/nav/mochila.png";
@@ -252,13 +253,9 @@ function Profile() {
                 onClick={() => setHpModal(true)}
                 aria-label={t("profile.modifyHpAria")}
                 title={t("profile.modifyHpAria")}
-                className="shrink-0 h-9 w-9 rounded-md flex items-center justify-center border border-[var(--gold)]/60 transition-transform active:scale-95"
-                style={{
-                  background: "linear-gradient(135deg, oklch(0.85 0.10 350), oklch(0.70 0.16 350))",
-                  boxShadow: "0 4px 12px -6px oklch(0.55 0.20 350 / 0.7), inset 0 0 8px oklch(1 0 0 / 0.2)",
-                }}
+                className="shrink-0 h-10 w-10 flex items-center justify-center transition-transform active:scale-95 bg-transparent border-0 p-0"
               >
-                <Heart size={18} fill="oklch(0.55 0.22 25)" color="oklch(0.45 0.22 25)" strokeWidth={2} />
+                <img src={hpButtonImg} alt="" className="h-full w-full object-contain pointer-events-none select-none" draggable={false} />
               </button>
               <div className="flex-1 h-3 rounded-full bg-black/40 overflow-hidden border border-[var(--gold)]/40">
                 <div className="h-full transition-all" style={{
