@@ -322,8 +322,18 @@ export async function submitInitiative(
   character: Character,
   rawValue: number,
 ) {
-  if (encounter.status !== "collecting") return { ok: false, error: "not_collecting" };
+  if (encounter.status !== "collecting" && encounter.status !== "active") {
+    return { ok: false, error: "wrong_status" };
+  }
   const value = clampInitiative(rawValue);
+  // Late join (status === "active"): append at end of rotation and mark turn as ended
+  // so the new participant waits until the next round.
+  const lateJoin = encounter.status === "active";
+  const extra: Record<string, unknown> = {};
+  if (lateJoin) {
+    extra.order_index = await nextOrderIndex(encounter.id);
+    extra.has_ended_turn = true;
+  }
   const { error } = await supabase
     .from("combat_participants" as any)
     .upsert(
@@ -336,16 +346,18 @@ export async function submitInitiative(
         image_url: character.image_url || null,
         color: character.color || null,
         initiative: value,
+        ...extra,
       },
       { onConflict: "encounter_id,character_id" },
     );
   if (error) return { ok: false, error: error.message };
   await pushLog(encounter.campaign_id, [
     { t: "char", v: character.name, color: character.color, id: character.id },
-    { t: "text", v: ` se inscribió a la iniciativa (${value}).` },
+    { t: "text", v: lateJoin ? ` se unió al combate en curso (${value}).` : ` se inscribió a la iniciativa (${value}).` },
   ]);
   return { ok: true };
 }
+
 
 export function groupForCharacter(
   participants: CombatParticipant[],

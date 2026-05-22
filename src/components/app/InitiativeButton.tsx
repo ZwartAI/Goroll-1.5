@@ -60,12 +60,19 @@ export function InitiativeButton({ character, encounter, participants, groups, o
         const r = await passTurn(encounter!, blocks, character);
         if (!r.ok) toast.error(t("combat.passError"));
       };
-    } else {
+    } else if (myPart) {
       label = t("combat.btnWaitingTurn");
       disabled = true;
       style = { opacity: 0.55 };
+    } else {
+      // Combat is active but this character is not registered — allow late join.
+      label = t("combat.btnJoinLate");
+      onClick = () => setOpen(true);
+      disabled = false;
+      style = { background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" };
     }
   }
+
 
   // Exclude self, non-players, and characters already in a link in this encounter.
   const linkedIds = new Set(
