@@ -43,6 +43,7 @@ export function Escenario({ characters, items, onlineIds, logs, selfId, onOpenCh
   const { combat } = useGameData();
   const combatActive = combat.encounter?.status === "active";
   const [logTab, setLogTab] = useState<"log" | "combat">(combatActive && !hideCombatTab ? "combat" : "log");
+  const { byCharacter: shieldByCharacter } = useEncounterShields(combat.encounter?.id);
   const dmSet = dmCharacterIds || new Set<string>();
   const players = characters.filter(c => c.role !== "dm" && !dmSet.has(c.id));
   const online = players.filter(p => (onlineIds.has(p.id) || p.id === selfId));
