@@ -257,11 +257,14 @@ function TurnRow({
         {block.members.map(m => (
           <div key={m.id} className="flex items-center gap-2">
             <Avatar p={m} small onClick={() => m.character_id && onOpenChar?.(m.character_id)} />
-            <div className="min-w-0 flex-1 flex items-center gap-1">
+            <div className="min-w-0 flex-1 flex items-center gap-1 flex-wrap">
               {m.is_leader && <Crown size={12} className="text-[var(--gold)]" />}
               <p className="font-display text-xs truncate" style={{ color: m.color || undefined }}>
                 {m.display_name}
               </p>
+              {m.character_id && (
+                <TurnEffectChips kind="character" id={m.character_id} encounterId={m.encounter_id} />
+              )}
             </div>
           </div>
         ))}
