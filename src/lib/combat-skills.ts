@@ -59,6 +59,8 @@ export const RARITY_MAX_USES: Record<Rarity, number | null> = {
 
 export type SkillResolution = "log" | "damage" | "heal" | "shield" | "narrative";
 
+export type SkillDistribution = "direct" | "defense" | "split" | "linkGroup";
+
 export type ResolvePayload = {
   resolution: SkillResolution;
   amount?: number;
@@ -66,6 +68,8 @@ export type ResolvePayload = {
   rollResult?: string;
   note?: string;
   durationRounds?: number;
+  /** How the amount is applied across multiple targets. Defaults to "defense" for damage. */
+  distribution?: SkillDistribution;
   /** Link synergy bonus added to damage amount. 0, 2 or 3. */
   linkBonus?: 0 | 2 | 3;
   /** Names of link members credited with the synergy (for the log). */
