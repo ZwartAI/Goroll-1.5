@@ -254,7 +254,9 @@ async function applyDamageToCharacter(
   }
   const cur = (ch as Character).current_hp;
   const newHp = Math.max(0, cur - remaining);
-  await supabase.from("characters").update({ current_hp: newHp } as any).eq("id", targetId);
+  const maxAfter = totals(ch as Character, (its || []) as Item[]).maxHp;
+  const { applyHpDelta } = await import("@/lib/hp");
+  await applyHpDelta(targetId, newHp, maxAfter);
   return { applied: totalRaw, def, absorbed };
 }
 
