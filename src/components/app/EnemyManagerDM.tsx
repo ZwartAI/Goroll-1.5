@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import {
-  Edit3, Copy, Trash2, FastForward, FileText, Sword, Heart, Pin,
+  Edit3, Copy, Trash2, FastForward, Sword, Heart, Pin,
 } from "lucide-react";
 import {
   activeBlock,
@@ -213,16 +213,8 @@ function EnemyRow({
                 DEF {p.enemy_defense || 0} · SPD {p.enemy_speed || "—"} · INI {p.initiative}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={onSheet}
-              title={t("combat.enemy.openSheet")}
-              aria-label={t("combat.enemy.openSheet")}
-              className="btn-fantasy shrink-0 w-9 h-9 flex items-center justify-center"
-              style={{ background: "color-mix(in oklab, var(--gold) 45%, var(--card))", color: "oklch(0.15 0.03 25)" }}>
-              <FileText size={16} />
-            </button>
           </div>
+
 
           <div className="space-y-0.5">
             <div className="relative h-2.5 rounded-full bg-card border border-border overflow-hidden">
@@ -244,12 +236,13 @@ function EnemyRow({
 
           {/* Single row: 5 compact icon-only action buttons */}
           <div className="grid grid-cols-5 gap-1.5">
-            <IconBtn label={t("combat.damage")} icon={<Sword size={16} />} bg="var(--loss)" onClick={onDamage} />
-            <IconBtn label={t("combat.heal")} icon={<Heart size={16} />} bg="var(--gain)" onClick={onHeal} />
-            <IconBtn label={t("combat.edit")} icon={<Edit3 size={16} />} bg="color-mix(in oklab, oklch(0.55 0.18 240) 55%, var(--card))" onClick={onEdit} />
-            <IconBtn label={t("combat.duplicate")} icon={<Copy size={16} />} bg="color-mix(in oklab, oklch(0.45 0.15 240) 65%, var(--card))" onClick={onDuplicate} />
-            <IconBtn label={t("combat.remove")} icon={<Trash2 size={16} />} bg="color-mix(in oklab, var(--loss) 75%, black)" onClick={onRemove} />
+            <IconBtn label={t("combat.damage")} icon={<Sword className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--loss) 70%, var(--card))" onClick={onDamage} />
+            <IconBtn label={t("combat.heal")} icon={<Heart className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--gain) 70%, var(--card))" onClick={onHeal} />
+            <IconBtn label={t("combat.edit")} icon={<Edit3 className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, oklch(0.55 0.12 240) 55%, var(--card))" onClick={onEdit} />
+            <IconBtn label={t("combat.duplicate")} icon={<Copy className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, oklch(0.45 0.10 240) 60%, var(--card))" onClick={onDuplicate} />
+            <IconBtn label={t("combat.remove")} icon={<Trash2 className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--loss) 55%, black)" onClick={onRemove} />
           </div>
+
         </div>
       </div>
 
@@ -342,7 +335,7 @@ function IconBtn({
   return (
     <button
       type="button"
-      className="btn-fantasy aspect-square w-full flex items-center justify-center"
+      className="btn-fantasy aspect-square w-full !p-0 flex items-center justify-center min-h-[34px]"
       style={{ background: bg, color: color || "white" }}
       onClick={onClick}
       title={label}
@@ -351,3 +344,4 @@ function IconBtn({
     </button>
   );
 }
+
