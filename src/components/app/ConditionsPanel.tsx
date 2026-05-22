@@ -179,6 +179,10 @@ export function ApplyConditionModal({
   const [pickId, setPickId] = useState<string>(catalog[0]?.id || "");
   const [turns, setTurns] = useState(3);
   const [damage, setDamage] = useState(0);
+  const [mode, setMode] = useState<"self" | "enemy">("self");
+  const [activeEncounterId, setActiveEncounterId] = useState<string | null>(null);
+  const [enemies, setEnemies] = useState<Array<{ id: string; name: string; icon: string | null; color: string | null }>>([]);
+  const [selectedEnemies, setSelectedEnemies] = useState<Set<string>>(new Set());
   const { t } = useT();
 
   const picked = catalog.find(c => c.id === pickId);
@@ -187,10 +191,93 @@ export function ApplyConditionModal({
   }, [catalog, pickId]);
   useEffect(() => { if (picked) setDamage(picked.damage_default); }, [pickId, picked]);
 
+  // Find an active combat for this campaign where this character is a participant.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: encs } = await (supabase as any)
+        .from("combat_encounters")
+        .select("id")
+        .eq("campaign_id", campaignId)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .limit(1);
+      const enc = (encs || [])[0];
+      if (!enc) {
+        if (!cancelled) { setActiveEncounterId(null); setEnemies([]); }
+        return;
+      }
+      // Confirm this character is a participant in that encounter.
+      const { data: me } = await (supabase as any)
+        .from("combat_participants")
+        .select("id")
+        .eq("encounter_id", enc.id)
+        .eq("character_id", characterId)
+        .maybeSingle();
+      if (!me) {
+        if (!cancelled) { setActiveEncounterId(null); setEnemies([]); }
+        return;
+      }
+      const { data: ps } = await (supabase as any)
+        .from("combat_participants")
+        .select("id, display_name, enemy_icon, enemy_color, participant_type, is_defeated")
+        .eq("encounter_id", enc.id)
+        .neq("participant_type", "player")
+        .eq("is_defeated", false)
+        .order("order_index", { ascending: true });
+      if (!cancelled) {
+        setActiveEncounterId(enc.id);
+        setEnemies((ps || []).map((p: any) => ({
+          id: p.id, name: p.display_name, icon: p.enemy_icon, color: p.enemy_color,
+        })));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [campaignId, characterId]);
+
+  function toggleEnemy(id: string) {
+    const n = new Set(selectedEnemies);
+    n.has(id) ? n.delete(id) : n.add(id);
+    setSelectedEnemies(n);
+  }
+
   async function apply() {
     if (!picked) return toast.error(t("conditions.pickEffect"));
     if (turns < 1) return toast.error(t("conditions.minTurns"));
     const label = getCatalogLabel(picked, t);
+
+    if (mode === "enemy") {
+      if (!activeEncounterId) return toast.error(t("conditions.noActiveCombat"));
+      if (selectedEnemies.size === 0) return toast.error(t("conditions.pickEnemy"));
+      const rows = Array.from(selectedEnemies).map(pid => ({
+        encounter_id: activeEncounterId,
+        campaign_id: campaignId,
+        target_enemy_participant_id: pid,
+        target_character_id: null,
+        source_character_id: characterId,
+        effect_type: picked.is_damage ? "debuff" : "note",
+        value: picked.is_damage ? Math.max(0, damage) : 0,
+        label: `${picked.icon} ${label}`,
+        duration_rounds: turns,
+      }));
+      const { error } = await (supabase as any).from("combat_temporary_effects").insert(rows);
+      if (error) return toast.error(error.message);
+      // Look up character + each enemy name for the log.
+      const { data: ch } = await supabase.from("characters").select("name, color").eq("id", characterId).maybeSingle();
+      for (const pid of selectedEnemies) {
+        const target = enemies.find(e => e.id === pid);
+        if (!target) continue;
+        await pushLog(campaignId, [
+          { t: "char", v: (ch as any)?.name || "", color: (ch as any)?.color || null, id: characterId },
+          { t: "text", v: " " + t("conditions.appliedToEnemyLog", { icon: picked.icon, label, target: target.name, turns }) },
+        ]);
+      }
+      toastSaved(t("conditions.appliedToEnemyToast"));
+      onApplied?.();
+      onClose();
+      return;
+    }
+
     await (supabase as any).from("character_conditions").insert({
       character_id: characterId,
       catalog_id: picked.id,
@@ -212,6 +299,23 @@ export function ApplyConditionModal({
     <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-4" onClick={onClose}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3" onClick={e => e.stopPropagation()}>
         <h3 className="font-display text-lg text-center">{t("conditions.modalTitle")}</h3>
+
+        {activeEncounterId && (
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{t("conditions.applyToHeading")}</p>
+            <div className="grid grid-cols-2 gap-1">
+              <button type="button" onClick={() => setMode("self")}
+                className={`text-[11px] py-1.5 rounded font-display ${mode === "self" ? "bg-[var(--gold)] text-black" : "bg-card border border-border"}`}>
+                {t("conditions.applyToSelfAlly")}
+              </button>
+              <button type="button" onClick={() => setMode("enemy")}
+                className={`text-[11px] py-1.5 rounded font-display ${mode === "enemy" ? "bg-[var(--loss)] text-black" : "bg-card border border-border"}`}>
+                {t("conditions.applyToEnemy")}
+              </button>
+            </div>
+          </div>
+        )}
+
         <select value={pickId} onChange={e => setPickId(e.target.value)}
           className="w-full bg-input border border-border rounded px-2 py-2 text-sm">
           {catalog.map(c => (
@@ -228,6 +332,34 @@ export function ApplyConditionModal({
               value={damage} onChange={e => setDamage(Math.max(0, +e.target.value))} />
           </label>
         )}
+
+        {mode === "enemy" && (
+          <div>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{t("conditions.pickEnemy")}</p>
+            {enemies.length === 0 ? (
+              <p className="text-[10px] text-muted-foreground">{t("conditions.noEnemiesCombat")}</p>
+            ) : (
+              <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
+                {enemies.map(e => {
+                  const on = selectedEnemies.has(e.id);
+                  return (
+                    <button key={e.id} type="button"
+                      onClick={() => toggleEnemy(e.id)}
+                      className="px-2 py-1 rounded border text-[11px]"
+                      style={{
+                        borderColor: on ? "var(--loss)" : "var(--border)",
+                        background: on ? "color-mix(in oklab, var(--loss) 20%, transparent)" : "transparent",
+                        color: e.color || "var(--loss)",
+                      }}>
+                      {e.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-2">
           <button className="btn-fantasy" onClick={onClose}>{t("common.cancel")}</button>
           <button className="btn-fantasy" style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }} onClick={apply}>{t("conditions.apply")}</button>
