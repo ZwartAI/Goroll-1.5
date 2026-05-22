@@ -19,6 +19,7 @@ export const es = {
     confirm: "Confirmar",
     back: "Volver",
     next: "Siguiente",
+    continue: "Continuar",
     yes: "Sí",
     no: "No",
     loading: "Cargando...",
