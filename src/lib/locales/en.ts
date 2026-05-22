@@ -583,6 +583,15 @@ export const en: Dict = {
     deleteEffect: "delete",
     deleteConfirm: 'Delete effect "{label}"?',
     deletedToast: "Effect deleted",
+    // Phase 6 — Apply to enemy in combat
+    applyToHeading: "Apply to",
+    applyToSelfAlly: "Character",
+    applyToEnemy: "Enemy in combat",
+    pickEnemy: "Pick enemy(ies)",
+    appliedToEnemyToast: "Effect applied to enemy",
+    noEnemiesCombat: "No enemies in combat.",
+    noActiveCombat: "No active combat.",
+    appliedToEnemyLog: "applies {icon} {label} to {target} ({turns}t).",
   },
   coins: {
     receive: "🪙 Receive coins",
