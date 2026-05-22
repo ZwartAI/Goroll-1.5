@@ -213,16 +213,8 @@ function EnemyRow({
                 DEF {p.enemy_defense || 0} · SPD {p.enemy_speed || "—"} · INI {p.initiative}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={onSheet}
-              title={t("combat.enemy.openSheet")}
-              aria-label={t("combat.enemy.openSheet")}
-              className="btn-fantasy shrink-0 w-9 h-9 flex items-center justify-center"
-              style={{ background: "color-mix(in oklab, var(--gold) 45%, var(--card))", color: "oklch(0.15 0.03 25)" }}>
-              <FileText size={16} />
-            </button>
           </div>
+
 
           <div className="space-y-0.5">
             <div className="relative h-2.5 rounded-full bg-card border border-border overflow-hidden">
