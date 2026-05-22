@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import {
-  Edit3, Copy, Trash2, FastForward, Sword, Heart, Pin, FileText, ChevronDown, X,
+  Edit3, Copy, Trash2, FastForward, Sword, Heart, Pin, ChevronDown, X,
 } from "lucide-react";
 import {
   activeBlock,
