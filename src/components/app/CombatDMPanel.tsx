@@ -8,6 +8,7 @@ import {
   cancelInitiative,
   dissolveLink,
   dmShiftTurn,
+  endActiveTurn,
   endCombat,
   requestInitiative,
   reorderBlockWithAutoInitiative,
