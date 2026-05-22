@@ -1010,6 +1010,10 @@ export const es = {
     heal: "Curar",
     applyDamage: "Aplicar daño",
     applyWithDefense: "Aplicar con defensa",
+    directDamage: "Daño directo",
+    applyDirectDamage: "Aplicar daño directo",
+    damageWithDefense: "Daño contemplando defensa",
+    applyDamageWithDefense: "Aplicar daño con defensa",
     damageApplied: "Daño aplicado: {n} después de DEF {def}.",
     attack: {
       title: "Enemigo ataca a jugadores",
