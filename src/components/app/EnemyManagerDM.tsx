@@ -444,10 +444,6 @@ function EnemyEffectsStrip({ participantId, encounterId }: { participantId: stri
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [participantId, encounterId]);
 
-  const lpFor = (e: EffectRow) =>
-    // long-press the emoji to open the detail modal
-    ({} as any);
-
   if (effects.length === 0) return null;
 
   return (
