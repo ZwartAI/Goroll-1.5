@@ -1070,18 +1070,11 @@ export async function dmEndEnemyTurn(
 ) {
   const block = activeBlock(encounter, blocks);
   if (!block) return { ok: false };
-  if (block.kind === "solo" && isEnemy(block.participant)) {
-    await pushLog(encounter.campaign_id, [
-      { t: "text", v: `${block.participant.display_name} terminó su turno.` },
-    ]);
-  } else if (block.kind === "pin") {
-    await pushLog(encounter.campaign_id, [
-      { t: "text", v: `${block.linked.display_name} terminó un turno adicional.` },
-    ]);
-  } else {
-    return { ok: false };
-  }
-  return dmShiftTurn(encounter, blocks, 1);
+  // Only valid when the active block is an enemy or an enemy turn pin.
+  const isEnemyActive =
+    (block.kind === "solo" && isEnemy(block.participant)) || block.kind === "pin";
+  if (!isEnemyActive) return { ok: false };
+  return endActiveTurn(encounter, blocks);
 }
 
 // ─────────────── Turn pins (extra turns for an existing enemy) ───────────────
