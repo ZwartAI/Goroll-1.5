@@ -537,7 +537,7 @@ export async function endActiveTurn(
     } else if (block.kind === "solo") {
       const name = actor?.name || block.participant.display_name;
       const color = actor?.color || block.participant.color || undefined;
-      const id = actor?.id || block.participant.character_id || undefined;
+      const id = actor?.id || block.participant.character_id || block.participant.id;
       await pushLog(encounter.campaign_id, [
         { t: "char", v: name, color, id },
         { t: "text", v: " termin\u00f3 su turno." },
