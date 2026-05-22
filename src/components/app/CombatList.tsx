@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n";
 import {
   activeBlock,
@@ -12,6 +13,10 @@ import {
 } from "@/lib/combat";
 import { Crown, GripVertical } from "lucide-react";
 import { EnemyIcon, getEnemyAssetUrl } from "@/components/app/EnemyIconPicker";
+import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
+import { useLongPress } from "@/hooks/useLongPress";
+import { EffectInfoModal, type EffectInfoInput } from "@/components/app/EffectInfoModal";
 import {
   DndContext,
   PointerSensor,
