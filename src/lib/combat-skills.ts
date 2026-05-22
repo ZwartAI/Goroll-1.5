@@ -674,8 +674,6 @@ export async function tickEnemyEffect(effectId: string): Promise<void> {
     if (p) {
       const part = p as CombatParticipant;
       participantName = (part as any).enemy_name || part.display_name || "";
-      participantColor = (part as any).enemy_color || part.color || null;
-      participantId = part.id;
       if (dmg > 0 && !part.is_defeated) {
         const max = part.enemy_max_hp || 1;
         const newHp = Math.max(0, Math.min(max, (part.enemy_hp || 0) - dmg));
