@@ -48,7 +48,7 @@ export function EffectInfoModal({ effect, onClose }: Props) {
       return {
         emoji: emoji || (typeKey === "shield" ? "🛡️" : typeKey === "buff" ? "✨" : typeKey === "control" ? "💫" : typeKey === "note" ? "📜" : "☠️"),
         name: text || (r.effect_type || ""),
-        typeLabel: t(`combat.effects.type.${isDamage ? "dot" : typeKey}`),
+        typeLabel: t(`combat.effects.types.${isDamage ? "dot" : typeKey}`),
         remainingTurns: typeof r.duration_rounds === "number" ? r.duration_rounds : null,
         damagePerTurn: isDamage ? dmg : 0,
         value: isShield ? dmg : null,
@@ -60,7 +60,7 @@ export function EffectInfoModal({ effect, onClose }: Props) {
       return {
         emoji: r.icon || "✨",
         name: r.label || "",
-        typeLabel: t(`combat.effects.type.${(r.damage_per_turn || 0) > 0 ? "dot" : "condition"}`),
+        typeLabel: t(`combat.effects.types.${(r.damage_per_turn || 0) > 0 ? "dot" : "condition"}`),
         remainingTurns: typeof r.turns_left === "number" ? r.turns_left : null,
         damagePerTurn: Math.max(0, Math.floor(r.damage_per_turn || 0)),
         value: null,
@@ -102,7 +102,7 @@ export function EffectInfoModal({ effect, onClose }: Props) {
               {normalized.typeLabel}
             </p>
             <h3 className="font-display text-base text-[var(--gold)] truncate">
-              {normalized.name || t("combat.effects.type.condition")}
+              {normalized.name || t("combat.effects.types.condition")}
             </h3>
           </div>
         </div>
