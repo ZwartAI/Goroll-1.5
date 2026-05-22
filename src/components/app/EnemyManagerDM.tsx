@@ -189,10 +189,11 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
 }
 
 function EnemyRow({
-  p, isActive, encounter, blocks, actionsOpen, onToggleActions,
+  p, shield, isActive, encounter, blocks, actionsOpen, onToggleActions,
   onEdit, onDamage, onHeal, onSheet, onDuplicate, onRemove, onAddPin,
 }: {
   p: CombatParticipant;
+  shield: number;
   isActive: boolean;
   encounter: CombatEncounter;
   blocks: ReturnType<typeof buildOrderedTurns>;
@@ -204,8 +205,6 @@ function EnemyRow({
   const { t } = useT();
   const max = p.enemy_max_hp || 1;
   const cur = p.enemy_hp || 0;
-  const pct = Math.max(0, Math.min(100, (cur / max) * 100));
-  const hpBg = pct > 60 ? "var(--gain)" : pct > 30 ? "#eab308" : "var(--loss)";
   const baseColor = p.enemy_color || "var(--loss)";
   const lp = useLongPress(onSheet, 450);
   const isTierAsset = !!getEnemyAssetUrl(p.enemy_icon);
