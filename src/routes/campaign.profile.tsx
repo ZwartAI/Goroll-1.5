@@ -163,8 +163,8 @@ function Profile() {
       {activeTab === "personaje" && (
         <>
           {/* Top: framed portrait (left) + right column with 3 stat assets above, purse/initiative below */}
-          <div className="grid grid-cols-2 gap-2 mb-3 items-start pl-0 border-none border-0 ml-0">
-            <div>
+          <div className="grid grid-cols-2 gap-2 mb-3 items-start pl-0 border-none border-0 ml-0" style={{ overflow: "visible" }}>
+            <div style={{ overflow: "visible" }}>
               <FramedCharacterPortrait
                 character={character}
                 level={(character as any).level ?? 1}
@@ -178,6 +178,7 @@ function Profile() {
                 }}
               />
             </div>
+
 
             <div className="flex flex-col gap-1.5">
               {/* Combined stats panel: attack / defense / speed in a single asset */}
@@ -232,17 +233,20 @@ function Profile() {
                   aria-label={`${t("purse.openHint")} — ${t("profile.coins")} ${character.coins}`}
                   title={t("purse.openHint")}
                   className="relative w-full block p-0 bg-transparent border-0 select-none transition-transform active:scale-[0.96]"
-                  style={{ aspectRatio: "295 / 80", WebkitTapHighlightColor: "transparent" }}
+                  style={{ WebkitTapHighlightColor: "transparent" }}
                 >
                   <img
                     src={pursePanelImg}
                     alt=""
-                    className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                    className="block w-full h-auto pointer-events-none"
                     draggable={false}
                   />
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div
+                    className="absolute pointer-events-none flex items-center justify-center"
+                    style={{ left: "55%", top: "50%", transform: "translate(-50%, -50%)", lineHeight: 1 }}
+                  >
                     <span
-                      className="font-display font-bold leading-none text-[var(--gold)] text-xl sm:text-2xl"
+                      className="font-display font-bold leading-none text-[var(--gold)] text-2xl sm:text-3xl"
                       style={{
                         textShadow: "0 1px 2px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)",
                       }}
@@ -251,6 +255,7 @@ function Profile() {
                     </span>
                   </div>
                 </button>
+
               )}
             </div>
           </div>
