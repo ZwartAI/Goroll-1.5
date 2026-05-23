@@ -14,7 +14,7 @@ import { CoinsPurseModal } from "@/components/app/CoinsAdjuster";
 import { Escenario } from "@/components/app/Escenario";
 import { CombatList } from "@/components/app/CombatList";
 import { InitiativeButton } from "@/components/app/InitiativeButton";
-import { User, Minus, Plus, Camera, Heart, HeartPulse, Coins, RotateCw } from "lucide-react";
+import { User, Minus, Plus, Camera, Heart, HeartPulse, Coins } from "lucide-react";
 import tabActiveBg from "@/assets/tab-active.png";
 import hpFrameBg from "@/assets/hp-frame.png";
 import hpButtonImg from "@/assets/hp-button.png";
