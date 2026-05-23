@@ -25,6 +25,10 @@ import navLogros from "@/assets/nav/logros.png";
 import navPotenciadores from "@/assets/nav/potenciadores.png";
 import navHabilidades from "@/assets/nav/habilidades.png";
 import navNotas from "@/assets/nav/notas.png";
+import statAttackImg from "@/assets/character-sheet/stat-attack.png";
+import statDefenseImg from "@/assets/character-sheet/stat-defense.png";
+import statSpeedImg from "@/assets/character-sheet/stat-speed.png";
+import pursePanelImg from "@/assets/character-sheet/purse-panel.png";
 import { MicSettingsModal } from "@/components/app/MicSettingsModal";
 import { HeaderMenu, MailboxInlineModal, useStandardHeaderItems } from "@/components/app/HeaderMenu";
 import { CharacterImageViewer } from "@/components/app/CharacterImageViewer";
@@ -33,6 +37,8 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { AttributesBar } from "@/components/app/AttributesBar";
+import { FramedCharacterPortrait } from "@/components/app/FramedCharacterPortrait";
+import { StatAsset } from "@/components/app/StatAsset";
 import { useLongPress } from "@/hooks/useLongPress";
 
 
@@ -158,108 +164,109 @@ function Profile() {
 
       {activeTab === "personaje" && (
         <>
-          {/* Top: image (left) + compact stats + initiative (right) */}
-          <div className="grid grid-cols-5 gap-2 mb-3">
-            <button
-              onClick={() => {
-                if (character.image_url || (character as any).body_image_url) {
-                  setImgViewer(true);
-                } else {
-                  setImgModal("face");
-                }
-              }}
-              className="col-span-2 aspect-square rounded-xl overflow-hidden bg-[var(--secondary)] relative ornate-card !p-0"
-              aria-label={t("profile.editImageAria")}
-            >
-              {character.image_url ? (
-                <img src={character.image_url} alt={character.name}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{
-                    transform: `translate(${((character.image_offset_x ?? 50) - 50)}%, ${((character.image_offset_y ?? 50) - 50)}%) scale(${character.image_scale || 1})`,
-                    transformOrigin: "center center",
-                  }} />
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
-                  <span className="text-3xl mb-1">🧙</span>
-                  <span className="text-[10px] text-center px-1">{t("profile.tapToUpload")}</span>
-                </div>
-              )}
-            </button>
-
+          {/* Top: framed portrait (left) + 3 stat assets + purse (right) */}
+          <div className="grid grid-cols-5 gap-2 mb-3 items-start">
+            <div className="col-span-2">
+              <FramedCharacterPortrait
+                character={character}
+                level={(character as any).level ?? 1}
+                ariaLabel={t("profile.editImageAria")}
+                onClick={() => {
+                  if (character.image_url || (character as any).body_image_url) {
+                    setImgViewer(true);
+                  } else {
+                    setImgModal("face");
+                  }
+                }}
+              />
+            </div>
 
             <div className="col-span-3 flex flex-col gap-1.5">
-              {/* Row 1: Level, Defense, Damage */}
+              {/* Row: 3 vertical stat assets */}
               <div className="grid grid-cols-3 gap-1.5">
-                <div className="ornate-card !p-1.5 text-center">
-                  <p className="text-[8px] uppercase tracking-wide text-muted-foreground leading-tight">{t("level.label")}</p>
-                  <p className="font-display text-base leading-tight text-[var(--gold)]">{(character as any).level ?? 1}</p>
-                </div>
-                <div className="ornate-card !p-1.5 text-center">
-                  <p className="text-[8px] uppercase tracking-wide text-muted-foreground leading-tight">{t("profile.defense")}</p>
-                  <p className="font-display text-base leading-tight text-[var(--gold)]">{stats.defense}</p>
-                </div>
-                <div className="ornate-card !p-1.5 text-center">
-                  <p className="text-[8px] uppercase tracking-wide text-muted-foreground leading-tight">{t("profile.damage")}</p>
-                  <p className="font-display text-base leading-tight text-[var(--loss)]">{stats.damage > 0 ? `+${stats.damage}` : stats.damage}</p>
-                </div>
-              </div>
-
-              {/* Row 2: Velocity (1) + Coins (2) */}
-              <div className="grid grid-cols-3 gap-1.5">
-                <div className="ornate-card !p-1.5 text-center">
-                  <p className="text-[8px] uppercase tracking-wide text-muted-foreground leading-tight">{t("profile.velocity")}</p>
-                  <p className="font-display text-base leading-tight">{character.velocity}<span className="text-[9px]">ft</span></p>
-                </div>
-                <button
-                  type="button"
-                  {...coinsPress}
-                  onContextMenu={(e) => { e.preventDefault(); setPurseOpen(true); }}
-                  onDoubleClick={() => setPurseOpen(true)}
-                  aria-label={t("purse.openHint")}
-                  title={t("purse.openHint")}
-                  className="ornate-card !p-1.5 col-span-2 flex items-center justify-center gap-2 select-none transition-transform active:scale-95"
-                >
-                  <Coins size={18} className="text-[var(--gold)] shrink-0" />
-                  <span className="font-display text-lg text-[var(--gold)] leading-none">{character.coins}</span>
-                  <span className="text-[8px] uppercase tracking-wide text-muted-foreground leading-tight ml-1">{t("profile.coins")}</span>
-                </button>
-              </div>
-
-              {/* Initiative / Pass Turn — primary combat action */}
-              <div className="mt-0.5">
-                <InitiativeButton
-                  character={character}
-                  encounter={combat.encounter}
-                  participants={combat.participants}
-                  groups={combat.groups}
-                  pins={combat.pins}
-                  online={characters.filter(c => onlineIds.has(c.id))}
+                <StatAsset
+                  src={statAttackImg}
+                  ariaLabel={`${t("profile.damage")} ${stats.damage}`}
+                  value={stats.damage > 0 ? `+${stats.damage}` : stats.damage}
+                />
+                <StatAsset
+                  src={statDefenseImg}
+                  ariaLabel={`${t("profile.defense")} ${stats.defense}`}
+                  value={stats.defense}
+                />
+                <StatAsset
+                  src={statSpeedImg}
+                  ariaLabel={`${t("profile.velocity")} ${character.velocity}`}
+                  value={<>{character.velocity}<span className="text-[0.55em] ml-0.5">ft</span></>}
                 />
               </div>
+
+              {/* Purse — horizontal asset, long-press to open modal */}
+              <button
+                type="button"
+                {...coinsPress}
+                onContextMenu={(e) => { e.preventDefault(); setPurseOpen(true); }}
+                onDoubleClick={() => setPurseOpen(true)}
+                aria-label={`${t("purse.openHint")} — ${t("profile.coins")} ${character.coins}`}
+                title={t("purse.openHint")}
+                className="relative w-full block p-0 bg-transparent border-0 select-none transition-transform active:scale-[0.96]"
+                style={{ aspectRatio: "295 / 95", WebkitTapHighlightColor: "transparent" }}
+              >
+                <img
+                  src={pursePanelImg}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                  draggable={false}
+                />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span
+                    className="font-display font-bold leading-none text-[var(--gold)] text-2xl sm:text-3xl"
+                    style={{
+                      textShadow: "0 1px 2px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)",
+                    }}
+                  >
+                    {character.coins}
+                  </span>
+                </div>
+              </button>
             </div>
           </div>
 
+          {/* Initiative / Pass Turn — only when combat is active or collecting */}
+          {combat.encounter?.status && combat.encounter.status !== "ended" && (
+            <div className="mb-3">
+              <InitiativeButton
+                character={character}
+                encounter={combat.encounter}
+                participants={combat.participants}
+                groups={combat.groups}
+                pins={combat.pins}
+                online={characters.filter(c => onlineIds.has(c.id))}
+              />
+            </div>
+          )}
 
-          {/* HP bar */}
+          {/* HP bar — bigger heart icon, integrated with frame */}
           <div
             className="mb-3"
             style={{
               backgroundImage: `url(${hpFrameBg})`,
               backgroundSize: "100% 100%",
               backgroundRepeat: "no-repeat",
-              padding: "0 22px",
-              aspectRatio: "9 / 1",
+              padding: "0 18px 0 6px",
+              aspectRatio: "7 / 1",
             }}
           >
             <div className="flex items-center gap-2 h-full">
               <button
                 type="button"
                 onClick={() => setHpModal(true)}
-                aria-label={t("profile.modifyHpAria")}
+                aria-label={`${t("profile.modifyHpAria")} (${character.current_hp}/${stats.maxHp})`}
                 title={t("profile.modifyHpAria")}
-                className="shrink-0 h-full aspect-square flex items-center justify-center transition-transform active:scale-95 bg-transparent border-0 p-0"
+                className="shrink-0 flex items-center justify-center transition-transform active:scale-95 bg-transparent border-0 p-0 -ml-2"
+                style={{ height: "140%", aspectRatio: "1 / 1" }}
               >
-                <img src={hpButtonImg} alt="" className="h-full w-full object-contain pointer-events-none select-none" draggable={false} />
+                <img src={hpButtonImg} alt="" className="h-full w-full object-contain pointer-events-none select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)]" draggable={false} />
               </button>
               <div className="flex-1 h-3 rounded-full bg-black/40 overflow-hidden border border-[var(--gold)]/40">
                 <div className="h-full transition-all" style={{
@@ -270,6 +277,7 @@ function Profile() {
               <span className="font-display text-xs shrink-0 tabular-nums w-[7ch] text-center mr-[2px]">{character.current_hp}/{stats.maxHp}</span>
             </div>
           </div>
+
 
           {/* Atributos */}
           <AttributesBar character={character} />
