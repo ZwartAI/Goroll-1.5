@@ -58,6 +58,21 @@ function Home() {
   const [actionCampaign, setActionCampaign] = useState<Campaign | null>(null);
   const [expelledCampaign, setExpelledCampaign] = useState<Campaign | null>(null);
   const [showAppSettings, setShowAppSettings] = useState(false);
+  const [campaignLoading, setCampaignLoading] = useState<{ active: boolean; name: string }>({ active: false, name: "" });
+  const [loadingSlow, setLoadingSlow] = useState(false);
+  const loadingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function beginCampaignLoading(c: Campaign) {
+    setLoadingSlow(false);
+    setCampaignLoading({ active: true, name: c.name });
+    if (loadingTimerRef.current) clearTimeout(loadingTimerRef.current);
+    loadingTimerRef.current = setTimeout(() => setLoadingSlow(true), 12_000);
+  }
+  function stopCampaignLoading() {
+    if (loadingTimerRef.current) { clearTimeout(loadingTimerRef.current); loadingTimerRef.current = null; }
+    setLoadingSlow(false);
+    setCampaignLoading({ active: false, name: "" });
+  }
 
   // character
   const [myChars, setMyChars] = useState<Character[]>([]);
