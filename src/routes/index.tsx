@@ -559,7 +559,7 @@ function Home() {
           <h2 className="text-center font-display text-lg">{t("home.roleQuestion")}</h2>
           <div className="grid grid-cols-3 gap-2">
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
-              onClick={() => { setRole("player"); setStep("campaign"); }}>
+              onClick={() => { setRole("player"); preloadCharacterSheetAssets(); setStep("campaign"); }}>
               <span className="text-2xl">🗡️</span>{t("home.rolePlayer")}
             </button>
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
@@ -568,9 +568,10 @@ function Home() {
               <span className="text-2xl">👑</span>{t("home.roleDM")}
             </button>
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
-              onClick={() => { setRole("spectator"); setStep("campaign"); }}>
+              onClick={() => { setRole("spectator"); preloadCharacterSheetAssets(); setStep("campaign"); }}>
               <span className="text-2xl">👁️</span>{t("home.roleSpectator")}
             </button>
+
           </div>
         </div>
       )}
