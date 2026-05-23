@@ -577,15 +577,18 @@ function Home() {
           <h2 className="text-center font-display text-lg">{t("home.roleQuestion")}</h2>
           <div className="grid grid-cols-3 gap-2">
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
+              disabled={campaignLoading.active}
               onClick={() => { setRole("player"); setStep("campaign"); }}>
               <span className="text-2xl">🗡️</span>{t("home.rolePlayer")}
             </button>
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
               style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
+              disabled={campaignLoading.active}
               onClick={() => { setRole("dm"); setStep("campaign"); }}>
               <span className="text-2xl">👑</span>{t("home.roleDM")}
             </button>
             <button className="btn-fantasy h-24 flex flex-col items-center justify-center gap-1 text-xs"
+              disabled={campaignLoading.active}
               onClick={() => { setRole("spectator"); setStep("campaign"); }}>
               <span className="text-2xl">👁️</span>{t("home.roleSpectator")}
             </button>
