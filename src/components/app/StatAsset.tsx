@@ -30,9 +30,8 @@ export function StatAsset({ src, value, ariaLabel, valueTopPct = 74 }: Props) {
         style={{ top: `${valueTopPct}%`, transform: "translateY(-50%)" }}
       >
         <span
-          className="font-display font-bold leading-none text-[var(--gold)]"
+          className="font-display font-bold leading-none text-[var(--gold)] text-xl sm:text-2xl"
           style={{
-            fontSize: "clamp(16px, 6cqw, 28px)",
             textShadow: "0 1px 2px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)",
           }}
         >

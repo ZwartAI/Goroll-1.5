@@ -75,9 +75,8 @@ export function FramedCharacterPortrait({ character, onClick, ariaLabel, classNa
         aria-label={`Level ${lvl}`}
       >
         <span
-          className="font-display font-bold leading-none text-[var(--gold)]"
+          className="font-display font-bold leading-none text-[var(--gold)] text-lg sm:text-xl"
           style={{
-            fontSize: "clamp(14px, 4.2cqw, 28px)",
             textShadow: "0 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.6)",
           }}
         >
