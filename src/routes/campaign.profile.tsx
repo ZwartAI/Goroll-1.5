@@ -27,6 +27,11 @@ import navHabilidades from "@/assets/nav/habilidades.png";
 import navNotas from "@/assets/nav/notas.png";
 import statsPanelImg from "@/assets/character-sheet/stats-panel.png";
 import pursePanelImg from "@/assets/character-sheet/purse-panel.png";
+import {
+  CHARACTER_SHEET_ASSETS,
+  preloadCharacterSheetAssets,
+} from "@/lib/preloadCharacterSheetAssets";
+
 import { MicSettingsModal } from "@/components/app/MicSettingsModal";
 import { HeaderMenu, MailboxInlineModal, useStandardHeaderItems } from "@/components/app/HeaderMenu";
 import { CharacterImageViewer } from "@/components/app/CharacterImageViewer";
