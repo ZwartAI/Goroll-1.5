@@ -180,7 +180,7 @@ function Profile() {
             </div>
 
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-0">
               {/* Combined stats panel: attack / defense / speed in a single asset */}
               <div
                 className="relative w-full select-none"
@@ -244,7 +244,9 @@ function Profile() {
                     alt=""
                     className="block w-full h-auto pointer-events-none"
                     draggable={false}
+                    style={{ marginTop: "-8%", marginBottom: "-8%" }}
                   />
+
                   <div
                     className="absolute pointer-events-none flex items-center justify-center"
                     style={{ left: "55%", top: "50%", transform: "translate(-50%, -50%)", lineHeight: 1 }}
