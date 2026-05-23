@@ -25,9 +25,7 @@ import navLogros from "@/assets/nav/logros.png";
 import navPotenciadores from "@/assets/nav/potenciadores.png";
 import navHabilidades from "@/assets/nav/habilidades.png";
 import navNotas from "@/assets/nav/notas.png";
-import statAttackImg from "@/assets/character-sheet/stat-attack.png";
-import statDefenseImg from "@/assets/character-sheet/stat-defense.png";
-import statSpeedImg from "@/assets/character-sheet/stat-speed.png";
+import statsPanelImg from "@/assets/character-sheet/stats-panel.png";
 import pursePanelImg from "@/assets/character-sheet/purse-panel.png";
 import { MicSettingsModal } from "@/components/app/MicSettingsModal";
 import { HeaderMenu, MailboxInlineModal, useStandardHeaderItems } from "@/components/app/HeaderMenu";
@@ -38,7 +36,7 @@ import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { AttributesBar } from "@/components/app/AttributesBar";
 import { FramedCharacterPortrait } from "@/components/app/FramedCharacterPortrait";
-import { StatAsset } from "@/components/app/StatAsset";
+
 import { useLongPress } from "@/hooks/useLongPress";
 
 
@@ -182,24 +180,38 @@ function Profile() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              {/* 3 vertical stat assets — natural aspect ratio */}
-              <div className="grid grid-cols-3 gap-1">
-                <StatAsset
-                  src={statAttackImg}
-                  ariaLabel={`${t("profile.damage")} ${stats.damage}`}
-                  value={stats.damage > 0 ? `+${stats.damage}` : stats.damage}
+              {/* Combined stats panel: attack / defense / speed in a single asset */}
+              <div
+                className="relative w-full select-none"
+                style={{ aspectRatio: "1920 / 980" }}
+                aria-label={`${t("profile.damage")} ${stats.damage}, ${t("profile.defense")} ${stats.defense}, ${t("profile.velocity")} ${character.velocity}`}
+              >
+                <img
+                  src={statsPanelImg}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                  draggable={false}
                 />
-                <StatAsset
-                  src={statDefenseImg}
-                  ariaLabel={`${t("profile.defense")} ${stats.defense}`}
-                  value={stats.defense}
-                />
-                <StatAsset
-                  src={statSpeedImg}
-                  ariaLabel={`${t("profile.velocity")} ${character.velocity}`}
-                  value={<>{character.velocity}<span className="text-[0.55em] ml-0.5">ft</span></>}
-                />
+                {[
+                  { leftPct: 16.5, value: stats.damage > 0 ? `+${stats.damage}` : `${stats.damage}` },
+                  { leftPct: 50,   value: `${stats.defense}` },
+                  { leftPct: 83.5, value: <>{character.velocity}<span className="text-[0.55em] ml-0.5">ft</span></> },
+                ].map((s, i) => (
+                  <div
+                    key={i}
+                    className="absolute flex items-center justify-center pointer-events-none"
+                    style={{ left: `${s.leftPct}%`, top: "72%", transform: "translate(-50%, -50%)" }}
+                  >
+                    <span
+                      className="font-display font-bold leading-none text-[var(--gold)] text-xl sm:text-2xl"
+                      style={{ textShadow: "0 1px 2px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7)" }}
+                    >
+                      {s.value}
+                    </span>
+                  </div>
+                ))}
               </div>
+
 
               {/* Purse OR Initiative (initiative temporarily replaces purse while combat is active) */}
               {combat.encounter?.status && combat.encounter.status !== "ended" ? (
