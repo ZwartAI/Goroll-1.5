@@ -12,15 +12,17 @@ type Props = {
   level?: number;
 };
 
-/**
- * Reusable framed portrait. Renders:
- *  1. Character face image (zoom/offset respected) as the background layer.
- *  2. A decorative frame asset on top (intercambiable via character.portrait_frame_url).
- *  3. The character level number centered inside the frame's top-left circle.
- *
- * The frame asset's circle sits roughly at top:6.5% / left:6.5% with diameter ~22%
- * of the total frame size. The inner artwork area covers ~10% inset all around.
- */
+// Adjustable layout constants for the framed portrait.
+// - frameScale/frameOffset: how much the decorative frame overflows the base square
+// - levelX/levelY: percentage position of the level number (relative to the scaled frame)
+const PORTRAIT_FRAME_LAYOUT = {
+  frameScale: 1.08,
+  frameOffsetX: -2, // % translate to the left
+  frameOffsetY: -2, // % translate upward
+  levelX: 10.5,
+  levelY: 15.5,
+};
+
 export function FramedCharacterPortrait({ character, onClick, ariaLabel, className = "", level }: Props) {
   const frameUrl = (character as any).portrait_frame_url || portraitFrameDefault;
   const ox = character.image_offset_x ?? 50;
@@ -28,9 +30,14 @@ export function FramedCharacterPortrait({ character, onClick, ariaLabel, classNa
   const scale = character.image_scale || 1;
   const lvl = level ?? (character as any).level ?? 1;
 
+  const { frameScale, frameOffsetX, frameOffsetY, levelX, levelY } = PORTRAIT_FRAME_LAYOUT;
+
   const Inner = (
-    <div className={`relative aspect-square w-full select-none ${className}`}>
-      {/* Inner portrait area, inset to match the frame's inner opening */}
+    <div
+      className={`relative aspect-square w-full select-none ${className}`}
+      style={{ overflow: "visible" }}
+    >
+      {/* Inner portrait area, inset to match the frame's inner opening (base, unscaled) */}
       <div
         className="absolute overflow-hidden bg-[var(--secondary)]"
         style={{ inset: "9%", borderRadius: "6%" }}
@@ -55,33 +62,45 @@ export function FramedCharacterPortrait({ character, onClick, ariaLabel, classNa
         )}
       </div>
 
-      {/* Frame overlay */}
-      <img
-        src={frameUrl}
-        alt=""
-        className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-        draggable={false}
-      />
-
-      {/* Level number centered in frame's top-left circle */}
+      {/* Scaled frame + level wrapper — overflows base square upward/left */}
       <div
-        className="absolute pointer-events-none flex items-center justify-center"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          top: "2.5%",
-          left: "2.5%",
-          width: "20%",
-          height: "20%",
+          overflow: "visible",
+          transform: `scale(${frameScale}) translate(${frameOffsetX}%, ${frameOffsetY}%)`,
+          transformOrigin: "center center",
         }}
-        aria-label={`Level ${lvl}`}
       >
-        <span
-          className="font-display font-bold leading-none text-[var(--gold)] text-lg sm:text-xl"
+        <img
+          src={frameUrl}
+          alt=""
+          className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+          draggable={false}
+        />
+
+        {/* Level number centered inside the frame's circle */}
+        <div
+          className="absolute pointer-events-none flex items-center justify-center text-center"
           style={{
-            textShadow: "0 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.6)",
+            left: `${levelX}%`,
+            top: `${levelY}%`,
+            width: "12%",
+            height: "12%",
+            transform: "translate(-50%, -50%)",
+            lineHeight: 1,
+            zIndex: 10,
           }}
+          aria-label={`Level ${lvl}`}
         >
-          {lvl}
-        </span>
+          <span
+            className="font-display font-bold leading-none text-[var(--gold)] text-base sm:text-lg"
+            style={{
+              textShadow: "0 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(0,0,0,0.6)",
+            }}
+          >
+            {lvl}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -93,7 +112,7 @@ export function FramedCharacterPortrait({ character, onClick, ariaLabel, classNa
         onClick={onClick}
         aria-label={ariaLabel}
         className="block w-full p-0 bg-transparent border-0 transition-transform active:scale-[0.98]"
-        style={{ WebkitTapHighlightColor: "transparent" }}
+        style={{ WebkitTapHighlightColor: "transparent", overflow: "visible" }}
       >
         {Inner}
       </button>
