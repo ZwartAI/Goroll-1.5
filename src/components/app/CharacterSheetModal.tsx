@@ -166,16 +166,26 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
           <h3 className="font-display text-xl rune-glow" style={{ color: character.color }}>{character.name}</h3>
           <p className="text-xs text-muted-foreground">{character.race || "—"} / {character.class || "—"} · {character.role === "dm" ? t("sheet.dungeonMaster") : t("sheet.player")}</p>
         </div>
-        {character.image_url && (
-          <div className="mx-auto w-40 aspect-[3/4] rounded-lg overflow-hidden bg-[var(--secondary)] relative">
-            <img src={character.image_url} alt={character.name}
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{
-                transform: `translate(${((character.image_offset_x ?? 50) - 50)}%, ${((character.image_offset_y ?? 50) - 50)}%) scale(${character.image_scale || 1})`,
-                transformOrigin: "center center",
-              }} />
-          </div>
-        )}
+        {(() => {
+          const anyChar = character as any;
+          const hasBody = !!anyChar.body_image_url;
+          const url: string = hasBody ? anyChar.body_image_url : (character.image_url || "");
+          if (!url) return null;
+          const ox = hasBody ? (anyChar.body_image_offset_x ?? 50) : (character.image_offset_x ?? 50);
+          const oy = hasBody ? (anyChar.body_image_offset_y ?? 50) : (character.image_offset_y ?? 50);
+          const scale = hasBody ? (anyChar.body_image_scale || 1) : (character.image_scale || 1);
+          const rot = hasBody ? (anyChar.body_image_rotation || 0) : (anyChar.image_rotation || 0);
+          return (
+            <div className="mx-auto w-40 aspect-[3/4] rounded-lg overflow-hidden bg-[var(--secondary)] relative">
+              <img src={url} alt={character.name}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  transform: `translate(${ox - 50}%, ${oy - 50}%) scale(${scale}) rotate(${rot}deg)`,
+                  transformOrigin: "center center",
+                }} />
+            </div>
+          );
+        })()}
         <div className="grid grid-cols-6 gap-1.5 text-center text-xs">
           <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("level.short")}</p><p className="font-display text-sm text-[var(--gold)]">{(character as any).level ?? 1}</p></div>
           <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("sheet.life")}</p><p className="font-display text-[11px] sm:text-sm leading-[1.05] tabular-nums text-center"><span className="block">{character.current_hp}</span><span className="block opacity-70">/{stats.maxHp}</span></p></div>
