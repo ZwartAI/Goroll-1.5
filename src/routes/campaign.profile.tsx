@@ -271,34 +271,8 @@ function Profile() {
           </div>
 
           {/* Atributos */}
-          <h2 className="font-display text-xs uppercase tracking-widest text-center mb-2 text-[var(--gold)]">{t("profile.attributes")}</h2>
-          <div className="grid grid-cols-6 gap-1 mb-3">
-            {ATTR_META.map(({ k, label, color }) => {
-              const v = (character as any)[k] as number;
-              const mod = fmtMod(modifier(v));
-              return (
-                <div
-                  key={k}
-                  className="ornate-card !p-1.5 text-center flex flex-col items-center justify-center gap-0.5 transition-all select-none active:scale-95"
-                  style={{
-                    borderColor: `color-mix(in oklab, ${color} 55%, transparent)`,
-                    background: `linear-gradient(180deg, color-mix(in oklab, ${color} 10%, var(--card)), var(--card))`,
-                    boxShadow: `inset 0 0 12px color-mix(in oklab, ${color} 12%, transparent)`,
-                    WebkitUserSelect: "none",
-                    WebkitTapHighlightColor: "transparent",
-                    touchAction: "manipulation",
-                  }}
-                >
-                  <span className="text-[10px] font-display tracking-wide whitespace-nowrap pointer-events-none" style={{ color }}>
-                    {label}: {v}
-                  </span>
-                  <span className="font-display font-bold leading-none text-lg pointer-events-none" style={{ color, textShadow: `0 0 8px color-mix(in oklab, ${color} 45%, transparent)` }}>
-                    {mod}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+          <AttributesBar character={character} />
+
           
 
           <ConditionsPanel character={character} campaignId={campaign.id} canEdit={true} />
