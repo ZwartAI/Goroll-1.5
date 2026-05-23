@@ -41,7 +41,7 @@ import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { AttributesBar } from "@/components/app/AttributesBar";
 import { FramedCharacterPortrait } from "@/components/app/FramedCharacterPortrait";
-import portraitFrameDefault from "@/assets/character-sheet/portrait-frame-default.png";
+
 
 import { useLongPress } from "@/hooks/useLongPress";
 
