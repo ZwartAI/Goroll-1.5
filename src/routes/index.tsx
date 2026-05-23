@@ -285,18 +285,27 @@ function Home() {
   }
 
   async function pickCampaign(c: Campaign) {
-    setCampaign(c);
-    if (role === "spectator") {
-      enterCampaign(c, null);
-    } else if (role === "dm") {
-      // Owner enters directly; non-owner goes through approval flow
-      if ((c as any).owner_user_id === user!.id) {
-        enterAsDM(c);
-      } else {
-        await requestCoDM(c);
+    beginCampaignLoading(c);
+    try {
+      setCampaign(c);
+      if (role === "spectator") {
+        enterCampaign(c, null);
+        return;
       }
-    } else {
+      if (role === "dm") {
+        if ((c as any).owner_user_id === user!.id) {
+          await enterAsDM(c);
+        } else {
+          await requestCoDM(c);
+          stopCampaignLoading();
+        }
+        return;
+      }
       setStep("character");
+      stopCampaignLoading();
+    } catch (e) {
+      stopCampaignLoading();
+      throw e;
     }
   }
 
