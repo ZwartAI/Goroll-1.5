@@ -182,7 +182,7 @@ function Profile() {
             </div>
 
             {/* 3 vertical stat assets — fill same height as portrait */}
-            <div className="grid grid-cols-3 gap-1">
+            <div className="grid grid-cols-3 gap-1 h-full">
               <StatAsset
                 src={statAttackImg}
                 ariaLabel={`${t("profile.damage")} ${stats.damage}`}
