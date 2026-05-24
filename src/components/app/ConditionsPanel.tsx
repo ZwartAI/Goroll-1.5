@@ -153,7 +153,7 @@ export function ConditionsPanel({
             <button onClick={() => tick(c)}
               className="text-[10px] px-2 py-1 rounded bg-[var(--gold)] text-black font-display min-w-[2.5rem]"
               title={t("conditions.apply")}>
-              {c.turns_left}t
+              {c.turns_left === 0 ? "∞" : `${c.turns_left}t`}
             </button>
           </div>
         ))}
