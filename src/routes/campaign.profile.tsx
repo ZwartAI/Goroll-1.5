@@ -42,6 +42,7 @@ import { useT } from "@/lib/i18n";
 import { AttributesBar } from "@/components/app/AttributesBar";
 import { FramedCharacterPortrait } from "@/components/app/FramedCharacterPortrait";
 import { LevelUpModal } from "@/components/app/LevelUpModal";
+import { PlayerNotifier } from "@/components/app/PlayerNotifier";
 import { InitialStatsSetupModal } from "@/components/app/InitialStatsSetupModal";
 
 
