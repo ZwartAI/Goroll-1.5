@@ -974,6 +974,7 @@ function MassGrant({ campaignId, dm, players, onlineIds }: {
       ], { kind: "character.update", id: p.id, prev: { skill_points: cur } });
     }
     toast.success(t("skills.massGrantDone", { n: sel.size }));
+    setConfirmKind(null);
   }
 
   async function levelUpAll() {
