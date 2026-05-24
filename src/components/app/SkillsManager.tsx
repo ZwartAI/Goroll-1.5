@@ -935,6 +935,8 @@ function MassGrant({ campaignId, dm, players, onlineIds }: {
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [sp, setSp] = useState(1);
   const [lvl, setLvl] = useState(1);
+  const [confirmKind, setConfirmKind] = useState<null | "sp" | "lvl">(null);
+
 
   useEffect(() => {
     if (sel.size === 0 && onlineIds.size > 0) {
