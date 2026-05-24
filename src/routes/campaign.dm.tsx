@@ -17,6 +17,7 @@ import { DMConditionsCreator } from "@/components/app/ConditionsPanel";
 import { BoosterEditor } from "@/components/app/BoosterEditor";
 import { type Booster } from "@/components/app/BoosterCard";
 import { DMRequestGate } from "@/components/app/DMRequestGate";
+import { EffectRemoveRequestsPanel } from "@/components/app/EffectRemoveRequestsPanel";
 import { SkillsManager, ManualCreate as SkillManualCreate } from "@/components/app/SkillsManager";
 import { Escenario } from "@/components/app/Escenario";
 import { CharacterImageViewer } from "@/components/app/CharacterImageViewer";
