@@ -47,10 +47,13 @@ export function ConditionsPanel({
   character,
   campaignId,
   canEdit = true,
+  viewerIsDm = true,
 }: {
   character: Character;
   campaignId: string;
   canEdit?: boolean;
+  /** When false, "remove" creates a DM approval request instead of deleting. */
+  viewerIsDm?: boolean;
 }) {
   const [rows, setRows] = useState<ConditionRow[]>([]);
   const [catalog, setCatalog] = useState<CatalogRow[]>([]);
