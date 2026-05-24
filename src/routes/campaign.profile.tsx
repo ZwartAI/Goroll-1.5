@@ -41,6 +41,7 @@ import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { AttributesBar } from "@/components/app/AttributesBar";
 import { FramedCharacterPortrait } from "@/components/app/FramedCharacterPortrait";
+import { LevelUpModal } from "@/components/app/LevelUpModal";
 
 
 import { useLongPress } from "@/hooks/useLongPress";
@@ -145,6 +146,10 @@ function Profile() {
 
   return (
     <PageFrame>
+      <LevelUpModal
+        level={(character as any).level ?? 1}
+        enabled={character.role === "player"}
+      />
       <ProfileHeader
         campaignName={campaign.name}
         characterName={character.name}

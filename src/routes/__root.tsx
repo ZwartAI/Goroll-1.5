@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
-import { mountGlobalClickSound } from "@/lib/sound";
+import { mountGlobalClickSound, preloadButtonSound } from "@/lib/sound";
 import { mountDisableAutofill } from "@/lib/disable-autofill";
 import { useGlobalBackground } from "@/lib/background";
 import { AppShell } from "@/components/app/AppShell";
@@ -125,7 +125,12 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  useEffect(() => { mountGlobalClickSound(); mountDisableAutofill(); }, []);
+  useEffect(() => {
+    mountGlobalClickSound();
+    mountDisableAutofill();
+    const warm = () => { preloadButtonSound(); window.removeEventListener("pointerdown", warm); };
+    window.addEventListener("pointerdown", warm, { once: true });
+  }, []);
   useGlobalBackground();
 
   return (
