@@ -430,7 +430,7 @@ export function DMConditionsCreator({
       catalog_id: picked.id,
       label: localizedLabel,
       icon: picked.icon,
-      turns_left: Math.max(1, turns),
+      turns_left: Math.max(0, turns),
       damage_per_turn: picked.is_damage ? Math.max(0, damage) : 0,
     }));
     const { error } = await (supabase as any).from("character_conditions").insert(rows);
