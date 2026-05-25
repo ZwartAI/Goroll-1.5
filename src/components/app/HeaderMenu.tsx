@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getStoredUser } from "@/lib/game";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export type HeaderMenuItem = {
   key: string;
@@ -225,7 +226,7 @@ export function MailboxInlineModal({ open, onClose }: { open: boolean; onClose: 
 
   return (
     <div className="fixed inset-0 z-[260] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-      onClick={onClose}>
+      {...backdropProps(onClose)}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3 max-h-[85vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}>
         <h2 className="font-display text-lg text-center text-[var(--gold)]">{t("mailbox.title")}</h2>

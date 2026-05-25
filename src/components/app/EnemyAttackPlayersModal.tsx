@@ -14,6 +14,7 @@ import { EnemySkillUseModal } from "@/components/app/EnemySkillUseModal";
 import { RarityBadge } from "@/components/app/RarityBadge";
 import type { Rarity } from "@/lib/game";
 import { Sparkles } from "lucide-react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   enemy: CombatParticipant;
@@ -96,7 +97,7 @@ export function EnemyAttackPlayersModal({ enemy, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div
         className="ornate-card max-w-md w-full p-4 space-y-3 max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}

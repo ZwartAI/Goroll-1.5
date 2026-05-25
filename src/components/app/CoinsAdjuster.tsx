@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
 import { Coins, Minus, Plus, X } from "lucide-react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 /** Legacy inline coin adjuster — kept for DM character sheet modal. */
 export function CoinsAdjuster({ onApply }: { onApply: (delta: number) => void | Promise<void> }) {
@@ -24,7 +25,7 @@ export function CoinsAdjuster({ onApply }: { onApply: (delta: number) => void | 
         >💸 −</button>
       </div>
       {open && (
-        <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" onClick={() => setOpen(null)}>
+        <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" {...backdropProps(() => setOpen(null))}>
           <div className="ornate-card p-4 max-w-xs w-full space-y-3" onClick={e => e.stopPropagation()}>
             <h3 className="font-display text-center">
               {open === "add" ? t("coins.receive") : t("coins.pay")}
@@ -81,7 +82,7 @@ export function CoinsPurseModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div
         className="ornate-card p-4 max-w-xs w-full space-y-4 relative"
         onClick={e => e.stopPropagation()}

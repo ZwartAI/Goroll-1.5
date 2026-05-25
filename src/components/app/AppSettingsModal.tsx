@@ -1,6 +1,7 @@
 import { THEMES, useTheme, type ThemeKey } from "@/lib/theme";
 import { useT, type Lang } from "@/lib/i18n";
 import { X } from "lucide-react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = { onClose: () => void };
 
@@ -14,7 +15,7 @@ export function AppSettingsModal({ onClose }: Props) {
   ];
 
   return (
-    <div className="fixed inset-0 z-[300] bg-black/85 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-[300] bg-black/85 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card p-5 max-w-sm w-full space-y-4 max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="font-display text-lg text-[var(--gold)]">{t("settings.title")}</h3>

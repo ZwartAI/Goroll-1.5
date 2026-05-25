@@ -11,6 +11,7 @@ import type { Booster } from "@/components/app/BoosterCard";
 import { BoosterPeek } from "@/components/app/BoosterEditor";
 import { SkillCard, type CharacterSkill } from "@/components/app/SkillCard";
 import { SkillDetailModal } from "@/components/app/SkillDetailModal";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   characterId: string;
@@ -80,7 +81,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   }, [characterId, campaignId]);
 
   if (!character) return (
-    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <p className="text-muted-foreground">{t("sheet.loading")}</p>
     </div>
   );
@@ -158,7 +159,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-2" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-2" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-md w-full max-h-[92vh] overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="p-4 space-y-3 max-h-[92vh] overflow-y-auto">
 
@@ -326,7 +327,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
         )}
         {vaultConfirm && (
           <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-4"
-            onClick={(e) => { e.stopPropagation(); setVaultConfirm(null); }}>
+            {...backdropProps(() => setVaultConfirm(null))}>
             <div className="ornate-card bg-card max-w-sm w-full p-4 space-y-3" onClick={(e) => e.stopPropagation()}>
               <p className="text-sm">{t("sheet.toVaultConfirm", { name: vaultConfirm.name })}</p>
               <div className="flex justify-end gap-2">

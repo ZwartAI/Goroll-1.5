@@ -9,6 +9,7 @@ import {
 import { EnemyIcon, getEnemyAssetUrl, getEnemyCustomImage } from "@/components/app/EnemyIconPicker";
 import { RarityBadge } from "@/components/app/RarityBadge";
 import { StatText } from "@/components/app/StatText";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   template: EnemyTemplate;
@@ -24,7 +25,7 @@ export function MonsterSheetModal({ template, onClose, onEdit, onAddToCombat }: 
   useEffect(() => { listTemplateSkills(template.id).then(setSkills); }, [template.id]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-xl w-full max-h-[92vh] overflow-y-auto p-4 space-y-3" onClick={e => e.stopPropagation()}>
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 relative"

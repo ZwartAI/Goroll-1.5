@@ -3,6 +3,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import type { Character } from "@/lib/game";
 import { clampInitiative, createLink, submitInitiative, type CombatEncounter } from "@/lib/combat";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   encounter: CombatEncounter;
@@ -50,7 +51,7 @@ export function InitiativeRollModal({ encounter, character, linkCandidates, onCl
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3" onClick={e => e.stopPropagation()}>
         <h3 className="font-display text-lg text-center text-[var(--gold)]">{t("combat.rollInitiativeTitle")}</h3>
         <p className="text-[11px] text-muted-foreground text-center">{t("combat.rollInitiativeHint")}</p>

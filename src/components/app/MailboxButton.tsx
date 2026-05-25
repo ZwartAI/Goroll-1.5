@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getStoredUser } from "@/lib/game";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Req = {
   id: string;
@@ -99,7 +100,7 @@ export function MailboxButton({ className = "text-white" }: { className?: string
 
       {open && (
         <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setOpen(false)}>
+          {...backdropProps(() => setOpen(false))}>
           <div className="ornate-card p-4 max-w-sm w-full space-y-3 max-h-[85vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>
             <h2 className="font-display text-lg text-center text-[var(--gold)]">{t("mailbox.title")}</h2>

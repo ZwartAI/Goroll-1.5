@@ -13,6 +13,7 @@ import frame8 from "@/assets/character-sheet/frames/frame-8.png";
 import frame9 from "@/assets/character-sheet/frames/frame-9.png";
 import frame10 from "@/assets/character-sheet/frames/frame-10.png";
 import frame11 from "@/assets/character-sheet/frames/frame-11.png";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 const FRAMES: { id: string; url: string | null; label: string }[] = [
   { id: "default", url: null, label: "frameDefault" },
@@ -56,7 +57,7 @@ export function FrameSelectorModal({
   return (
     <div
       className="fixed inset-0 z-[70] bg-black/90 flex items-center justify-center p-3"
-      onClick={onClose}
+      {...backdropProps(onClose)}
     >
       <div
         className="ornate-card p-4 max-w-md w-full max-h-[90vh] overflow-y-auto space-y-3"

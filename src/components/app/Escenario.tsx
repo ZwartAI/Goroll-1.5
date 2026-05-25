@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n";
 import { useGameData } from "@/lib/useGame";
 import { useEncounterShields } from "@/hooks/useEncounterShields";
 import { HpShieldBar } from "@/components/app/HpShieldBar";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   characters: Character[];
@@ -203,7 +204,7 @@ function OfflineRow({ c, maxHp, onClick }: { c: any; maxHp?: number; onClick: ()
 
 function OfflineListModal({ players, onClose, onPick, title, closeLabel }: { players: any[]; onClose: () => void; onPick: (id: string) => void; title: string; closeLabel: string }) {
   return (
-    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card p-4 max-w-md w-full max-h-[85vh] overflow-y-auto space-y-2" onClick={e => e.stopPropagation()}>
         <h3 className="font-display text-lg text-center text-[var(--gold)]">{title}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

@@ -3,6 +3,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { applyEnemyDamage, healEnemy, type CombatParticipant } from "@/lib/combat";
 import { NumberInput } from "@/components/app/NumberInput";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   participant: CombatParticipant;
@@ -51,7 +52,7 @@ export function EnemyDamageModal({ participant, onClose, mode = "both" }: Props)
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-sm w-full p-4 space-y-3 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <h3 className="font-display text-[var(--gold)] text-base uppercase tracking-widest">
           {participant.display_name}

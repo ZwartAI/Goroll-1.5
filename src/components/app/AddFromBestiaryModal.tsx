@@ -3,6 +3,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { spawnFromTemplate, type EnemyTemplate, type SpawnPosition } from "@/lib/bestiary";
 import type { CombatEncounter } from "@/lib/combat";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   template: EnemyTemplate;
@@ -28,7 +29,7 @@ export function AddFromBestiaryModal({ template, encounter, dm, onClose }: Props
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-sm w-full p-4 space-y-3" onClick={e => e.stopPropagation()}>
         <h3 className="font-display text-[var(--gold)] text-sm uppercase tracking-widest">
           {t("bestiary.addToCombat")}: {template.name}

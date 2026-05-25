@@ -5,6 +5,7 @@ import { Upload, X, AlertTriangle, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { parseEnemyFile, type EnemyImportResult, type ImportedEnemy, type DuplicateMode } from "@/lib/enemyImport";
 import type { EnemyTemplate } from "@/lib/bestiary";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   campaignId: string;
@@ -111,7 +112,7 @@ export function EnemyExcelImportModal({ campaignId, dm, existing, onClose, onImp
   };
 
   return (
-    <div className="fixed inset-0 z-[70] bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-[70] bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-2xl w-full max-h-[92vh] overflow-y-auto p-4 space-y-3" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="font-display text-[var(--gold)] text-base uppercase tracking-widest">

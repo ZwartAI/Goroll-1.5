@@ -9,6 +9,7 @@ import { RarityBadge } from "@/components/app/RarityBadge";
 import { ItemView } from "@/components/app/ItemView";
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export const Route = createFileRoute("/campaign/equipment")({ component: Equipment });
 
@@ -63,7 +64,7 @@ function Equipment() {
       </div>
 
       {picker && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-end justify-center" onClick={() => setPicker(null)}>
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-end justify-center" {...backdropProps(() => setPicker(null))}>
           <div className="ornate-card p-4 w-full max-w-md max-h-[70vh] overflow-y-auto rounded-b-none" onClick={e => e.stopPropagation()}>
             <h3 className="font-display text-lg mb-3 text-center">{t(`slots.${picker}`)}</h3>
             {equipped(picker) && (

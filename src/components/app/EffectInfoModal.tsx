@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type TempEffect = Tables<"combat_temporary_effects">;
 type CharCondition = Tables<"character_conditions">;
@@ -87,7 +88,7 @@ export function EffectInfoModal({ effect, onClose }: Props) {
   }, [normalized.sourceCharacterId]);
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div
         className="ornate-card p-4 max-w-xs w-full space-y-3"
         onClick={e => e.stopPropagation()}

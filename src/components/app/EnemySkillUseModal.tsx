@@ -9,6 +9,7 @@ import {
 } from "@/lib/combat";
 import { EnemyIcon } from "@/components/app/EnemyIconPicker";
 import { StatText } from "@/components/app/StatText";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export function EnemySkillUseModal({
   participant, skill, onClose, initialResolvedTargets,
@@ -40,7 +41,7 @@ export function EnemySkillUseModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-md w-full max-h-[90vh] overflow-y-auto p-4 space-y-3" onClick={e => e.stopPropagation()}>
         <div className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full border-2 flex items-center justify-center"

@@ -10,12 +10,13 @@ import { StatText } from "./StatText";
 import type { Booster } from "./BoosterCard";
 import { useT } from "@/lib/i18n";
 import { Trash2, MessageSquare } from "lucide-react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 /* ─────────────────────────────── shared bits ─────────────────────────────── */
 
 function ModalShell({ children, onClose, color }: { children: React.ReactNode; onClose: () => void; color: string }) {
   return (
-    <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div
         className="ornate-card max-w-md w-full max-h-[92vh] overflow-y-auto p-5 space-y-4 relative"
         onClick={e => e.stopPropagation()}
@@ -537,7 +538,7 @@ function TransferPickModal({
     });
   }
   return (
-    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div className="ornate-card bg-card max-w-sm w-full p-4 space-y-3 max-h-[85vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <p className="text-xs uppercase tracking-widest text-muted-foreground text-center">{t("boosters.distributeCopies")}</p>
         <p className="text-[11px] text-muted-foreground text-center">{t("boosters.distributeHint")}</p>
@@ -721,7 +722,7 @@ export function BoosterActions({
               </div>
             )}
             {showTransfer && (
-              <div className="fixed inset-0 bg-black/80 z-[80] flex items-center justify-center p-3" onClick={() => setShowTransfer(false)}>
+              <div className="fixed inset-0 bg-black/80 z-[80] flex items-center justify-center p-3" {...backdropProps(() => setShowTransfer(false))}>
                 <div className="ornate-card p-4 max-w-sm w-full max-h-[80vh] overflow-y-auto space-y-2" onClick={e => e.stopPropagation()}>
                   <h3 className="font-display text-center text-base text-[var(--gold)]">{t("boosters.pickRecipient")}</h3>
                   {members.length === 0 && (

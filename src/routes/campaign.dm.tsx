@@ -29,6 +29,7 @@ import { useVoice } from "@/lib/useVoice";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export const Route = createFileRoute("/campaign/dm")({ component: DM });
 
@@ -483,7 +484,7 @@ function DM() {
           onEdit={() => { setEditItem(selItem); setSelItem(null); }} />
       )}
       {editItem && (
-        <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-3" onClick={() => setEditItem(null)}>
+        <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-3" {...backdropProps(() => setEditItem(null))}>
           <div onClick={e => e.stopPropagation()}>
             <ItemEditor item={editItem} dm={dmCtx} campaignId={campaign.id} onClose={() => setEditItem(null)} />
           </div>
@@ -739,7 +740,7 @@ function ItemActions({ item, players, dm, campaignId, allItems, allCharacters, o
     onClose();
   }
   return (
-    <div className="fixed inset-0 bg-black/80 z-[65] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/80 z-[65] flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3" onClick={e=>e.stopPropagation()}>
         <h3 className="font-display text-lg" style={isEq ? { color: RARITY_COLOR[item.rarity as Rarity] } : undefined}>{item.name}</h3>
         <p className="text-xs text-muted-foreground">

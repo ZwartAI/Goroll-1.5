@@ -14,6 +14,7 @@ import {
   type EnemyRole,
 } from "@/lib/bestiary";
 import type { CombatEncounter } from "@/lib/combat";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   campaignId: string;
@@ -127,7 +128,7 @@ export function BestiaryPickerModal({ campaignId, encounter, dm, onClose }: Prop
   const hasFilters = !!(query || rarity || tier || role || biome);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-2xl w-full max-h-[85vh] flex flex-col p-3 gap-2" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between gap-2">
           <h3 className="font-display text-sm uppercase tracking-widest text-[var(--gold)]">{t("bestiary.addFromBestiary")}</h3>

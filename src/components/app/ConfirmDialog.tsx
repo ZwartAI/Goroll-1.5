@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export type ConfirmVariant = "danger" | "warning" | "normal";
 
@@ -43,7 +44,7 @@ export function ConfirmDialog({
   return (
     <div
       className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-3"
-      onClick={onCancel}
+      {...backdropProps(onCancel)}
       role="dialog"
       aria-modal="true"
     >
