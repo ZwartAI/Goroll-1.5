@@ -4,6 +4,7 @@ import { useT } from "@/lib/i18n";
 import { Sparkles, X } from "lucide-react";
 import sfxVictory from "@/assets/sounds/Victory.mp3";
 import { playSfx, preloadSfx } from "@/lib/sound";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 // Warm the buffer as soon as this module loads so the SFX is essentially
 // instant the first time a player levels up.

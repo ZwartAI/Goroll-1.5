@@ -10,6 +10,7 @@ import { StatText } from "./StatText";
 import type { Booster } from "./BoosterCard";
 import { useT } from "@/lib/i18n";
 import { Trash2, MessageSquare } from "lucide-react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 /* ─────────────────────────────── shared bits ─────────────────────────────── */
 

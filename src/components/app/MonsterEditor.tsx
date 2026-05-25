@@ -25,6 +25,7 @@ import {
 import { EnemyIconPicker, EnemyColorPicker, ENEMY_COLORS, ENEMY_ASSETS, getEnemyAssetUrl } from "@/components/app/EnemyIconPicker";
 import { EnemyImageEditor, type EnemyImageState } from "@/components/app/EnemyImageEditor";
 import { ConfirmDialog } from "@/components/app/ConfirmDialog";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   campaignId: string;

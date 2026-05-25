@@ -9,6 +9,7 @@ import {
 } from "@/lib/combat";
 import { EnemyIcon } from "@/components/app/EnemyIconPicker";
 import { StatText } from "@/components/app/StatText";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export function EnemySkillUseModal({
   participant, skill, onClose, initialResolvedTargets,

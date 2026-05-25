@@ -29,6 +29,7 @@ import { useVoice } from "@/lib/useVoice";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export const Route = createFileRoute("/campaign/dm")({ component: DM });
 

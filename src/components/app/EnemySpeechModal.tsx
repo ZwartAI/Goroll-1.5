@@ -3,6 +3,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { logEnemySpeech, type CombatParticipant } from "@/lib/combat";
 import { EnemyIcon } from "@/components/app/EnemyIconPicker";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export function EnemySpeechModal({
   participant, onClose,

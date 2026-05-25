@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export type ConfirmVariant = "danger" | "warning" | "normal";
 

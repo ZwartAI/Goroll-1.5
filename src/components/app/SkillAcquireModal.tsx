@@ -7,6 +7,7 @@ import { SkillIconMedallion } from "./SkillIconMedallion";
 import { SkillCostBadge } from "./SkillCostBadge";
 import { SkillDetailModal } from "./SkillDetailModal";
 import type { CharacterSkill } from "./SkillCard";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   skills: CharacterSkill[];

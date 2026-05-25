@@ -5,6 +5,7 @@ import { Upload, X, AlertTriangle, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { parseEnemyFile, type EnemyImportResult, type ImportedEnemy, type DuplicateMode } from "@/lib/enemyImport";
 import type { EnemyTemplate } from "@/lib/bestiary";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   campaignId: string;

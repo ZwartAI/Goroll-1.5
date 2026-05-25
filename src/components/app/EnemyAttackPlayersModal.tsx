@@ -14,6 +14,7 @@ import { EnemySkillUseModal } from "@/components/app/EnemySkillUseModal";
 import { RarityBadge } from "@/components/app/RarityBadge";
 import type { Rarity } from "@/lib/game";
 import { Sparkles } from "lucide-react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   enemy: CombatParticipant;

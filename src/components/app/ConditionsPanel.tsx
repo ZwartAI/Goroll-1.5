@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Plus, X } from "lucide-react";
 import type { Character } from "@/lib/game";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type CatalogRow = {
   id: string;

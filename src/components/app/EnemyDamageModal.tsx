@@ -3,6 +3,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { applyEnemyDamage, healEnemy, type CombatParticipant } from "@/lib/combat";
 import { NumberInput } from "@/components/app/NumberInput";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   participant: CombatParticipant;

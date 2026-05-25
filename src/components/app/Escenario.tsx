@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n";
 import { useGameData } from "@/lib/useGame";
 import { useEncounterShields } from "@/hooks/useEncounterShields";
 import { HpShieldBar } from "@/components/app/HpShieldBar";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   characters: Character[];

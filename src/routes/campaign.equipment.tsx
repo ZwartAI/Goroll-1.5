@@ -9,6 +9,7 @@ import { RarityBadge } from "@/components/app/RarityBadge";
 import { ItemView } from "@/components/app/ItemView";
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export const Route = createFileRoute("/campaign/equipment")({ component: Equipment });
 

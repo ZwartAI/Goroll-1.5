@@ -1,6 +1,7 @@
 import { THEMES, useTheme, type ThemeKey } from "@/lib/theme";
 import { useT, type Lang } from "@/lib/i18n";
 import { X } from "lucide-react";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = { onClose: () => void };
 

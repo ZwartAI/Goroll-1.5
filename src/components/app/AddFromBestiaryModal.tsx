@@ -3,6 +3,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import { spawnFromTemplate, type EnemyTemplate, type SpawnPosition } from "@/lib/bestiary";
 import type { CombatEncounter } from "@/lib/combat";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   template: EnemyTemplate;

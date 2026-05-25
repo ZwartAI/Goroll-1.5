@@ -57,6 +57,7 @@ import { FramedCharacterPortrait } from "@/components/app/FramedCharacterPortrai
 import { LevelUpModal } from "@/components/app/LevelUpModal";
 import { PlayerNotifier } from "@/components/app/PlayerNotifier";
 import { InitialStatsSetupModal } from "@/components/app/InitialStatsSetupModal";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 
 

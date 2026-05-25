@@ -2,6 +2,7 @@ import { useT } from "@/lib/i18n";
 import { Pencil, X, User, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 /**
  * Fullscreen viewer for the character full-body image. Tapping a character's

@@ -23,6 +23,7 @@ import { CombatList } from "@/components/app/CombatList";
 import { Crown, Link as LinkIcon } from "lucide-react";
 import { EnemyEditorModal } from "@/components/app/EnemyEditorModal";
 import { EnemyManagerDM } from "@/components/app/EnemyManagerDM";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   campaignId: string;

@@ -9,6 +9,7 @@ import {
   AlignLeft, AlignCenter, AlignRight, Undo2, Redo2, Eraser,
 } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   characterId: string;

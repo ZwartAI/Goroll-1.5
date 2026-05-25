@@ -12,6 +12,7 @@ import {
   type DuplicatePlacement,
 } from "@/lib/combat";
 import { EnemyIcon, getEnemyAssetUrl } from "@/components/app/EnemyIconPicker";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   enemy: CombatParticipant;

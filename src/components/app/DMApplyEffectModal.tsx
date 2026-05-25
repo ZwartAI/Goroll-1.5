@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { dmApplyEffectsToTargets, type DMEffectKind } from "@/lib/combat-skills";
 import type { CombatEncounter, CombatParticipant } from "@/lib/combat";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   encounter: CombatEncounter;

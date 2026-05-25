@@ -9,6 +9,7 @@ import {
 import { EnemyIcon, getEnemyAssetUrl, getEnemyCustomImage } from "@/components/app/EnemyIconPicker";
 import { RarityBadge } from "@/components/app/RarityBadge";
 import { StatText } from "@/components/app/StatText";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   template: EnemyTemplate;

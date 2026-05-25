@@ -3,6 +3,7 @@ import { RarityBadge } from "./RarityBadge";
 import { useT } from "@/lib/i18n";
 import type { CharacterSkill } from "./SkillCard";
 import { StatText } from "./StatText";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   skill: CharacterSkill;

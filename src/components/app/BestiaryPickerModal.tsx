@@ -14,6 +14,7 @@ import {
   type EnemyRole,
 } from "@/lib/bestiary";
 import type { CombatEncounter } from "@/lib/combat";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   campaignId: string;

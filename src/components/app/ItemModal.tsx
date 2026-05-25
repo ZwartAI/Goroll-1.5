@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ItemView } from "@/components/app/ItemView";
 import type { Item } from "@/lib/game";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 /** Read-only view of an item by id (used from log clicks for players). */
 export function ItemModal({ itemId, onClose, footer }: { itemId: string; onClose: () => void; footer?: React.ReactNode }) {

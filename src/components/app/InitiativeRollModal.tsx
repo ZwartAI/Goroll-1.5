@@ -3,6 +3,7 @@ import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import type { Character } from "@/lib/game";
 import { clampInitiative, createLink, submitInitiative, type CombatEncounter } from "@/lib/combat";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   encounter: CombatEncounter;

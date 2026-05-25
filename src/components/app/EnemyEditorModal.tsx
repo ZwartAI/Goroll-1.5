@@ -22,6 +22,7 @@ import { EnemyImageEditor, type EnemyImageState } from "@/components/app/EnemyIm
 import { NumberInput } from "@/components/app/NumberInput";
 import { PRIMARY_TIERS, TIER_VISUALS, ROLE_OPTIONS, BIOME_PRESETS, SKILL_TYPES, SKILL_SHAPES } from "@/lib/bestiary";
 import { ConfirmDialog } from "@/components/app/ConfirmDialog";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 const CUSTOM_BIOME = "__custom__";
 const RARITIES = ["white", "blue", "purple", "gold"] as const;

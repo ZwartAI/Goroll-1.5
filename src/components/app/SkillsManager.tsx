@@ -15,6 +15,7 @@ import {
 import { SkillIconMedallion, SKILL_ICON_OPTIONS } from "./SkillIconMedallion";
 import { CharacterPortrait } from "./CharacterPortrait";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   campaignId: string;

@@ -17,6 +17,7 @@ import { RarityBadge } from "@/components/app/RarityBadge";
 import { StatText } from "@/components/app/StatText";
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 export const Route = createFileRoute("/campaign/inventory")({ component: Inventory });
 

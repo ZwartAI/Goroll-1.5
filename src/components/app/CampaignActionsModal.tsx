@@ -3,6 +3,7 @@ import type { Campaign } from "@/lib/game";
 import { CampaignMembersEditor } from "./CampaignMembersEditor";
 import { DeleteCampaignButton } from "./DeleteCampaignButton";
 import { useT } from "@/lib/i18n";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   campaign: Campaign;

@@ -19,6 +19,7 @@ import {
 import type { CombatEncounter, CombatParticipant, CombatTurnGroup, CombatTurnPin } from "@/lib/combat";
 import { isEnemy, groupForCharacter } from "@/lib/combat";
 import { supabase } from "@/integrations/supabase/client";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   encounter: CombatEncounter;

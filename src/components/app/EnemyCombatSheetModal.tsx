@@ -24,6 +24,7 @@ import { EnemySkillUseModal } from "@/components/app/EnemySkillUseModal";
 import { EnemySpeechModal } from "@/components/app/EnemySpeechModal";
 import { EnemyDamageModal } from "@/components/app/EnemyDamageModal";
 import { StatText } from "@/components/app/StatText";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type Props = {
   participant: CombatParticipant;

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { backdropProps } from "@/lib/modalBackdrop";
 
 type TempEffect = Tables<"combat_temporary_effects">;
 type CharCondition = Tables<"character_conditions">;
