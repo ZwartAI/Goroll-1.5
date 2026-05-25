@@ -35,7 +35,7 @@ import sfxHabilidades from "@/assets/sounds/Habilidades.mp3";
 import sfxNotas from "@/assets/sounds/Notas.mp3";
 import sfxMonedero from "@/assets/sounds/Monedero.mp3";
 import sfxHp from "@/assets/sounds/HP.mp3";
-import { playSfx } from "@/lib/sound";
+import { playSfx, preloadSfx } from "@/lib/sound";
 import {
   CHARACTER_SHEET_ASSETS,
   preloadCharacterSheetAssets,
@@ -64,14 +64,35 @@ import { InitialStatsSetupModal } from "@/components/app/InitialStatsSetupModal"
 // role is selected, so assets are usually already warm by the time we get here).
 preloadCharacterSheetAssets();
 
+const CHARACTER_SHEET_SFX = [
+  sfxEquipo,
+  sfxMochila,
+  sfxLogros,
+  sfxPotenciador,
+  sfxHabilidades,
+  sfxNotas,
+  sfxMonedero,
+  sfxHp,
+];
+
+preloadSfx(CHARACTER_SHEET_SFX);
+
 export const Route = createFileRoute("/campaign/profile")({
   head: () => ({
-    links: CHARACTER_SHEET_ASSETS.map((href) => ({
-      rel: "preload",
-      as: "image" as const,
-      href,
-      fetchpriority: "high",
-    })),
+    links: [
+      ...CHARACTER_SHEET_ASSETS.map((href) => ({
+        rel: "preload",
+        as: "image" as const,
+        href,
+        fetchpriority: "high",
+      })),
+      ...CHARACTER_SHEET_SFX.map((href) => ({
+        rel: "preload",
+        as: "audio" as const,
+        href,
+        type: "audio/mpeg",
+      })),
+    ],
   }),
   component: Profile,
 });
