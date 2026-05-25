@@ -363,17 +363,19 @@ function Profile() {
           {/* Quick links — single row of 6 vertical asset buttons */}
           <div className="grid grid-cols-6 gap-1 mb-4">
             {[
-              { to: "/campaign/equipment", src: navEquipo, label: t("profile.quickEquip") },
-              { to: "/campaign/inventory", src: navMochila, label: t("profile.quickInv") },
-              { to: "/campaign/achievements", src: navLogros, label: t("profile.quickAch") },
-              { to: "/campaign/boosters", src: navPotenciadores, label: t("profile.quickBoost") },
-              { to: "/campaign/skills", src: navHabilidades, label: t("skills.title") },
-              { to: "/campaign/notes", src: navNotas, label: t("profile.quickNotes") },
+              { to: "/campaign/equipment", src: navEquipo, label: t("profile.quickEquip"), sfx: sfxEquipo },
+              { to: "/campaign/inventory", src: navMochila, label: t("profile.quickInv"), sfx: sfxMochila },
+              { to: "/campaign/achievements", src: navLogros, label: t("profile.quickAch"), sfx: sfxLogros },
+              { to: "/campaign/boosters", src: navPotenciadores, label: t("profile.quickBoost"), sfx: sfxPotenciador },
+              { to: "/campaign/skills", src: navHabilidades, label: t("skills.title"), sfx: sfxHabilidades },
+              { to: "/campaign/notes", src: navNotas, label: t("profile.quickNotes"), sfx: sfxNotas },
             ].map((b) => (
               <Link
                 key={b.to}
                 to={b.to}
                 aria-label={b.label}
+                data-sfx
+                onClick={() => playSfx(b.sfx)}
                 className="block min-w-0 transition-transform duration-150 ease-out active:scale-[0.94]"
                 style={{ WebkitTapHighlightColor: "transparent", touchAction: "manipulation" }}
               >
