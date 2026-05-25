@@ -212,10 +212,18 @@ export function CampaignMembersEditor({ campaign, onBack }: { campaign: Campaign
           <div key={r.id} className="bg-secondary/40 rounded px-2 py-2 space-y-1">
             <p className="text-xs">
               <span className="font-display text-[var(--gold)]">{r.requester_username}</span>{" "}
-              {r.kind === "player_rejoin" ? t("mailbox.reqRejoin") : t("mailbox.reqCoDM")}
+              {r.kind === "player_rejoin"
+                ? t("mailbox.reqRejoin")
+                : r.kind === "player_join"
+                  ? t("mailbox.reqPlayerJoin")
+                  : t("mailbox.reqCoDM")}
             </p>
             <p className="text-[9px] uppercase text-muted-foreground tracking-widest">
-              {r.kind === "player_rejoin" ? t("membersExtra.kindRejoin") : t("membersExtra.kindCoDM")}
+              {r.kind === "player_rejoin"
+                ? t("membersExtra.kindRejoin")
+                : r.kind === "player_join"
+                  ? t("membersExtra.kindPlayerJoin")
+                  : t("membersExtra.kindCoDM")}
             </p>
             <div className="grid grid-cols-2 gap-1">
               <button disabled={busy} onClick={() => decideRequest(r, true)}
