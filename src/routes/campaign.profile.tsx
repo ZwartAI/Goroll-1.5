@@ -333,7 +333,8 @@ function Profile() {
             <div className="flex items-center gap-2 h-full">
               <button
                 type="button"
-                onClick={() => setHpModal(true)}
+                data-sfx
+                onClick={() => { playSfx(sfxHp); setHpModal(true); }}
                 aria-label={`${t("profile.modifyHpAria")} (${character.current_hp}/${stats.maxHp})`}
                 title={t("profile.modifyHpAria")}
                 className="shrink-0 flex items-center justify-center transition-transform active:scale-95 bg-transparent border-0 p-0 -ml-2"
