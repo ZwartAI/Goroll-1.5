@@ -229,7 +229,7 @@ function EnemyRow({
           onClick={() => { if (!lp.didLongPress()) onSheet(); }}
           title={t("combat.enemy.openSheet")}
         >
-          <EnemyIcon name={p.enemy_icon} size={56} fill={isTierAsset} assetScale={isTierAsset && !customImg ? 4 : 1} customImage={customImg} />
+          <EnemyIcon name={p.enemy_icon} size={56} fill={isTierAsset} customImage={customImg} />
         </div>
 
         {/* Right: info + actions */}
@@ -343,7 +343,7 @@ function PinRow({
         onClick={onOpenSheet}
         className="w-8 h-8 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 relative"
         style={{ borderColor: baseColor, color: baseColor }}>
-        <EnemyIcon name={linked.enemy_icon} size={16} fill={isTierAsset} assetScale={isTierAsset && !customImg ? 4 : 1} customImage={customImg} />
+        <EnemyIcon name={linked.enemy_icon} size={16} fill={isTierAsset} customImage={customImg} />
       </button>
       <div className="min-w-0 flex-1">
         <p className="font-display text-xs truncate" style={{ color: baseColor }}>
