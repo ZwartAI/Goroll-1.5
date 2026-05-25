@@ -835,7 +835,7 @@ function ProfileHeader({
   const [appSettingsOpen, setAppSettingsOpen] = useState(false);
   const items = useStandardHeaderItems({
     stats: { to: "/campaign/settings" },
-    achievements: true,
+    achievements: false,
     mic: { enabled: voice.enabled, toggle: voice.toggle },
     fullscreen: true,
     settings: { onOpen: () => setAppSettingsOpen(true) },
