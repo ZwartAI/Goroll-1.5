@@ -94,7 +94,7 @@ export function EnemyDuplicateModal({
             className="relative w-14 h-14 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0"
             style={{ borderColor: color, color }}
           >
-            <EnemyIcon name={enemy.enemy_icon} size={28} fill={isTierAsset} assetScale={isTierAsset ? 4 : 1} />
+            <EnemyIcon name={enemy.enemy_icon} size={28} fill={isTierAsset} />
           </div>
           <div className="min-w-0 flex-1">
             <p className="font-display truncate" style={{ color }}>{enemy.display_name}</p>
