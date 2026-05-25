@@ -327,7 +327,8 @@ function PinRow({
 }) {
   const { t } = useT();
   const baseColor = linked.enemy_color || "var(--loss)";
-  const isTierAsset = !!getEnemyAssetUrl(linked.enemy_icon);
+  const customImg = getEnemyCustomImage(linked);
+  const isTierAsset = !!customImg || !!getEnemyAssetUrl(linked.enemy_icon);
   const inactive = linked.is_defeated || !pin.is_active;
   return (
     <div
@@ -342,7 +343,7 @@ function PinRow({
         onClick={onOpenSheet}
         className="w-8 h-8 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 relative"
         style={{ borderColor: baseColor, color: baseColor }}>
-        <EnemyIcon name={linked.enemy_icon} size={16} fill={isTierAsset} assetScale={isTierAsset ? 4 : 1} />
+        <EnemyIcon name={linked.enemy_icon} size={16} fill={isTierAsset} assetScale={isTierAsset && !customImg ? 4 : 1} customImage={customImg} />
       </button>
       <div className="min-w-0 flex-1">
         <p className="font-display text-xs truncate" style={{ color: baseColor }}>
