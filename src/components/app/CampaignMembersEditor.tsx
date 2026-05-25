@@ -177,6 +177,27 @@ export function CampaignMembersEditor({ campaign, onBack }: { campaign: Campaign
           <input type="checkbox" checked={lockNames} onChange={e => setLockNames(e.target.checked)} />
           {t("campaign.lockNamesRule")}
         </label>
+        <div className="pt-1 space-y-1">
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("campaign.joinModeLabel")}</p>
+          <label className="flex items-center gap-2 text-xs cursor-pointer">
+            <input
+              type="radio"
+              name="joinMode"
+              checked={joinMode === "request"}
+              onChange={() => setJoinMode("request")}
+            />
+            {t("campaign.joinModeRequest")}
+          </label>
+          <label className="flex items-center gap-2 text-xs cursor-pointer">
+            <input
+              type="radio"
+              name="joinMode"
+              checked={joinMode === "closed"}
+              onChange={() => setJoinMode("closed")}
+            />
+            {t("campaign.joinModeClosed")}
+          </label>
+        </div>
         <button className="btn-fantasy w-full text-xs" disabled={busy} onClick={saveFlags}>{t("campaign.saveRules")}</button>
       </div>
 
