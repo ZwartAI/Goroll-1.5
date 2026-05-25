@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useGameData } from "@/lib/useGame";
 import { PageFrame } from "@/components/app/Frame";
 import { HeaderMenu, MailboxInlineModal, useStandardHeaderItems } from "@/components/app/HeaderMenu";
+import { AppSettingsModal } from "@/components/app/AppSettingsModal";
 import { setSession, type LogRow } from "@/lib/game";
 import { LogSegments } from "@/components/app/LogSegments";
 import { LogList } from "@/components/app/LogList";
