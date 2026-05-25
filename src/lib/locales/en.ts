@@ -137,6 +137,17 @@ export const en: Dict = {
     languagePromptTitle: "Choose your language",
     languagePromptBody: "Select how you want to use the app. This preference will be saved to your account.",
   },
+  playerJoin: {
+    waitingTitle: "Waiting for the Dungeon Master",
+    waitingBody: "Your request to join {name} as a player is pending.",
+    cancel: "Cancel request",
+    approved: "The DM approved your join request",
+    rejected: "The DM rejected your join request",
+    alreadyPending: "You already have a pending join request.",
+    closedTitle: "No seats available",
+    closedBody: "This campaign is not accepting new players right now. You can still join as a spectator.",
+    close: "Close",
+  },
   conditionNames: {
     poisoned: "Poisoned",
     paralyzed: "Paralyzed",
