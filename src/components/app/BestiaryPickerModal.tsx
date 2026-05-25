@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, Check } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
 import {
@@ -25,6 +25,8 @@ type Props = {
 
 type RarityKey = "white" | "green" | "red" | "gold";
 const RARITY_KEYS: RarityKey[] = ["white", "green", "red", "gold"];
+
+type SortKey = "newest" | "oldest" | "nameAsc" | "nameDesc";
 
 function rarityFromTier(tier: string | null | undefined): RarityKey | null {
   const v = tier ? TIER_VISUALS[tier] : null;
@@ -68,10 +70,8 @@ function matchScore(name: string, query: string): number | null {
   const q = normalize(query);
   if (!q) return 0;
   if (n.includes(q)) return n.indexOf(q); // direct substring
-  // token-level substring (any word startsWith)
   const tokens = n.split(/\s+/);
   if (tokens.some(tok => tok.startsWith(q))) return 50;
-  // fuzzy distance suggestion
   const tolerance = Math.max(2, Math.floor(q.length / 3));
   let best = Infinity;
   for (const tok of tokens) {
@@ -88,12 +88,14 @@ export function BestiaryPickerModal({ campaignId, encounter, dm, onClose }: Prop
   const { t } = useT();
   const [templates, setTemplates] = useState<EnemyTemplate[]>([]);
   const [loading, setLoading] = useState(true);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [query, setQuery] = useState("");
   const [rarity, setRarity] = useState<RarityKey | "">("");
   const [tier, setTier] = useState<EnemyTier | "">("");
   const [role, setRole] = useState<EnemyRole | "">("");
   const [biome, setBiome] = useState<string>("");
+  const [sortBy, setSortBy] = useState<SortKey>("newest");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     let alive = true;
@@ -120,19 +122,65 @@ export function BestiaryPickerModal({ campaignId, encounter, dm, onClose }: Prop
       if (score === null) continue;
       out.push({ tpl, score });
     }
-    out.sort((a, b) => a.score - b.score || a.tpl.name.localeCompare(b.tpl.name));
+    // When a query is active, relevance wins; otherwise honor the sort dropdown.
+    if (query) {
+      out.sort((a, b) => a.score - b.score || a.tpl.name.localeCompare(b.tpl.name));
+    } else {
+      out.sort((a, b) => {
+        const A = a.tpl, B = b.tpl;
+        switch (sortBy) {
+          case "oldest":
+            return (A.created_at || "").localeCompare(B.created_at || "");
+          case "nameAsc":
+            return A.name.localeCompare(B.name);
+          case "nameDesc":
+            return B.name.localeCompare(A.name);
+          case "newest":
+          default:
+            return (B.created_at || "").localeCompare(A.created_at || "");
+        }
+      });
+    }
     return out.map(x => x.tpl);
-  }, [templates, rarity, tier, role, biome, query]);
+  }, [templates, rarity, tier, role, biome, query, sortBy]);
 
-  const clearFilters = () => { setQuery(""); setRarity(""); setTier(""); setRole(""); setBiome(""); };
-  const hasFilters = !!(query || rarity || tier || role || biome);
+  const clearFilters = () => { setQuery(""); setRarity(""); setTier(""); setRole(""); setBiome(""); setSortBy("newest"); };
+  const hasFilters = !!(query || rarity || tier || role || biome || sortBy !== "newest");
+
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const summonSelected = async () => {
+    if (selected.size === 0 || busy) return;
+    setBusy(true);
+    const ids = Array.from(selected);
+    const byId = new Map(templates.map(tp => [tp.id, tp]));
+    let failed = 0;
+    for (const id of ids) {
+      const tpl = byId.get(id);
+      if (!tpl) { failed++; continue; }
+      const r = await spawnFromTemplate(tpl, encounter, { count: 1, initiative: 10, position: "byInitiative" }, dm);
+      if (!r.ok) failed++;
+    }
+    setBusy(false);
+    if (failed > 0) toast.error(t("bestiary.spawnError"));
+    if (failed < ids.length) {
+      toast.success(t("bestiary.spawned"));
+      onClose();
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-2xl w-full max-h-[85vh] flex flex-col p-3 gap-2" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between gap-2">
           <h3 className="font-display text-sm uppercase tracking-widest text-[var(--gold)]">{t("bestiary.addFromBestiary")}</h3>
-          <button className="p-1 text-muted-foreground hover:text-foreground" onClick={onClose} aria-label={t("common.close")}>
+          <button className="p-1 text-muted-foreground hover:text-foreground no-hover-grow" onClick={onClose} aria-label={t("common.close")}>
             <X size={16} />
           </button>
         </div>
@@ -176,12 +224,20 @@ export function BestiaryPickerModal({ campaignId, encounter, dm, onClose }: Prop
           </FilterSelect>
         </div>
 
-        {hasFilters && (
-          <button className="text-[10px] uppercase tracking-widest text-muted-foreground hover:text-[var(--gold)] self-end"
-            onClick={clearFilters}>
-            {t("bestiary.clearFilters")}
-          </button>
-        )}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <FilterSelect value={sortBy} onChange={(v) => setSortBy(v as SortKey)} label={t("bestiary.sortBy")}>
+            <option value="newest">{t("bestiary.sortNewest")}</option>
+            <option value="oldest">{t("bestiary.sortOldest")}</option>
+            <option value="nameAsc">{t("bestiary.sortNameAsc")}</option>
+            <option value="nameDesc">{t("bestiary.sortNameDesc")}</option>
+          </FilterSelect>
+          {hasFilters && (
+            <button className="text-[10px] uppercase tracking-widest text-muted-foreground hover:text-[var(--gold)] no-hover-grow self-end"
+              onClick={clearFilters}>
+              {t("bestiary.clearFilters")}
+            </button>
+          )}
+        </div>
 
         {/* Results */}
         <div className="flex-1 overflow-y-auto -mx-1 px-1">
@@ -195,18 +251,16 @@ export function BestiaryPickerModal({ campaignId, encounter, dm, onClose }: Prop
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {filtered.map(tpl => {
                 const rk = rarityFromTier(tpl.tier);
+                const isSelected = selected.has(tpl.id);
                 return (
                   <button
                     key={tpl.id}
-                    disabled={busyId === tpl.id}
-                    className="ornate-card !p-2 flex items-center gap-2 text-left hover:border-[var(--gold)] disabled:opacity-50"
-                    onClick={async () => {
-                      setBusyId(tpl.id);
-                      const r = await spawnFromTemplate(tpl, encounter, { count: 1, initiative: 10, position: "byInitiative" }, dm);
-                      setBusyId(null);
-                      if (!r.ok) toast.error(t("bestiary.spawnError"));
-                      else { toast.success(t("bestiary.spawned")); onClose(); }
-                    }}>
+                    type="button"
+                    disabled={busy}
+                    aria-pressed={isSelected}
+                    className={`ornate-card no-hover-grow !p-2 flex items-center gap-2 text-left transition-colors disabled:opacity-50 ${isSelected ? "border-[var(--gold)] bg-[color-mix(in_oklab,var(--gold)_15%,transparent)]" : "hover:border-[var(--gold)]"}`}
+                    onClick={() => toggleSelect(tpl.id)}
+                  >
                     <div className="w-9 h-9 rounded-full border-2 flex items-center justify-center bg-card shrink-0"
                       style={{ borderColor: tpl.color, color: tpl.color }}>★</div>
                     <div className="flex-1 min-w-0">
@@ -224,6 +278,12 @@ export function BestiaryPickerModal({ campaignId, encounter, dm, onClose }: Prop
                         </p>
                       )}
                     </div>
+                    <div
+                      className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 ${isSelected ? "border-[var(--gold)] bg-[var(--gold)] text-[oklch(0.15_0.03_25)]" : "border-border text-transparent"}`}
+                      aria-hidden="true"
+                    >
+                      <Check size={12} strokeWidth={3} />
+                    </div>
                   </button>
                 );
               })}
@@ -231,7 +291,19 @@ export function BestiaryPickerModal({ campaignId, encounter, dm, onClose }: Prop
           )}
         </div>
 
-        <button className="btn-fantasy w-full text-xs mt-1" onClick={onClose}>{t("common.close")}</button>
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <button className="btn-fantasy no-hover-grow text-xs" onClick={onClose} disabled={busy}>
+            {t("common.close")}
+          </button>
+          <button
+            className="btn-fantasy no-hover-grow text-xs"
+            style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
+            disabled={busy || selected.size === 0}
+            onClick={summonSelected}
+          >
+            {t("bestiary.summonSelected", { n: String(selected.size) })}
+          </button>
+        </div>
       </div>
     </div>
   );
