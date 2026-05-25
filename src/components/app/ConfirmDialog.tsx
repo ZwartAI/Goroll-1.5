@@ -43,7 +43,7 @@ export function ConfirmDialog({
   return (
     <div
       className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-3"
-      onClick={onCancel}
+      {...backdropProps(onCancel)}
       role="dialog"
       aria-modal="true"
     >

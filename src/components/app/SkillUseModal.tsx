@@ -216,7 +216,7 @@ export function SkillUseModal({ encounter, participants: initialParticipants, gr
     : `${remaining ?? 0}/${max ?? 0}`;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 flex items-end sm:items-center justify-center p-2 sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/80 flex items-end sm:items-center justify-center p-2 sm:p-4" {...backdropProps(onClose)}>
       <div className="ornate-card w-full max-w-lg max-h-[92vh] overflow-y-auto p-4 space-y-3"
         style={{ borderColor: color, boxShadow: `0 0 24px color-mix(in oklab, ${color} 35%, transparent)` }}
         onClick={e => e.stopPropagation()}>

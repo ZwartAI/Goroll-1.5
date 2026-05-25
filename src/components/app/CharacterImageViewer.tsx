@@ -65,7 +65,7 @@ export function CharacterImageViewer({
   return (
     <div
       className="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-3"
-      onClick={onClose}
+      {...backdropProps(onClose)}
     >
       <button
         type="button"

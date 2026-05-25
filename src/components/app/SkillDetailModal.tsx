@@ -22,7 +22,7 @@ export function SkillDetailModal({ skill, onClose, onAcquire, dmActions, canAcqu
   const { t } = useT();
   const color = RARITY_COLOR[skill.rarity as Rarity];
   return (
-    <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3 max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
         style={{ borderColor: color }}>

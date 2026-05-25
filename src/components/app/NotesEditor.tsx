@@ -129,7 +129,7 @@ export function NotesEditor({ characterId, characterName, characterColor, readOn
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-2" onClick={tryClose}>
+    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-2" {...backdropProps(tryClose)}>
       <div className="ornate-card w-full max-w-2xl max-h-[94vh] flex flex-col p-3 sm:p-4 gap-2"
         onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between gap-2">

@@ -69,7 +69,7 @@ export function EnemyCombatSheetModal({ participant, encounter, participants, gr
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 flex items-end sm:items-center justify-center p-2 sm:p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/75 flex items-end sm:items-center justify-center p-2 sm:p-3" {...backdropProps(onClose)}>
       <div className="ornate-card w-full max-w-lg max-h-[92vh] overflow-y-auto p-3 sm:p-4 space-y-3"
         onClick={e => e.stopPropagation()}>
         {/* Header */}

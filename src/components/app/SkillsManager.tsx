@@ -288,7 +288,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-      onClick={onClose}
+      {...backdropProps(onClose)}
     >
       <div
         className="ornate-card w-full max-w-md max-h-[88vh] overflow-y-auto p-4"

@@ -35,7 +35,7 @@ export function SkillAcquireModal({ skills, spBalance, onClose, onPurchase }: Pr
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-[70] flex items-end sm:items-center justify-center p-2 sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-[70] flex items-end sm:items-center justify-center p-2 sm:p-4" {...backdropProps(onClose)}>
       <div
         className="ornate-card w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
         onClick={e => e.stopPropagation()}

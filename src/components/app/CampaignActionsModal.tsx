@@ -23,7 +23,7 @@ export function CampaignActionsModal({ campaign, currentUserId, role: _role, onP
   const { t } = useT();
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/85 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] bg-black/85 flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div className="ornate-card p-5 max-w-sm w-full space-y-3 max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         {view === "menu" && (
           <>

@@ -739,7 +739,7 @@ function ItemActions({ item, players, dm, campaignId, allItems, allCharacters, o
     onClose();
   }
   return (
-    <div className="fixed inset-0 bg-black/80 z-[65] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/80 z-[65] flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3" onClick={e=>e.stopPropagation()}>
         <h3 className="font-display text-lg" style={isEq ? { color: RARITY_COLOR[item.rarity as Rarity] } : undefined}>{item.name}</h3>
         <p className="text-xs text-muted-foreground">

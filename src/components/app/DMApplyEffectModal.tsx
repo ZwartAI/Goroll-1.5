@@ -102,7 +102,7 @@ export function DMApplyEffectModal({ encounter, participants, dm, onClose }: Pro
       : t("combat.dmEffects.valueDot");
 
   return (
-    <div className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div
         className="ornate-card w-full max-w-md p-3 space-y-3 max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}

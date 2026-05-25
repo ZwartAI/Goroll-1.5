@@ -80,7 +80,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   }, [characterId, campaignId]);
 
   if (!character) return (
-    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <p className="text-muted-foreground">{t("sheet.loading")}</p>
     </div>
   );
@@ -158,7 +158,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-2" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-2" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-md w-full max-h-[92vh] overflow-hidden" onClick={e => e.stopPropagation()}>
         <div className="p-4 space-y-3 max-h-[92vh] overflow-y-auto">
 

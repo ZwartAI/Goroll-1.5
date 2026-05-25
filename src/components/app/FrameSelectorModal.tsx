@@ -56,7 +56,7 @@ export function FrameSelectorModal({
   return (
     <div
       className="fixed inset-0 z-[70] bg-black/90 flex items-center justify-center p-3"
-      onClick={onClose}
+      {...backdropProps(onClose)}
     >
       <div
         className="ornate-card p-4 max-w-md w-full max-h-[90vh] overflow-y-auto space-y-3"

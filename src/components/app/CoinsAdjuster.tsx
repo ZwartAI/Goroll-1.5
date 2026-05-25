@@ -81,7 +81,7 @@ export function CoinsPurseModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div
         className="ornate-card p-4 max-w-xs w-full space-y-4 relative"
         onClick={e => e.stopPropagation()}

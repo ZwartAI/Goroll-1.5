@@ -151,7 +151,7 @@ export function EnemyEditorModal({ encounter, dm, editing, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-md w-full max-h-[90vh] overflow-y-auto p-4 space-y-3" onClick={e => e.stopPropagation()}>
         <h3 className="font-display text-[var(--gold)] text-base uppercase tracking-widest">
           {isEdit ? t("combat.editEnemy") : t("combat.addEnemy")}
@@ -414,7 +414,7 @@ function EnemySkillEditor({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-3" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-3" {...backdropProps(onClose)}>
       <div className="ornate-card max-w-md w-full max-h-[90vh] overflow-y-auto p-4 space-y-2" onClick={e => e.stopPropagation()}>
         <h4 className="font-display text-[var(--gold)] text-sm uppercase tracking-widest">
           {editing ? t("bestiary.editSkill") : t("bestiary.addSkill")}

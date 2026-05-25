@@ -319,7 +319,7 @@ export function ApplyConditionModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-4" {...backdropProps(onClose)}>
       <div className="ornate-card p-4 max-w-sm w-full space-y-3" onClick={e => e.stopPropagation()}>
         <h3 className="font-display text-lg text-center">{t("conditions.modalTitle")}</h3>
 
