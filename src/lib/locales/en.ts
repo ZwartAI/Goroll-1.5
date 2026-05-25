@@ -216,6 +216,8 @@ export const en: Dict = {
     title: "Menu",
     achievements: "Achievements",
     bestiary: "Bestiary",
+    stats: "Stats",
+    settings: "Settings",
     exit: "Exit / change role",
   },
   escenario: {
@@ -286,6 +288,9 @@ export const en: Dict = {
     imgGestureHint: "Drag to move · pinch or scroll to zoom",
     imgEditFace: "Edit face",
     imgEditBody: "Edit body",
+    imgEditFrame: "Edit frame",
+    frameSelectTitle: "Select frame",
+    frameDefault: "Default",
     imgViewerNone: "No image yet — tap edit to upload.",
     imgUploadBoth: "Upload images",
     imgDeleteFace: "Remove face",
