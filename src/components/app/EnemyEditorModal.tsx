@@ -17,7 +17,8 @@ import {
   type EnemyDraft,
   type InsertPosition,
 } from "@/lib/combat";
-import { EnemyIconPicker, EnemyColorPicker, ENEMY_COLORS, ENEMY_ASSETS } from "@/components/app/EnemyIconPicker";
+import { EnemyIconPicker, EnemyColorPicker, ENEMY_COLORS, ENEMY_ASSETS, getEnemyAssetUrl } from "@/components/app/EnemyIconPicker";
+import { EnemyImageEditor, type EnemyImageState } from "@/components/app/EnemyImageEditor";
 import { NumberInput } from "@/components/app/NumberInput";
 import { PRIMARY_TIERS, TIER_VISUALS, ROLE_OPTIONS, BIOME_PRESETS, SKILL_TYPES, SKILL_SHAPES } from "@/lib/bestiary";
 import { ConfirmDialog } from "@/components/app/ConfirmDialog";
