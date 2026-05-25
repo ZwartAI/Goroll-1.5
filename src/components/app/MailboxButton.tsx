@@ -11,7 +11,7 @@ type Req = {
   requester_user_id: string;
   requester_username: string;
   status: string;
-  kind: "codm" | "player_rejoin";
+  kind: "codm" | "player_rejoin" | "player_join";
   created_at: string;
 };
 
