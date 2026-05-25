@@ -218,6 +218,8 @@ export const es = {
     title: "Menú",
     achievements: "Logros",
     bestiary: "Bestiario",
+    stats: "Estadísticas",
+    settings: "Configuración",
     exit: "Salir / cambiar rol",
   },
   escenario: {
@@ -288,6 +290,9 @@ export const es = {
     imgGestureHint: "Arrastra para mover · pellizca o rueda para zoom",
     imgEditFace: "Editar rostro",
     imgEditBody: "Editar cuerpo",
+    imgEditFrame: "Editar marco",
+    frameSelectTitle: "Seleccionar marco",
+    frameDefault: "Por defecto",
     imgViewerNone: "Aún no hay imagen — toca editar para subir.",
     imgUploadBoth: "Subir imágenes",
     imgDeleteFace: "Eliminar rostro",

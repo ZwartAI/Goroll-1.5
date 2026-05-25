@@ -27,13 +27,26 @@ const FREE_UNLOCK_THRESHOLD = 8;
 
 export function SkillsManager({ campaignId, dm, players, onlineIds }: Props) {
   const { t } = useT();
-  const [targetId, setTargetId] = useState<string>(players[0]?.id ?? "");
+  const storageKey = `skills:dm:targetId:${campaignId}`;
+  const [targetId, setTargetId] = useState<string>(() => {
+    try {
+      const saved = typeof window !== "undefined" ? window.sessionStorage.getItem(storageKey) : null;
+      if (saved && players.some(p => p.id === saved)) return saved;
+    } catch {}
+    return players[0]?.id ?? "";
+  });
   const [skills, setSkills] = useState<CharacterSkill[]>([]);
   const [sel, setSel] = useState<CharacterSkill | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
   const target = players.find(p => p.id === targetId) ?? null;
+
+  // Persist last selection across remounts (e.g. tab navigation in DM page).
+  useEffect(() => {
+    if (!targetId) return;
+    try { window.sessionStorage.setItem(storageKey, targetId); } catch {}
+  }, [targetId, storageKey]);
 
   async function reload() {
     if (!targetId) { setSkills([]); return; }

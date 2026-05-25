@@ -16,6 +16,7 @@ export function CharacterImageViewer({
   onClose,
   onEditFace,
   onEditBody,
+  onEditFrame,
 }: {
   character: any;
   canEdit: boolean;
@@ -23,6 +24,7 @@ export function CharacterImageViewer({
   onClose: () => void;
   onEditFace: () => void;
   onEditBody: () => void;
+  onEditFrame?: () => void;
 }) {
   const { t } = useT();
   const hasBody = !!character?.body_image_url;
@@ -104,7 +106,7 @@ export function CharacterImageViewer({
         )}
 
         {canEdit && bodyUrl && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 flex-wrap justify-center max-w-[95%]">
             <button
               type="button"
               className="btn-fantasy text-xs px-3 py-1.5 flex items-center gap-1"
@@ -121,6 +123,16 @@ export function CharacterImageViewer({
               <Pencil size={12} />
               {t("profile.imgEditBody")}
             </button>
+            {onEditFrame && (
+              <button
+                type="button"
+                className="btn-fantasy text-xs px-3 py-1.5 flex items-center gap-1"
+                onClick={onEditFrame}
+              >
+                <Pencil size={12} />
+                {t("profile.imgEditFrame")}
+              </button>
+            )}
           </div>
         )}
 
