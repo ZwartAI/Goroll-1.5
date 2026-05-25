@@ -111,7 +111,11 @@ export function MailboxButton({ className = "text-white" }: { className?: string
                 <div key={r.id} className="ornate-card p-3 space-y-2">
                   <p className="text-sm">
                     <span className="font-display text-[var(--gold)]">{r.requester_username}</span>{" "}
-                    {r.kind === "player_rejoin" ? t("mailbox.reqRejoin") : t("mailbox.reqCoDM")}
+                    {r.kind === "player_rejoin"
+                      ? t("mailbox.reqRejoin")
+                      : r.kind === "player_join"
+                        ? t("mailbox.reqPlayerJoin")
+                        : t("mailbox.reqCoDM")}
                   </p>
                   <p className="text-[10px] text-muted-foreground">
                     {t("mailbox.ofCampaign", { name: campaignNames[r.campaign_id] || "—" })}
