@@ -70,7 +70,7 @@ export function DeleteCampaignButton({ campaignId, campaignName, isOwner, onDele
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-[120] bg-black/85 flex items-center justify-center p-4" onClick={() => !busy && setOpen(false)}>
+        <div className="fixed inset-0 z-[120] bg-black/85 flex items-center justify-center p-4" {...backdropProps(() => !busy && setOpen(false))}>
           <div className="ornate-card p-5 max-w-sm w-full space-y-3" onClick={e => e.stopPropagation()}>
             <h3 className="font-display text-lg text-center text-[var(--loss)]">{t("campaign.deleteTitle")}</h3>
             <p className="text-sm text-center">

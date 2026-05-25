@@ -74,7 +74,7 @@ export function LevelUpModal({
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      onClick={() => setShownLevel(null)}
+      {...backdropProps(() => setShownLevel(null))}
     >
       <div
         className="ornate-card relative w-full max-w-sm p-6 text-center animate-in fade-in zoom-in-95 duration-300"

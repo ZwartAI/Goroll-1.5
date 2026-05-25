@@ -70,7 +70,7 @@ export function EnemyDuplicateModal({
   return (
     <div
       className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-3"
-      onClick={() => { if (!busy) onClose(); }}
+      {...backdropProps(() => { if (!busy) onClose(); })}
     >
       <div
         className="ornate-card max-w-md w-full p-4 space-y-3 max-h-[90vh] overflow-y-auto"

@@ -137,7 +137,7 @@ function Inventory() {
       )}
 
       {sel && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setSel(null)}>
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" {...backdropProps(() => setSel(null))}>
           <div className="ornate-card p-4 max-w-sm w-full space-y-3" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-start">
               <div>

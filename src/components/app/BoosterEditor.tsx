@@ -721,7 +721,7 @@ export function BoosterActions({
               </div>
             )}
             {showTransfer && (
-              <div className="fixed inset-0 bg-black/80 z-[80] flex items-center justify-center p-3" onClick={() => setShowTransfer(false)}>
+              <div className="fixed inset-0 bg-black/80 z-[80] flex items-center justify-center p-3" {...backdropProps(() => setShowTransfer(false))}>
                 <div className="ornate-card p-4 max-w-sm w-full max-h-[80vh] overflow-y-auto space-y-2" onClick={e => e.stopPropagation()}>
                   <h3 className="font-display text-center text-base text-[var(--gold)]">{t("boosters.pickRecipient")}</h3>
                   {members.length === 0 && (

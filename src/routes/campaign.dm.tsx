@@ -483,7 +483,7 @@ function DM() {
           onEdit={() => { setEditItem(selItem); setSelItem(null); }} />
       )}
       {editItem && (
-        <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-3" onClick={() => setEditItem(null)}>
+        <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-3" {...backdropProps(() => setEditItem(null))}>
           <div onClick={e => e.stopPropagation()}>
             <ItemEditor item={editItem} dm={dmCtx} campaignId={campaign.id} onClose={() => setEditItem(null)} />
           </div>

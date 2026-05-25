@@ -231,7 +231,7 @@ export function CombatDMPanel({ campaignId, dm, encounter, participants, groups,
       )}
 
       {confirmState && (
-        <div className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-3" onClick={() => setConfirmState(null)}>
+        <div className="fixed inset-0 z-[60] bg-black/70 flex items-center justify-center p-3" {...backdropProps(() => setConfirmState(null))}>
           <div className="ornate-card max-w-sm w-full p-4 space-y-3" onClick={e => e.stopPropagation()}>
             <p className="text-sm text-foreground">{confirmState.message}</p>
             <div className="grid grid-cols-2 gap-2">
