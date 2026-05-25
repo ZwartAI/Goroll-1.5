@@ -22,7 +22,8 @@ import {
   deleteTemplateSkill,
   reorderTemplateSkill,
 } from "@/lib/bestiary";
-import { EnemyIconPicker, EnemyColorPicker, ENEMY_COLORS, ENEMY_ASSETS } from "@/components/app/EnemyIconPicker";
+import { EnemyIconPicker, EnemyColorPicker, ENEMY_COLORS, ENEMY_ASSETS, getEnemyAssetUrl } from "@/components/app/EnemyIconPicker";
+import { EnemyImageEditor, type EnemyImageState } from "@/components/app/EnemyImageEditor";
 import { ConfirmDialog } from "@/components/app/ConfirmDialog";
 
 type Props = {
