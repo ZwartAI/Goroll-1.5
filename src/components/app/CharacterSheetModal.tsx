@@ -326,7 +326,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
         )}
         {vaultConfirm && (
           <div className="fixed inset-0 bg-black/85 z-[70] flex items-center justify-center p-4"
-            {...backdropProps((e) => { e.stopPropagation(); setVaultConfirm(null); })}>
+            {...backdropProps(() => setVaultConfirm(null))}>
             <div className="ornate-card bg-card max-w-sm w-full p-4 space-y-3" onClick={(e) => e.stopPropagation()}>
               <p className="text-sm">{t("sheet.toVaultConfirm", { name: vaultConfirm.name })}</p>
               <div className="flex justify-end gap-2">
