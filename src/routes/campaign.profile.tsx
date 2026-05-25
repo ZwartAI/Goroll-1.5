@@ -782,6 +782,21 @@ function HpModal({
   const [addVal, setAddVal] = useState("");
   const sub = parseInt(subVal, 10);
   const add = parseInt(addVal, 10);
+  const subValid = Number.isFinite(sub) && sub > 0;
+  const addValid = Number.isFinite(add) && add > 0;
+
+  async function applySubtract() {
+    if (!subValid) return;
+    await onApply(-sub);
+    setSubVal("");
+    onClose();
+  }
+  async function applyAdd() {
+    if (!addValid) return;
+    await onApply(add);
+    setAddVal("");
+    onClose();
+  }
 
   return (
     <div className="fixed inset-0 bg-black/85 z-[80] flex items-center justify-center p-4" onClick={onClose}>
@@ -800,40 +815,48 @@ function HpModal({
           </p>
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <p className="text-[9px] uppercase tracking-widest text-center text-[oklch(0.72_0.18_25)]">
+              <p className="text-[9px] uppercase tracking-widest text-center text-[oklch(0.72_0.18_300)]">
                 {t("profile.hpSubtract")}
               </p>
               <input
                 type="number" min={1} inputMode="numeric"
                 value={subVal}
                 onChange={e => setSubVal(e.target.value.replace(/[^0-9]/g, ""))}
-                onKeyDown={async (e) => {
-                  if (e.key === "Enter" && sub && sub > 0) {
-                    await onApply(-sub);
-                    setSubVal("");
-                  }
-                }}
+                onKeyDown={(e) => { if (e.key === "Enter") applySubtract(); }}
                 placeholder={t("profile.hpAmountPh")}
                 className="w-full bg-input border border-border rounded px-2 py-1.5 text-center text-sm"
               />
+              <button
+                type="button"
+                disabled={!subValid}
+                onClick={applySubtract}
+                className="w-full rounded-md px-2 py-1.5 text-xs font-display uppercase tracking-wider text-white shadow-md transition-transform active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: "linear-gradient(135deg, oklch(0.45 0.18 300), oklch(0.32 0.16 295))" }}
+              >
+                {t("profile.hpSubtract")}
+              </button>
             </div>
             <div className="space-y-1">
-              <p className="text-[9px] uppercase tracking-widest text-center text-[var(--gold)]">
+              <p className="text-[9px] uppercase tracking-widest text-center text-[oklch(0.78_0.18_145)]">
                 {t("profile.hpAdd")}
               </p>
               <input
                 type="number" min={1} inputMode="numeric"
                 value={addVal}
                 onChange={e => setAddVal(e.target.value.replace(/[^0-9]/g, ""))}
-                onKeyDown={async (e) => {
-                  if (e.key === "Enter" && add && add > 0) {
-                    await onApply(add);
-                    setAddVal("");
-                  }
-                }}
+                onKeyDown={(e) => { if (e.key === "Enter") applyAdd(); }}
                 placeholder={t("profile.hpAmountPh")}
                 className="w-full bg-input border border-border rounded px-2 py-1.5 text-center text-sm"
               />
+              <button
+                type="button"
+                disabled={!addValid}
+                onClick={applyAdd}
+                className="w-full rounded-md px-2 py-1.5 text-xs font-display uppercase tracking-wider text-white shadow-md transition-transform active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: "linear-gradient(135deg, oklch(0.62 0.18 145), oklch(0.42 0.16 150))" }}
+              >
+                {t("profile.hpAdd")}
+              </button>
             </div>
           </div>
         </div>
