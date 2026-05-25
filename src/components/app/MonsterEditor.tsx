@@ -245,6 +245,14 @@ export function MonsterEditor({ campaignId, dm, editing, onClose, onSaved }: Pro
           <Field label={t("combat.icon")}>
             <EnemyIconPicker value={icon} onChange={setIcon} />
           </Field>
+          <Field label={t("bestiary.customImage")}>
+            <EnemyImageEditor
+              value={image}
+              onChange={setImage}
+              fallbackUrl={getEnemyAssetUrl(icon)}
+              storageKey={`enemy/${campaignId}`}
+            />
+          </Field>
           <Field label={t("bestiary.visualAsset")}>
             <div className="grid grid-cols-6 gap-1.5">
               {(["normal","elite","boss","god","hero_female","hero_male"] as const).map(k => {
