@@ -856,12 +856,14 @@ function DMHeader({
   onLogout: () => void;
 }) {
   const [mailboxOpen, setMailboxOpen] = useState(false);
+  const [appSettingsOpen, setAppSettingsOpen] = useState(false);
   const items = useStandardHeaderItems({
     achievements: true,
     bestiary: true,
     mailbox: { onOpen: () => setMailboxOpen(true) },
     mic: { enabled: voice.enabled, toggle: voice.toggle },
     fullscreen: true,
+    settings: { onOpen: () => setAppSettingsOpen(true) },
     exit: { onExit: onLogout },
   });
   return (
@@ -875,6 +877,7 @@ function DMHeader({
         <HeaderMenu items={items} />
       </div>
       <MailboxInlineModal open={mailboxOpen} onClose={() => setMailboxOpen(false)} />
+      {appSettingsOpen && <AppSettingsModal onClose={() => setAppSettingsOpen(false)} />}
     </header>
   );
 }
