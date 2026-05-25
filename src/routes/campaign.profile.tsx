@@ -545,6 +545,7 @@ function Profile() {
           onClose={() => setPurseOpen(false)}
         />
       )}
+      </div>
     </PageFrame>
   );
 }
