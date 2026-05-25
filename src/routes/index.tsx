@@ -335,6 +335,15 @@ function Home() {
           toast.success(t("rejoin.approved"));
           setWaitingReqId(null);
           setStep("character");
+        } else if (waitingKind === "player_join") {
+          // DM accepted: server-side membership was created by the approval handler.
+          // Make sure we are registered as a player member here too (safety net).
+          await (supabase as any).from("campaign_members")
+            .upsert({ campaign_id: campaign.id, user_id: user.id, role: "player" },
+              { onConflict: "campaign_id,user_id" });
+          toast.success(t("playerJoin.approved"));
+          setWaitingReqId(null);
+          setStep("character");
         } else {
           toast.success(t("home.reqApproved"));
           await enterAsDM(campaign);
@@ -342,6 +351,8 @@ function Home() {
       } else {
         if (waitingKind === "player_rejoin") {
           toast.error(t("rejoin.rejected"));
+        } else if (waitingKind === "player_join") {
+          toast.error(t("playerJoin.rejected"));
         } else {
           const cooldownUntil = Date.now() + 60_000;
           try { localStorage.setItem(COOLDOWN_KEY(campaign.id), String(cooldownUntil)); } catch {}
