@@ -65,7 +65,10 @@ export type CombatParticipant = {
   enemy_biome: string | null;
   enemy_base_damage: string | null;
   enemy_behavior: string | null;
-
+  // Custom image framing (image_url already lives above).
+  enemy_image_offset_x: number | null;
+  enemy_image_offset_y: number | null;
+  enemy_image_scale: number | null;
 };
 
 export function isEnemy(p: CombatParticipant): boolean {
