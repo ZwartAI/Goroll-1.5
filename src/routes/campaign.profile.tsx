@@ -35,6 +35,8 @@ import {
 import { MicSettingsModal } from "@/components/app/MicSettingsModal";
 import { HeaderMenu, MailboxInlineModal, useStandardHeaderItems } from "@/components/app/HeaderMenu";
 import { CharacterImageViewer } from "@/components/app/CharacterImageViewer";
+import { FrameSelectorModal } from "@/components/app/FrameSelectorModal";
+import { AppSettingsModal } from "@/components/app/AppSettingsModal";
 import { useVoice } from "@/lib/useVoice";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -74,6 +76,7 @@ function Profile() {
   const [imgModal, setImgModal] = useState<null | "face" | "body">(null);
   const [imgViewer, setImgViewer] = useState(false);
   const [imgViewerCharId, setImgViewerCharId] = useState<string | null>(null);
+  const [frameSelectOpen, setFrameSelectOpen] = useState(false);
 
   const [hpModal, setHpModal] = useState(false);
   const [purseOpen, setPurseOpen] = useState(false);
@@ -417,6 +420,14 @@ function Profile() {
           onClose={() => setImgViewer(false)}
           onEditFace={() => { setImgViewer(false); setImgModal("face"); }}
           onEditBody={() => { setImgViewer(false); setImgModal("body"); }}
+          onEditFrame={() => { setImgViewer(false); setFrameSelectOpen(true); }}
+        />
+      )}
+      {frameSelectOpen && (
+        <FrameSelectorModal
+          characterId={character.id}
+          currentUrl={(character as any).portrait_frame_url}
+          onClose={() => setFrameSelectOpen(false)}
         />
       )}
       {imgViewerCharId && (() => {
