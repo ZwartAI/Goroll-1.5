@@ -132,6 +132,10 @@ export function CampaignMembersEditor({ campaign, onBack }: { campaign: Campaign
           await (supabase as any).from("campaign_members")
             .upsert({ campaign_id: r.campaign_id, user_id: r.requester_user_id, role: "player" },
               { onConflict: "campaign_id,user_id" });
+        } else if (r.kind === "player_join") {
+          await (supabase as any).from("campaign_members")
+            .upsert({ campaign_id: r.campaign_id, user_id: r.requester_user_id, role: "player" },
+              { onConflict: "campaign_id,user_id" });
         } else {
           await (supabase as any).from("campaign_members")
             .upsert({ campaign_id: r.campaign_id, user_id: r.requester_user_id, role: "dm" },
