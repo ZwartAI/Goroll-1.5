@@ -1026,7 +1026,7 @@ function MassGrant({ campaignId, dm, players, onlineIds }: {
       </div>
       <div className="grid grid-cols-2 gap-2 pt-1">
         <div className="space-y-1">
-          <input type="number" className="w-full bg-input border border-border rounded px-2 py-1 text-sm text-right" value={sp} onChange={e => setSp(+e.target.value)} />
+          <input type="number" className="w-full bg-input border border-border rounded px-2 py-1 text-sm text-left" value={sp} onChange={e => setSp(+e.target.value)} />
           <button className="btn-fantasy w-full text-xs" disabled={!sel.size || sp === 0} onClick={() => setConfirmKind("sp")}
             style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}>
             {t("skills.giveSpToSelected", { n: sel.size })}
