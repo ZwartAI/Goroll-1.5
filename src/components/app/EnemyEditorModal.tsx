@@ -17,7 +17,8 @@ import {
   type EnemyDraft,
   type InsertPosition,
 } from "@/lib/combat";
-import { EnemyIconPicker, EnemyColorPicker, ENEMY_COLORS, ENEMY_ASSETS } from "@/components/app/EnemyIconPicker";
+import { EnemyIconPicker, EnemyColorPicker, ENEMY_COLORS, ENEMY_ASSETS, getEnemyAssetUrl } from "@/components/app/EnemyIconPicker";
+import { EnemyImageEditor, type EnemyImageState } from "@/components/app/EnemyImageEditor";
 import { NumberInput } from "@/components/app/NumberInput";
 import { PRIMARY_TIERS, TIER_VISUALS, ROLE_OPTIONS, BIOME_PRESETS, SKILL_TYPES, SKILL_SHAPES } from "@/lib/bestiary";
 import { ConfirmDialog } from "@/components/app/ConfirmDialog";
@@ -57,6 +58,12 @@ export function EnemyEditorModal({ encounter, dm, editing, onClose }: Props) {
   const [behavior, setBehavior] = useState<string>((editing as any)?.enemy_behavior || "");
   const [count, setCount] = useState(1);
   const [position, setPosition] = useState<InsertPosition>("byInitiative");
+  const [image, setImage] = useState<EnemyImageState>({
+    url: (editing as any)?.image_url || "",
+    offsetX: (editing as any)?.enemy_image_offset_x ?? 50,
+    offsetY: (editing as any)?.enemy_image_offset_y ?? 50,
+    scale: (editing as any)?.enemy_image_scale ?? 1,
+  });
   const [busy, setBusy] = useState(false);
 
   // Skills (snapshot per enemy participant).
@@ -113,6 +120,10 @@ export function EnemyEditorModal({ encounter, dm, editing, onClose }: Props) {
       biome: biome || null,
       base_damage: baseDamage.trim() || null,
       behavior: behavior.trim() || null,
+      image_url: image.url || null,
+      image_offset_x: image.offsetX,
+      image_offset_y: image.offsetY,
+      image_scale: image.scale,
     };
 
     if (isEdit && editing) {
@@ -206,6 +217,15 @@ export function EnemyEditorModal({ encounter, dm, editing, onClose }: Props) {
               );
             })}
           </div>
+        </Field>
+
+        <Field label={t("bestiary.customImage")}>
+          <EnemyImageEditor
+            value={image}
+            onChange={setImage}
+            fallbackUrl={getEnemyAssetUrl(icon)}
+            storageKey={`enemy/${encounter.campaign_id}`}
+          />
         </Field>
 
         <Field label={t("combat.icon")}>

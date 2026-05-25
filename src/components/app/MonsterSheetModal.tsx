@@ -6,7 +6,7 @@ import {
   type EnemyTemplate,
   type EnemyTemplateSkill,
 } from "@/lib/bestiary";
-import { EnemyIcon, getEnemyAssetUrl } from "@/components/app/EnemyIconPicker";
+import { EnemyIcon, getEnemyAssetUrl, getEnemyCustomImage } from "@/components/app/EnemyIconPicker";
 import { RarityBadge } from "@/components/app/RarityBadge";
 import { StatText } from "@/components/app/StatText";
 
@@ -29,7 +29,7 @@ export function MonsterSheetModal({ template, onClose, onEdit, onAddToCombat }: 
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 relative"
             style={{ borderColor: template.color, color: template.color }}>
-            <EnemyIcon name={template.icon_key} size={28} fill={!!getEnemyAssetUrl(template.icon_key)} />
+            <EnemyIcon name={template.icon_key} size={28} fill={!!getEnemyAssetUrl(template.icon_key) || !!getEnemyCustomImage(template)} customImage={getEnemyCustomImage(template)} />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-display text-base truncate" style={{ color: template.color }}>{template.name}</h3>
