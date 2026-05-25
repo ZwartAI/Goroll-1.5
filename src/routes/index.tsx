@@ -644,19 +644,41 @@ function Home() {
         </div>
       )}
 
+      {!waitingReqId && closedCampaign && (
+        <div className="ornate-card p-6 space-y-4 text-center">
+          <div className="text-5xl">🔒</div>
+          <h2 className="font-display text-lg text-[var(--loss)]">{t("playerJoin.closedTitle")}</h2>
+          <p className="text-sm text-muted-foreground">{t("playerJoin.closedBody")}</p>
+          <p className="text-xs text-muted-foreground">{closedCampaign.name}</p>
+          <button className="btn-fantasy w-full" onClick={() => setClosedCampaign(null)}>
+            {t("playerJoin.close")}
+          </button>
+        </div>
+      )}
+
       {waitingReqId && campaign && (
         <div className="ornate-card p-6 space-y-4 text-center">
           <div className="text-5xl">⏳</div>
           <h2 className="font-display text-lg text-[var(--gold)]">
-            {waitingKind === "player_rejoin" ? t("rejoin.waitingTitle") : t("home.waitingTitle")}
+            {waitingKind === "player_rejoin"
+              ? t("rejoin.waitingTitle")
+              : waitingKind === "player_join"
+                ? t("playerJoin.waitingTitle")
+                : t("home.waitingTitle")}
           </h2>
           <p className="text-sm text-muted-foreground">
             {waitingKind === "player_rejoin"
               ? t("rejoin.waitingBody", { name: campaign.name })
-              : t("home.waitingBody", { name: campaign.name })}
+              : waitingKind === "player_join"
+                ? t("playerJoin.waitingBody", { name: campaign.name })
+                : t("home.waitingBody", { name: campaign.name })}
           </p>
           <button className="btn-fantasy w-full" onClick={cancelCoDMRequest}>
-            {waitingKind === "player_rejoin" ? t("rejoin.cancel") : t("home.cancelRequest")}
+            {waitingKind === "player_rejoin"
+              ? t("rejoin.cancel")
+              : waitingKind === "player_join"
+                ? t("playerJoin.cancel")
+                : t("home.cancelRequest")}
           </button>
         </div>
       )}
