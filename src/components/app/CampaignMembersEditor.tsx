@@ -153,7 +153,7 @@ export function CampaignMembersEditor({ campaign, onBack }: { campaign: Campaign
     setBusy(true);
     try {
       await (supabase as any).from("campaigns")
-        .update({ single_dm_only: singleDmOnly, lock_character_names: lockNames })
+        .update({ single_dm_only: singleDmOnly, lock_character_names: lockNames, player_join_mode: joinMode })
         .eq("id", campaign.id);
       toastSaved();
     } finally { setBusy(false); }
