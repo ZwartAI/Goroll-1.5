@@ -88,6 +88,7 @@ export function EnemyAttackPlayersModal({ enemy, onClose }: Props) {
       useDefense,
       distribution: selected.size > 1 ? distribution : "individual",
       spreadToLinkGroup: spread && anySelectedLinked,
+      encounterId: combat.encounter?.id,
     });
     setBusy(false);
     if (!r.ok) { toast.error(t("combat.saveError")); return; }
