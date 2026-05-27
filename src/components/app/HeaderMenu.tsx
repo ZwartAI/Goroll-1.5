@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 import {
   ChevronLeft, ChevronRight, X,
-  Mail, Trophy, Skull, Mic, MicOff, Maximize2, Minimize2, LogOut, BarChart3, Settings as SettingsIcon,
+  Mail, Trophy, Skull, Users, Mic, MicOff, Maximize2, Minimize2, LogOut, BarChart3, Settings as SettingsIcon,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
