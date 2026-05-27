@@ -230,6 +230,7 @@ export const en: Dict = {
     title: "Menu",
     achievements: "Achievements",
     bestiary: "Bestiary",
+    npcs: "NPCs",
     stats: "Stats",
     settings: "Settings",
     exit: "Exit / change role",
