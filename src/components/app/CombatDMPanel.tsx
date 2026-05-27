@@ -43,6 +43,10 @@ export function CombatDMPanel({ campaignId, dm, encounter, participants, groups,
   const [pickingTemplate, setPickingTemplate] = useState(false);
   const [applyingEffect, setApplyingEffect] = useState(false);
   const [confirmState, setConfirmState] = useState<{ message: string; onConfirm: () => void } | null>(null);
+  const [showManager, setShowManager] = useState(false);
+  const [confirmingEndTurn, setConfirmingEndTurn] = useState(false);
+  const [endingTurn, setEndingTurn] = useState(false);
+
 
   const canAddEnemy = encounter && status !== "ended";
 
