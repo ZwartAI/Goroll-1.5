@@ -1430,6 +1430,16 @@ export const en: Dict = {
     spReward: "You received +1 Skill Point",
     ok: "Ok",
   },
+  levelAdjust: {
+    title: "Adjust level",
+    increase: "Level up",
+    decrease: "Level down",
+    logUp: "raised",
+    logDown: "lowered",
+    logLevelTo: "to level {level}",
+    logSpAdd: "+1 SP",
+    logSpSub: "−1 SP",
+  },
   spMgmt: {
     title: "Level and Skill Points Management",
     levelUp: "Level up",

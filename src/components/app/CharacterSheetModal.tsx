@@ -12,6 +12,7 @@ import { BoosterPeek } from "@/components/app/BoosterEditor";
 import { SkillCard, type CharacterSkill } from "@/components/app/SkillCard";
 import { SkillDetailModal } from "@/components/app/SkillDetailModal";
 import { backdropProps } from "@/lib/modalBackdrop";
+import { LevelAdjustModal } from "@/components/app/LevelAdjustModal";
 
 type Props = {
   characterId: string;
@@ -35,6 +36,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   const [showNotes, setShowNotes] = useState(false);
   const [vaultConfirm, setVaultConfirm] = useState<Booster | null>(null);
   const [peekBooster, setPeekBooster] = useState<Booster | null>(null);
+  const [levelAdjustOpen, setLevelAdjustOpen] = useState(false);
 
   async function reload() {
     const [a, b, c, d, e] = await Promise.all([
@@ -188,7 +190,20 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
           );
         })()}
         <div className="grid grid-cols-6 gap-1.5 text-center text-xs">
-          <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("level.short")}</p><p className="font-display text-sm text-[var(--gold)]">{(character as any).level ?? 1}</p></div>
+          {isEdit ? (
+            <button
+              type="button"
+              onClick={() => setLevelAdjustOpen(true)}
+              className="ornate-card p-2 text-center hover:border-[var(--gold)]/60 transition cursor-pointer"
+              aria-label={t("levelAdjust.title")}
+              title={t("levelAdjust.title")}
+            >
+              <p className="text-muted-foreground text-[9px] uppercase">{t("level.short")}</p>
+              <p className="font-display text-sm text-[var(--gold)]">{(character as any).level ?? 1}</p>
+            </button>
+          ) : (
+            <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("level.short")}</p><p className="font-display text-sm text-[var(--gold)]">{(character as any).level ?? 1}</p></div>
+          )}
           <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("sheet.life")}</p><p className="font-display text-[11px] sm:text-sm leading-[1.05] tabular-nums text-center"><span className="block">{character.current_hp}</span><span className="block opacity-70">/{stats.maxHp}</span></p></div>
           <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("sheet.def")}</p><p className="font-display text-sm text-[var(--gold)]">{stats.defense}</p></div>
           <div className="ornate-card p-2"><p className="text-muted-foreground text-[9px] uppercase">{t("sheet.vel")}</p><p className="font-display text-sm">{character.velocity}</p></div>
@@ -381,6 +396,14 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
             players={[]}
             hideDiscard
             onClose={() => setPeekBooster(null)}
+          />
+        )}
+        {levelAdjustOpen && editor && character && (
+          <LevelAdjustModal
+            character={character}
+            campaignId={campaignId}
+            editor={editor}
+            onClose={() => setLevelAdjustOpen(false)}
           />
         )}
         </div>

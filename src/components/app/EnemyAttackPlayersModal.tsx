@@ -268,7 +268,7 @@ export function EnemyAttackPlayersModal({ enemy, onClose }: Props) {
           skill={useSkill}
           initialResolvedTargets={selectedNames}
           skipDamageApplication
-          onClose={() => { setUseSkill(null); onClose(); }}
+          onClose={() => setUseSkill(null)}
         />
       )}
     </div>
