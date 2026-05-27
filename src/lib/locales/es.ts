@@ -1142,6 +1142,11 @@ export const es = {
     confirmDeletePin: "¿Quitar este turno adicional?",
     actions: "Acciones",
     hideActions: "Ocultar acciones",
+    activeTurnBadge: "EN TURNO",
+    extraTurnActive: "Turno extra activo",
+    extraTurnsCount: "{n} turnos extra",
+    extraTurnsCountOne: "1 turno extra",
+    activeEntity: "Entidad activa",
     sheet: "Ficha",
     effects: {
       title: "Efectos activos",

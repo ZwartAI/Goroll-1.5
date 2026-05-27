@@ -72,22 +72,41 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
     pinsByEnemy.set(p.linked_participant_id, arr);
   }
 
+  // Visual sort: keep the active entity (or the linked entity of an active pin)
+  // at the top of the DM grid. Does NOT mutate combat order.
+  const activeEntityId =
+    active?.kind === "solo" && isEnemy(active.participant) ? active.participant.id
+    : active?.kind === "pin" ? active.linked.id
+    : null;
+  const sortedEnemies = activeEntityId
+    ? [...enemies].sort((a, b) => {
+        if (a.id === activeEntityId) return -1;
+        if (b.id === activeEntityId) return 1;
+        return a.order_index - b.order_index;
+      })
+    : enemies;
+
   return (
     <div className="space-y-2">
       <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">
         {t("combat.enemies")}
       </p>
-      {enemies.map(p => {
-        const isActive = active?.kind === "solo" && active.participant.id === p.id;
-        const myPins = pinsByEnemy.get(p.id) || [];
-        return (
-          <div key={p.id} className="space-y-1">
-            <EnemyRow
+      <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+        {sortedEnemies.map(p => {
+          const isActiveSolo = active?.kind === "solo" && active.participant.id === p.id;
+          const myPins = pinsByEnemy.get(p.id) || [];
+          const activePin = active?.kind === "pin" && active.linked.id === p.id ? active.pin : null;
+          const isActive = isActiveSolo || !!activePin;
+          return (
+            <EnemyCardCompact
+              key={p.id}
               p={p}
               shield={shieldByEnemy[p.id] || 0}
               isActive={isActive}
+              isExtraTurnActive={!!activePin}
               encounter={encounter}
               blocks={blocks}
+              pins={myPins}
               actionsOpen={openActionsId === p.id}
               onToggleActions={() => setOpenActionsId(prev => (prev === p.id ? null : p.id))}
               onEdit={() => setEditing(p)}
@@ -96,30 +115,16 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
               onSheet={() => setSheet(p)}
               onDuplicate={() => setDuplicating(p)}
               onRemove={() => setRemoving(p)}
+              onDeletePin={(pin) => setRemovingPin(pin)}
               onAddPin={async () => {
                 const r = await addTurnPin(encounter, p);
                 if (!r.ok) toast.error(t("combat.saveError"));
                 else toast.success(t("combat.pinAdded"));
               }}
             />
-            {myPins.map(pin => {
-              const pinActive = active?.kind === "pin" && active.pin.id === pin.id;
-              return (
-                <PinRow
-                  key={pin.id}
-                  pin={pin}
-                  linked={p}
-                  isActive={pinActive}
-                  encounter={encounter}
-                  blocks={blocks}
-                  onDelete={() => setRemovingPin(pin)}
-                  onOpenSheet={() => setSheet(p)}
-                />
-              );
-            })}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
 
       {editing && (
         <EnemyEditorModal encounter={encounter} dm={dm} editing={editing} onClose={() => setEditing(null)} />
@@ -161,7 +166,6 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
         onCancel={() => setRemoving(null)}
         onConfirm={async () => {
           if (!removing) return;
-          // Also delete its pins (cascade not declared on DB).
           const myPins = pinsByEnemy.get(removing.id) || [];
           await Promise.all(myPins.map(p => deleteTurnPin(p)));
           const r = await removeEnemy(removing, encounter, dm);
@@ -189,184 +193,208 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
   );
 }
 
-function EnemyRow({
-  p, shield, isActive, encounter, blocks, actionsOpen, onToggleActions,
-  onEdit, onDamage, onHeal, onSheet, onDuplicate, onRemove, onAddPin,
+/** Maps an enemy participant to its glow accent color (npc disposition aware). */
+function accentColorFor(p: CombatParticipant): string {
+  const npcId = (p as any).npc_template_id as string | null | undefined;
+  const disp = (p as any).npc_disposition as ("ally" | "neutral" | "hostile" | null | undefined);
+  if (npcId) {
+    if (disp === "hostile") return "var(--loss)";
+    if (disp === "ally") return "var(--gain)";
+    return "var(--gold)";
+  }
+  return p.enemy_color || "var(--loss)";
+}
+
+function EnemyCardCompact({
+  p, shield, isActive, isExtraTurnActive, encounter, blocks, pins,
+  actionsOpen, onToggleActions,
+  onEdit, onDamage, onHeal, onSheet, onDuplicate, onRemove, onAddPin, onDeletePin,
 }: {
   p: CombatParticipant;
   shield: number;
   isActive: boolean;
+  isExtraTurnActive: boolean;
   encounter: CombatEncounter;
   blocks: ReturnType<typeof buildOrderedTurns>;
+  pins: CombatTurnPin[];
   actionsOpen: boolean;
   onToggleActions: () => void;
   onEdit: () => void; onDamage: () => void; onHeal: () => void; onSheet: () => void;
   onDuplicate: () => void; onRemove: () => void; onAddPin: () => void;
+  onDeletePin: (pin: CombatTurnPin) => void;
 }) {
   const { t } = useT();
   const max = p.enemy_max_hp || 1;
   const cur = p.enemy_hp || 0;
   const baseColor = p.enemy_color || "var(--loss)";
+  const accent = accentColorFor(p);
   const lp = useLongPress(onSheet, 450);
   const customImg = getEnemyCustomImage(p);
   const isTierAsset = !!customImg || !!getEnemyAssetUrl(p.enemy_icon);
+  const isNpc = !!(p as any).npc_template_id;
+  const disp = (p as any).npc_disposition as ("ally" | "neutral" | "hostile" | null | undefined);
+
+  // Subdued styling for inactive cards; bold styling for active.
+  const cardStyle: React.CSSProperties = isActive
+    ? {
+        borderColor: accent,
+        background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 18%, var(--card)), var(--card))`,
+        boxShadow: `0 0 0 2px ${accent}, 0 0 20px color-mix(in oklab, ${accent} 55%, transparent), inset 0 0 24px color-mix(in oklab, ${accent} 14%, transparent)`,
+        opacity: p.is_defeated ? 0.55 : 1,
+      }
+    : {
+        borderColor: `color-mix(in oklab, ${baseColor} 45%, transparent)`,
+        opacity: p.is_defeated ? 0.5 : 0.97,
+      };
 
   return (
-    <div
-      className="ornate-card !p-3 transition"
-      style={{
-        borderColor: isActive ? "var(--loss)" : `color-mix(in oklab, ${baseColor} 55%, transparent)`,
-        opacity: p.is_defeated ? 0.55 : 1,
-        boxShadow: isActive ? `0 0 0 1px var(--loss), 0 0 18px color-mix(in oklab, ${baseColor} 50%, transparent)` : undefined,
-      }}
-    >
-      <div className="flex items-stretch gap-3">
-        {/* Left: large avatar */}
-        <div
-          className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card relative shrink-0 self-center cursor-pointer select-none"
+    <div className="ornate-card !p-2 transition flex flex-col gap-1.5" style={cardStyle}>
+      {/* Header: avatar + name + INI + ACTIVE badge */}
+      <div className="flex items-start gap-2">
+        <button
+          type="button"
+          className="w-[52px] h-[52px] rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 select-none"
           style={{ borderColor: baseColor, color: baseColor }}
           {...{ onMouseDown: lp.onMouseDown, onMouseUp: lp.onMouseUp, onMouseLeave: lp.onMouseLeave, onTouchStart: lp.onTouchStart, onTouchEnd: lp.onTouchEnd, onTouchCancel: lp.onTouchCancel }}
           onClick={() => { if (!lp.didLongPress()) onSheet(); }}
           title={t("combat.enemy.openSheet")}
         >
-          <EnemyIcon name={p.enemy_icon} size={56} fill={isTierAsset} customImage={customImg} />
-        </div>
-
-        {/* Right: info + actions */}
-        <div className="min-w-0 flex-1 flex flex-col gap-1.5">
-          <div className="flex items-start gap-2">
-            <div className="min-w-0 flex-1">
-              <p className="font-display text-base sm:text-lg leading-tight truncate" style={{ color: baseColor }}>
-                {p.display_name}
-              </p>
-              <p className="text-[10px] sm:text-[11px] text-muted-foreground font-display uppercase tracking-wider">
-                DEF {p.enemy_defense || 0} · SPD {p.enemy_speed || "—"} · INI {p.initiative}
-              </p>
-            </div>
+          <EnemyIcon name={p.enemy_icon} size={30} fill={isTierAsset} customImage={customImg} />
+        </button>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1">
+            <p className="font-display text-sm leading-tight truncate flex-1" style={{ color: baseColor }}>
+              {p.display_name}
+            </p>
+            <span className="font-display text-[11px] px-1.5 py-0.5 rounded border border-[var(--gold)]/60 text-[var(--gold)] bg-card shrink-0">
+              {p.initiative}
+            </span>
           </div>
-
-          <HpShieldBar current={cur} max={max} shield={shield} height={10} hideLabel />
-          <p className="text-[10px] sm:text-[11px] text-muted-foreground font-display text-center">
-            {cur} / {max} HP{shield > 0 && <span className="ml-1.5 text-cyan-300">· 🛡️ +{shield}</span>}
-          </p>
-
-          {/* Active effects strip (Phase 1) */}
-          <EnemyEffectsStrip participantId={p.id} encounterId={encounter.id} />
-
-          {isActive && !p.is_defeated && (
-            <button
-              className="btn-fantasy w-full text-xs sm:text-sm py-1.5 flex items-center justify-center gap-1.5 font-display"
-              style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
-              onClick={() => dmEndEnemyTurn(encounter, blocks)}>
-              <FastForward size={14} /> {t("combat.endEnemyTurn")}
-            </button>
-          )}
-
-          {/* Compact "Actions" toggle (Phase 1): hidden by default to reduce visual noise */}
-          {!actionsOpen ? (
-            <button
-              type="button"
-              className="btn-fantasy w-full text-xs py-1.5 flex items-center justify-center gap-1.5 font-display uppercase tracking-wider"
-              style={{
-                background: "linear-gradient(180deg, oklch(0.32 0.10 250), oklch(0.22 0.08 250))",
-                color: "white",
-                borderColor: "oklch(0.45 0.10 240)",
-              }}
-              onClick={onToggleActions}
-              title={t("combat.actions")}
-              aria-expanded={false}
+          <div className="flex items-center gap-1 mt-0.5 flex-wrap">
+            <span
+              className="text-[9px] font-display uppercase tracking-widest px-1.5 py-0.5 rounded"
+              style={isNpc
+                ? { background: `color-mix(in oklab, ${accent} 22%, transparent)`, color: accent, border: `1px solid ${accent}` }
+                : { background: "color-mix(in oklab, var(--loss) 22%, transparent)", color: "var(--loss)" }}
             >
-              <ChevronDown size={14} /> {t("combat.actions")}
-            </button>
-          ) : (
-            <div className="space-y-1">
-              <div className="grid grid-cols-5 gap-1.5">
-                <IconBtn label={t("combat.damage")} icon={<Sword className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--loss) 70%, var(--card))" onClick={onDamage} />
-                <IconBtn label={t("combat.heal")} icon={<Heart className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--gain) 70%, var(--card))" onClick={onHeal} />
-                <IconBtn label={t("combat.edit")} icon={<Edit3 className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, oklch(0.55 0.12 240) 55%, var(--card))" onClick={onEdit} />
-                <IconBtn label={t("combat.duplicate.label")} icon={<Copy className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, oklch(0.45 0.10 240) 60%, var(--card))" onClick={onDuplicate} />
-                <IconBtn label={t("combat.remove")} icon={<Trash2 className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--loss) 55%, black)" onClick={onRemove} />
-              </div>
-              <button
-                type="button"
-                className="btn-fantasy w-full text-[10px] py-1 flex items-center justify-center gap-1 font-display uppercase tracking-wider"
-                style={{ background: "transparent", borderStyle: "dashed", color: "var(--muted-foreground)" }}
-                onClick={onToggleActions}
-                title={t("combat.hideActions")}
-              >
-                <X size={11} /> {t("combat.hideActions")}
-              </button>
-            </div>
-          )}
-
+              {isNpc ? t("combat.npcLabel") : t("combat.enemyLabel")}
+            </span>
+            {isNpc && disp && (
+              <span className="text-[9px] font-display uppercase tracking-widest px-1.5 py-0.5 rounded"
+                style={{ background: `color-mix(in oklab, ${accent} 14%, transparent)`, color: accent, border: `1px solid ${accent}` }}>
+                {t(`npcs.disp_${disp}`)}
+              </span>
+            )}
+            {isActive && (
+              <span className="text-[9px] font-display uppercase tracking-widest px-1.5 py-0.5 rounded-full whitespace-nowrap"
+                style={{ background: accent, color: "white" }}>
+                {t("combat.activeTurnBadge")}
+              </span>
+            )}
+          </div>
+          <p className="text-[10px] text-muted-foreground font-display uppercase tracking-wider mt-0.5">
+            DEF {p.enemy_defense || 0} · SPD {p.enemy_speed || "—"}
+          </p>
         </div>
       </div>
 
-      {/* Add turn pin */}
-      <button
-        className="btn-fantasy w-full text-[10px] py-1 mt-2 flex items-center justify-center gap-1 border border-dashed"
-        style={{ background: "transparent", borderColor: `color-mix(in oklab, ${baseColor} 55%, transparent)`, color: baseColor }}
-        onClick={onAddPin}
-        title={t("combat.addTurnPinHint")}>
-        <Pin size={12} /> {t("combat.addTurnPin")}
-      </button>
-    </div>
-  );
-}
-
-function PinRow({
-  pin, linked, isActive, encounter, blocks, onDelete, onOpenSheet,
-}: {
-  pin: CombatTurnPin;
-  linked: CombatParticipant;
-  isActive: boolean;
-  encounter: CombatEncounter;
-  blocks: ReturnType<typeof buildOrderedTurns>;
-  onDelete: () => void;
-  onOpenSheet: () => void;
-}) {
-  const { t } = useT();
-  const baseColor = linked.enemy_color || "var(--loss)";
-  const customImg = getEnemyCustomImage(linked);
-  const isTierAsset = !!customImg || !!getEnemyAssetUrl(linked.enemy_icon);
-  const inactive = linked.is_defeated || !pin.is_active;
-  return (
-    <div
-      className="ornate-card !p-2 flex items-center gap-2 ml-3 transition"
-      style={{
-        borderColor: isActive ? "var(--loss)" : `color-mix(in oklab, ${baseColor} 45%, transparent)`,
-        borderStyle: "dashed",
-        opacity: inactive ? 0.5 : 1,
-      }}
-    >
-      <button
-        onClick={onOpenSheet}
-        className="w-8 h-8 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 relative"
-        style={{ borderColor: baseColor, color: baseColor }}>
-        <EnemyIcon name={linked.enemy_icon} size={16} fill={isTierAsset} customImage={customImg} />
-      </button>
-      <div className="min-w-0 flex-1">
-        <p className="font-display text-xs truncate" style={{ color: baseColor }}>
-          {pin.label || `${t("combat.enemyTurnOf")} ${linked.display_name}`}
-        </p>
-        <p className="text-[9px] uppercase tracking-widest text-muted-foreground">
-          {t("combat.extraTurn")}
+      {/* HP bar with inline text */}
+      <div className="space-y-0.5">
+        <HpShieldBar current={cur} max={max} shield={shield} height={8} hideLabel />
+        <p className="text-[10px] text-muted-foreground font-display text-center leading-none">
+          {cur} / {max} HP{shield > 0 && <span className="ml-1.5 text-cyan-300">· 🛡️ +{shield}</span>}
         </p>
       </div>
-      {isActive && !inactive && (
+
+      {/* Effects strip */}
+      <EnemyEffectsStrip participantId={p.id} encounterId={encounter.id} />
+
+      {/* Extra-turn chips */}
+      {pins.length > 0 && (
+        <div className="flex items-center gap-1 flex-wrap">
+          <span className="text-[9px] font-display uppercase tracking-widest text-muted-foreground">
+            {pins.length === 1 ? t("combat.extraTurnsCountOne") : t("combat.extraTurnsCount", { n: pins.length })}
+          </span>
+          {pins.map(pin => {
+            const pinActive = isExtraTurnActive && pins.find(x => x.id === pin.id) && (blocks.some(b => b.kind === "pin" && b.pin.id === pin.id));
+            return (
+              <span key={pin.id}
+                className="inline-flex items-center gap-1 text-[10px] font-display px-1.5 py-0.5 rounded-full border"
+                style={pinActive
+                  ? { background: `color-mix(in oklab, ${accent} 30%, transparent)`, color: "white", borderColor: accent }
+                  : { background: "color-mix(in oklab, var(--card) 80%, transparent)", color: baseColor, borderColor: `color-mix(in oklab, ${baseColor} 55%, transparent)` }}>
+                <Pin size={10} />
+                {pin.initiative}
+                <button type="button" onClick={() => onDeletePin(pin)} title={t("combat.deletePin")} className="opacity-70 hover:opacity-100">
+                  <X size={10} />
+                </button>
+              </span>
+            );
+          })}
+          {isExtraTurnActive && (
+            <span className="text-[9px] font-display uppercase tracking-widest px-1.5 py-0.5 rounded"
+              style={{ background: accent, color: "white" }}>
+              {t("combat.extraTurnActive")}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* End-turn button (prominent when active) */}
+      {isActive && !p.is_defeated && (
         <button
-          className="btn-fantasy text-[10px] py-1 px-2 flex items-center gap-1"
+          className="btn-fantasy w-full text-xs py-1.5 flex items-center justify-center gap-1.5 font-display"
           style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
           onClick={() => dmEndEnemyTurn(encounter, blocks)}>
-          <FastForward size={12} /> {t("combat.endEnemyTurn")}
+          <FastForward size={13} /> {t("combat.endEnemyTurn")}
         </button>
       )}
-      <button
-        className="text-[var(--loss)] hover:opacity-80 p-1"
-        onClick={onDelete}
-        title={t("combat.deletePin")}>
-        <Trash2 size={14} />
-      </button>
+
+      {/* Compact action row: Actions toggle + Add extra turn */}
+      {!actionsOpen ? (
+        <div className="grid grid-cols-2 gap-1.5">
+          <button
+            type="button"
+            className="btn-fantasy text-[11px] py-1 flex items-center justify-center gap-1 font-display uppercase tracking-wider"
+            style={{
+              background: "linear-gradient(180deg, oklch(0.32 0.10 250), oklch(0.22 0.08 250))",
+              color: "white",
+              borderColor: "oklch(0.45 0.10 240)",
+            }}
+            onClick={onToggleActions}
+            aria-expanded={false}
+          >
+            <ChevronDown size={12} /> {t("combat.actions")}
+          </button>
+          <button
+            type="button"
+            className="btn-fantasy text-[11px] py-1 flex items-center justify-center gap-1 font-display uppercase tracking-wider border border-dashed"
+            style={{ background: "transparent", borderColor: `color-mix(in oklab, ${baseColor} 55%, transparent)`, color: baseColor }}
+            onClick={onAddPin}
+            title={t("combat.addTurnPinHint")}
+          >
+            <Pin size={12} /> {t("combat.addTurnPin")}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-1">
+          <div className="grid grid-cols-5 gap-1">
+            <IconBtn label={t("combat.damage")} icon={<Sword className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--loss) 70%, var(--card))" onClick={onDamage} />
+            <IconBtn label={t("combat.heal")} icon={<Heart className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--gain) 70%, var(--card))" onClick={onHeal} />
+            <IconBtn label={t("combat.edit")} icon={<Edit3 className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, oklch(0.55 0.12 240) 55%, var(--card))" onClick={onEdit} />
+            <IconBtn label={t("combat.duplicate.label")} icon={<Copy className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, oklch(0.45 0.10 240) 60%, var(--card))" onClick={onDuplicate} />
+            <IconBtn label={t("combat.remove")} icon={<Trash2 className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--loss) 55%, black)" onClick={onRemove} />
+          </div>
+          <button
+            type="button"
+            className="btn-fantasy w-full text-[10px] py-1 flex items-center justify-center gap-1 font-display uppercase tracking-wider"
+            style={{ background: "transparent", borderStyle: "dashed", color: "var(--muted-foreground)" }}
+            onClick={onToggleActions}
+          >
+            <X size={11} /> {t("combat.hideActions")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
