@@ -148,7 +148,10 @@ export function EnemySkillUseModal({
     }
 
     setBusy(false);
-    if (damageOk) onClose();
+    if (damageOk) {
+      onConfirmed?.();
+      onClose();
+    }
   };
 
   const showApplyControls = !skipDamageApplication;
