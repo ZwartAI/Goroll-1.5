@@ -232,6 +232,7 @@ export const es = {
     title: "Menú",
     achievements: "Logros",
     bestiary: "Bestiario",
+    npcs: "NPCs",
     stats: "Estadísticas",
     settings: "Configuración",
     exit: "Salir / cambiar rol",
