@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
 import { toast } from "sonner";
-import { Swords, Flag, Play, ChevronLeft, ChevronRight, X, Plus, BookOpen, Sparkles } from "lucide-react";
+import { Swords, Flag, Play, ChevronRight, X, Plus, BookOpen, Sparkles, Users } from "lucide-react";
 import { BestiaryPickerModal } from "@/components/app/BestiaryPickerModal";
 import { DMApplyEffectModal } from "@/components/app/DMApplyEffectModal";
+import { CombatManagerModal } from "@/components/app/CombatManagerModal";
+import { EndTurnConfirmModal } from "@/components/app/EndTurnConfirmModal";
 import {
   buildOrderedTurns,
   cancelInitiative,
   dissolveLink,
-  dmShiftTurn,
   endActiveTurn,
   endCombat,
   requestInitiative,
@@ -24,6 +25,7 @@ import { Crown, Link as LinkIcon } from "lucide-react";
 import { EnemyEditorModal } from "@/components/app/EnemyEditorModal";
 import { EnemyManagerDM } from "@/components/app/EnemyManagerDM";
 import { backdropProps } from "@/lib/modalBackdrop";
+
 
 type Props = {
   campaignId: string;
