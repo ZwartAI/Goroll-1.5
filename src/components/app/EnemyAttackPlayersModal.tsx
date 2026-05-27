@@ -273,6 +273,7 @@ export function EnemyAttackPlayersModal({ enemy, onClose }: Props) {
             selected.size > 1 && distribution === "split" ? "split" : "individual"
           }
           onClose={() => setUseSkill(null)}
+          onConfirmed={() => { setUseSkill(null); onClose(); }}
         />
       )}
 
