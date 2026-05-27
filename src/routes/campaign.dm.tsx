@@ -862,6 +862,7 @@ function DMHeader({
   const items = useStandardHeaderItems({
     achievements: false,
     bestiary: true,
+    npcs: true,
     mailbox: { onOpen: () => setMailboxOpen(true) },
     mic: { enabled: voice.enabled, toggle: voice.toggle },
     fullscreen: true,
