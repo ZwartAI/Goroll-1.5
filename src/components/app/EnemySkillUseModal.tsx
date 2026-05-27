@@ -32,6 +32,7 @@ export function EnemySkillUseModal({
   participant,
   skill,
   onClose,
+  onConfirmed,
   initialResolvedTargets,
   initialRollResult,
   initialSelectedCharIds,
@@ -41,6 +42,7 @@ export function EnemySkillUseModal({
   participant: CombatParticipant;
   skill: CombatEnemySkill;
   onClose: () => void;
+  onConfirmed?: () => void;
   initialResolvedTargets?: string;
   initialRollResult?: number;
   initialSelectedCharIds?: string[];
@@ -146,7 +148,10 @@ export function EnemySkillUseModal({
     }
 
     setBusy(false);
-    if (damageOk) onClose();
+    if (damageOk) {
+      onConfirmed?.();
+      onClose();
+    }
   };
 
   const showApplyControls = !skipDamageApplication;
