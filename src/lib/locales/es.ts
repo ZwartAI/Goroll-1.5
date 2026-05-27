@@ -1045,6 +1045,7 @@ export const es = {
     addEnemy: "Añadir enemigo",
     editEnemy: "Editar enemigo",
     enemyLabel: "Enemigo",
+    npcLabel: "NPC",
     enemies: "Enemigos",
     name: "Nombre",
     icon: "Icono",
