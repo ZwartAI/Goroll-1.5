@@ -234,7 +234,7 @@ export function EnemySkillUseModal({
                   >
                     <span className="w-2 h-2 rounded-full" style={{ background: c.color || "var(--gold)" }} />
                     <span className="truncate max-w-[120px]">{c.name}</span>
-                    <span className="text-[9px] opacity-80">{c.current_hp}/—</span>
+                    <span className="text-[9px] opacity-80">{c.current_hp}/{c.base_hp}</span>
                     {sh > 0 && <span className="text-[9px]" style={{ color: "#60a5fa" }}>🛡{sh}</span>}
                     {linked && <span className="text-[9px] opacity-70">⛓</span>}
                   </button>
@@ -295,7 +295,7 @@ export function EnemySkillUseModal({
           <button className="btn-fantasy" disabled={busy}
             style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
             onClick={submit}>
-            {showApplyControls && mode !== "logOnly" ? t("combat.enemy.confirmImpact") : t("common.confirm")}
+            {busy ? t("combat.enemy.applying") : (showApplyControls && mode !== "logOnly" ? t("combat.enemy.confirmImpact") : t("common.confirm"))}
           </button>
         </div>
       </div>
