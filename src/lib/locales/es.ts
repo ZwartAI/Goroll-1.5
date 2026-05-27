@@ -1432,6 +1432,16 @@ export const es = {
     spReward: "Recibiste +1 Skill Point",
     ok: "Ok",
   },
+  levelAdjust: {
+    title: "Ajustar nivel",
+    increase: "Subir nivel",
+    decrease: "Bajar nivel",
+    logUp: "subió a",
+    logDown: "bajó a",
+    logLevelTo: "al nivel {level}",
+    logSpAdd: "+1 SP",
+    logSpSub: "−1 SP",
+  },
   spMgmt: {
     title: "Gestión de nivel y Skill Points",
     levelUp: "Subir nivel",
