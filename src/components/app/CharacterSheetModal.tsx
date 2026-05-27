@@ -12,6 +12,7 @@ import { BoosterPeek } from "@/components/app/BoosterEditor";
 import { SkillCard, type CharacterSkill } from "@/components/app/SkillCard";
 import { SkillDetailModal } from "@/components/app/SkillDetailModal";
 import { backdropProps } from "@/lib/modalBackdrop";
+import { LevelAdjustModal } from "@/components/app/LevelAdjustModal";
 
 type Props = {
   characterId: string;
