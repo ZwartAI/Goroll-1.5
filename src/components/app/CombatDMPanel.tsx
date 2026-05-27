@@ -193,13 +193,15 @@ export function CombatDMPanel({ campaignId, dm, encounter, participants, groups,
           </button>
           <div className="grid grid-cols-3 gap-2 pt-1">
             <button className="btn-fantasy text-xs"
-              onClick={() => dmShiftTurn(encounter, buildOrderedTurns(participants, groups, pins), -1)}>
-              <ChevronLeft size={14} className="inline" /> {t("combat.prevTurn")}
+              style={{ background: "color-mix(in oklab, var(--gold) 25%, var(--card))", color: "var(--gold)" }}
+              onClick={() => setShowManager(true)}>
+              <Users size={14} className="inline mr-1" /> {t("combat.combatManager")}
             </button>
-            <button className="btn-fantasy text-xs"
+            <button className="btn-fantasy text-xs disabled:opacity-60"
+              disabled={endingTurn}
               style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
-              onClick={() => endActiveTurn(encounter, buildOrderedTurns(participants, groups, pins), dm)}>
-              {t("combat.nextTurn")} <ChevronRight size={14} className="inline" />
+              onClick={() => setConfirmingEndTurn(true)}>
+              {endingTurn ? t("combat.endTurn.resolving") : t("combat.nextTurn")} <ChevronRight size={14} className="inline" />
             </button>
             <button className="btn-fantasy text-xs"
               style={{ background: "var(--loss)", color: "white" }}
@@ -213,6 +215,7 @@ export function CombatDMPanel({ campaignId, dm, encounter, participants, groups,
               <X size={14} className="inline mr-1" /> {t("combat.end")}
             </button>
           </div>
+
         </>
       )}
 
