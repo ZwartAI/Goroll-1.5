@@ -271,7 +271,7 @@ export async function endCombat(
   const charIds = players.map((p: any) => p.character_id);
   const { data: chars } = await supabase.from("characters").select("id, name, current_hp, base_hp, color, image_url").in("id", charIds);
   
-  const results = players.map(p => {
+  const results = players.map((p: any) => {
     const char = (chars || []).find((c: any) => c.id === p.character_id);
     return {
       id: p.character_id as string,
@@ -284,8 +284,9 @@ export async function endCombat(
     };
   });
 
-  const survivorNames = results.filter(r => r.is_survivor).map(r => r.name).join(", ");
-  const defeatedNames = results.filter(r => !r.is_survivor).map(r => r.name).join(", ");
+  const survivorNames = results.filter((r: any) => r.is_survivor).map((r: any) => r.name).join(", ");
+  const defeatedNames = results.filter((r: any) => !r.is_survivor).map((r: any) => r.name).join(", ");
+
 
   const { error } = await supabase
     .from("combat_encounters" as any)
