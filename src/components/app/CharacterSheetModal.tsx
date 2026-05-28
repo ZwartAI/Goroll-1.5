@@ -33,6 +33,8 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   const [boosters, setBoosters] = useState<Booster[]>([]);
   const [skills, setSkills] = useState<CharacterSkill[]>([]);
   const [skillPeek, setSkillPeek] = useState<CharacterSkill | null>(null);
+  const [lockConfirm, setLockConfirm] = useState<CharacterSkill | null>(null);
+  const [lockBusy, setLockBusy] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [vaultConfirm, setVaultConfirm] = useState<Booster | null>(null);
   const [peekBooster, setPeekBooster] = useState<Booster | null>(null);
