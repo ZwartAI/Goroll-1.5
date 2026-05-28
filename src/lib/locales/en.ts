@@ -1118,9 +1118,8 @@ export const en: Dict = {
     shieldAbsorbedMsg: "The shield of {name} absorbed {amount} damage.",
     shieldBrokenMsg: "The shield of {name} broke.",
     shieldEndedMsg: "The shield of {name} ended and lost {amount} remaining shields.",
-    directDamage: "Direct damage",
-    damageWithDefense: "Damage with defense",
-    heal: "Heal",
+    defenseBlockedMsg: "Defense blocked the damage.",
+
     defenseBlockedMsg: "{name} blocked the damage. Damage {amount} against DEF {def}.",
     ignoreDefenseShieldsHint: "Ignores defense and shields.",
     absorbBeforeHpHint: "Absorbs damage before losing HP.",
