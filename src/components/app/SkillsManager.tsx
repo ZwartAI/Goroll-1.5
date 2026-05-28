@@ -38,6 +38,8 @@ export function SkillsManager({ campaignId, dm, players, onlineIds }: Props) {
   });
   const [skills, setSkills] = useState<CharacterSkill[]>([]);
   const [sel, setSel] = useState<CharacterSkill | null>(null);
+  const [lockConfirm, setLockConfirm] = useState<CharacterSkill | null>(null);
+  const [lockBusy, setLockBusy] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
