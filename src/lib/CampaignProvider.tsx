@@ -321,7 +321,7 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
           onClose={() => setEndedCombatData(null)}
         />
       )}
-      {character && character.role === "player" && (
+      {character && character.role === "player" && character.campaign_id === campaign?.id && (
         <>
           <PlayerNotifier
             characterId={character.id}
