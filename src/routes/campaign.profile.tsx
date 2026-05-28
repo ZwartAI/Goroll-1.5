@@ -53,7 +53,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useT } from "@/lib/i18n";
 import { AttributesBar } from "@/components/app/AttributesBar";
-import { PlayerNotifier } from "@/components/app/PlayerNotifier";
+import { FramedCharacterPortrait } from "@/components/app/FramedCharacterPortrait";
 import { InitialStatsSetupModal } from "@/components/app/InitialStatsSetupModal";
 import { backdropProps } from "@/lib/modalBackdrop";
 
