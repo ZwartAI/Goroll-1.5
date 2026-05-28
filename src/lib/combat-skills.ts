@@ -7,15 +7,11 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { pushLog } from "@/lib/log";
-import { resolveDamageAgainstEntity } from "./combat-logic";
+import { resolveDamageAgainstEntity, type TargetType } from "./combat-logic";
 import {
-
   activeBlock,
   blockContainsCharacter,
-  resolveDamageAgainstEntity,
-  type TargetType,
   buildOrderedTurns,
-
   groupForCharacter,
   isEnemy,
   type CombatEncounter,
@@ -23,6 +19,7 @@ import {
   type CombatTurnGroup,
   type CombatTurnPin,
 } from "@/lib/combat";
+
 import type { Character, Item, Rarity } from "@/lib/game";
 import { totals } from "@/lib/game";
 
