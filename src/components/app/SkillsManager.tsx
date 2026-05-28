@@ -242,6 +242,7 @@ export function SkillsManager({ campaignId, dm, players, onlineIds }: Props) {
               setSel(null);
               reload();
             },
+            onLock: () => setLockConfirm(sel),
             onDelete: async () => {
               if (!confirm(t("skills.deleteConfirm", { name: sel.name }))) return;
               await (supabase as any).from("character_skills").delete().eq("id", sel.id);
@@ -249,6 +250,45 @@ export function SkillsManager({ campaignId, dm, players, onlineIds }: Props) {
               reload();
             },
           }} />
+      )}
+      {lockConfirm && target && (
+        <ConfirmDialog
+          open
+          variant="warning"
+          title={t("skills.lockConfirmTitle")}
+          description={`${t("skills.lockConfirmDesc")}\n\n• ${lockConfirm.name} (${lockConfirm.rarity})\n• ${target.name}\n• ${lockConfirm.cost} SP`}
+          confirmLabel={t("skills.lockSkill")}
+          cancelLabel={t("common.cancel")}
+          busy={lockBusy}
+          onCancel={() => setLockConfirm(null)}
+          onConfirm={async () => {
+            if (lockBusy) return;
+            setLockBusy(true);
+            try {
+              const { error } = await (supabase as any).from("character_skills")
+                .update({ is_unlocked: false, unlocked_at: null, updated_at: new Date().toISOString() })
+                .eq("id", lockConfirm.id)
+                .eq("character_id", target.id)
+                .eq("is_unlocked", true);
+              if (error) throw error;
+              await pushLog(campaignId, [
+                { t: "char", v: dm.name, color: dm.color, id: dm.id },
+                { t: "text", v: t("skills.logDmLocked") },
+                { t: "char", v: target.name, color: target.color, id: target.id },
+                { t: "text", v: ":" },
+                { t: "item", v: lockConfirm.name, rarity: lockConfirm.rarity, id: lockConfirm.id },
+              ]);
+              toast.success(t("skills.lockedToast"));
+              setLockConfirm(null);
+              setSel(null);
+              reload();
+            } catch (e: any) {
+              toast.error(e?.message || "Error");
+            } finally {
+              setLockBusy(false);
+            }
+          }}
+        />
       )}
     </div>
   );
