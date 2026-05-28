@@ -29,14 +29,15 @@ export async function resolveDamageAgainstEntity(args: {
   mode: DamageMode;
   sourceName?: string;
   skillName?: string;
+  skipLogging?: boolean;
 }): Promise<DamageResult | null> {
-  const { targetId, targetType, encounterId, campaignId, amount, mode, sourceName, skillName } = args;
+  const { targetId, targetType, encounterId, campaignId, amount, mode, sourceName, skillName, skipLogging } = args;
   const raw = Math.max(0, Math.floor(amount || 0));
 
   if (targetType === "character") {
-    return resolveCharacterDamage(targetId, encounterId, campaignId, raw, mode, sourceName, skillName);
+    return resolveCharacterDamage(targetId, encounterId, campaignId, raw, mode, sourceName, skillName, skipLogging);
   } else {
-    return resolveEnemyDamage(targetId, encounterId, campaignId, raw, mode, sourceName, skillName);
+    return resolveEnemyDamage(targetId, encounterId, campaignId, raw, mode, sourceName, skillName, skipLogging);
   }
 }
 
@@ -47,7 +48,8 @@ async function resolveCharacterDamage(
   raw: number,
   mode: DamageMode,
   sourceName?: string,
-  skillName?: string
+  skillName?: string,
+  skipLogging?: boolean
 ): Promise<DamageResult | null> {
   const [{ data: ch }, { data: its }, { data: shields }] = await Promise.all([
     supabase.from("characters").select("*").eq("id", targetId).maybeSingle(),
@@ -72,7 +74,6 @@ async function resolveCharacterDamage(
     await applyHpDelta(targetId, newHp, maxHp);
     
     if (applied > 0 && !skipLogging) {
-
       await pushLog(campaignId, [
         { t: "char", v: ch.name, color: ch.color, id: ch.id },
         { t: "text", v: " " },
@@ -92,7 +93,6 @@ async function resolveCharacterDamage(
   const totalMitigatedByDef = useDefense ? Math.min(raw, def) : 0;
 
   if (useDefense && damagePostDef === 0 && raw > 0 && !skipLogging) {
-
     await pushLog(campaignId, [
       { t: "i18n", v: { key: "combat.defenseBlockedMsg", params: { name: ch.name, amount: raw, def } } as any } as any
     ]);
@@ -103,7 +103,7 @@ async function resolveCharacterDamage(
   let shieldBroke = false;
 
   // Shields absorb damage post-defense
-  if (!args_ignoreShields(mode)) {
+  if (mode !== "directDamage") {
     for (const sh of (shields || []) as any[]) {
       if (damagePostDef <= 0) break;
       const take = Math.min(sh.value || 0, damagePostDef);
@@ -119,7 +119,6 @@ async function resolveCharacterDamage(
         if (!skipLogging) {
           await pushLog(campaignId, [{ t: "i18n", v: { key: "combat.shieldBrokenMsg", params: { name: ch.name } } as any } as any]);
         }
-
       } else {
         await (supabase as any).from("combat_temporary_effects").update({ value: nextValue }).eq("id", sh.id);
       }
@@ -154,12 +153,10 @@ async function resolveCharacterDamage(
   }
 
   if (segments.length > 0 && !skipLogging) {
-
     await pushLog(campaignId, segments);
   }
 
   if (defeated && !skipLogging) {
-
     await pushLog(campaignId, [{ t: "text", v: `${ch.name} fue derrotado.` }]);
   }
 
@@ -176,7 +173,6 @@ async function resolveEnemyDamage(
   skillName?: string,
   skipLogging?: boolean
 ): Promise<DamageResult | null> {
-
   const [{ data: p }, { data: shields }] = await Promise.all([
     (supabase as any).from("combat_participants").select("*").eq("id", targetId).maybeSingle(),
     (supabase as any).from("combat_temporary_effects")
@@ -194,8 +190,7 @@ async function resolveEnemyDamage(
   const currentHp = part.enemy_hp || 0;
   const def = part.enemy_defense || 0;
   const name = part.display_name;
-  const color = part.color || part.enemy_color;
-
+  
   if (mode === "heal") {
     const newHp = Math.min(maxHp, currentHp + raw);
     const applied = newHp - currentHp;
@@ -228,7 +223,7 @@ async function resolveEnemyDamage(
   let absorbed = 0;
   let shieldBroke = false;
 
-  if (!args_ignoreShields(mode)) {
+  if (mode !== "directDamage") {
     for (const sh of (shields || []) as any[]) {
       if (damagePostDef <= 0) break;
       const take = Math.min(sh.value || 0, damagePostDef);
@@ -244,7 +239,6 @@ async function resolveEnemyDamage(
         if (!skipLogging) {
           await pushLog(campaignId, [{ t: "i18n", v: { key: "combat.shieldBrokenMsg", params: { name } } as any } as any]);
         }
-
       } else {
         await (supabase as any).from("combat_temporary_effects").update({ value: nextValue }).eq("id", sh.id);
       }
@@ -287,8 +281,4 @@ async function resolveEnemyDamage(
   }
 
   return { raw, applied, def: totalMitigatedByDef, absorbed, newHp, maxHp, defeated, shieldBroke };
-}
-
-function args_ignoreShields(mode: DamageMode): boolean {
-  return mode === "directDamage";
 }
