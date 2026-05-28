@@ -161,7 +161,7 @@ async function resolveCharacterDamage(
       segs.push({ t: "text", v: ` ` });
       
       if (detail === "minimal") {
-        segs.push({ t: "text", v: `fue atacado.` }); // Very minimal
+        segs.push({ t: "text", v: `recibió un impacto.` });
       } else if (detail === "normal") {
         segs.push({ t: "i18n", v: { key: labelKey } as any } as any);
         segs.push({ t: "text", v: `: ` });
@@ -307,7 +307,7 @@ async function resolveEnemyDamage(
       segs.push({ t: "text", v: `${name} ` });
 
       if (detail === "minimal") {
-        segs.push({ t: "text", v: `fue atacado.` });
+        segs.push({ t: "text", v: `recibió un impacto.` });
       } else if (detail === "normal") {
         segs.push({ t: "i18n", v: { key: labelKey } as any } as any);
         segs.push({ t: "text", v: `: ` });
