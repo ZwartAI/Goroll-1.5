@@ -71,7 +71,8 @@ async function resolveCharacterDamage(
     const applied = newHp - currentHp;
     await applyHpDelta(targetId, newHp, maxHp);
     
-    if (applied > 0) {
+    if (applied > 0 && !skipLogging) {
+
       await pushLog(campaignId, [
         { t: "char", v: ch.name, color: ch.color, id: ch.id },
         { t: "text", v: " " },
@@ -90,7 +91,8 @@ async function resolveCharacterDamage(
   let damagePostDef = Math.max(0, raw - def);
   const totalMitigatedByDef = useDefense ? Math.min(raw, def) : 0;
 
-  if (useDefense && damagePostDef === 0 && raw > 0) {
+  if (useDefense && damagePostDef === 0 && raw > 0 && !skipLogging) {
+
     await pushLog(campaignId, [
       { t: "i18n", v: { key: "combat.defenseBlockedMsg", params: { name: ch.name, amount: raw, def } } as any } as any
     ]);
@@ -114,7 +116,10 @@ async function resolveCharacterDamage(
       if (nextValue <= 0) {
         await (supabase as any).from("combat_temporary_effects").delete().eq("id", sh.id);
         shieldBroke = true;
-        await pushLog(campaignId, [{ t: "i18n", v: { key: "combat.shieldBrokenMsg", params: { name: ch.name } } as any } as any]);
+        if (!skipLogging) {
+          await pushLog(campaignId, [{ t: "i18n", v: { key: "combat.shieldBrokenMsg", params: { name: ch.name } } as any } as any]);
+        }
+
       } else {
         await (supabase as any).from("combat_temporary_effects").update({ value: nextValue }).eq("id", sh.id);
       }
@@ -148,11 +153,13 @@ async function resolveCharacterDamage(
     if (absorbed > 0) segments.push({ t: "text", v: ` (🛡️ -${absorbed})` });
   }
 
-  if (segments.length > 0) {
+  if (segments.length > 0 && !skipLogging) {
+
     await pushLog(campaignId, segments);
   }
 
-  if (defeated) {
+  if (defeated && !skipLogging) {
+
     await pushLog(campaignId, [{ t: "text", v: `${ch.name} fue derrotado.` }]);
   }
 
@@ -166,8 +173,10 @@ async function resolveEnemyDamage(
   raw: number,
   mode: DamageMode,
   sourceName?: string,
-  skillName?: string
+  skillName?: string,
+  skipLogging?: boolean
 ): Promise<DamageResult | null> {
+
   const [{ data: p }, { data: shields }] = await Promise.all([
     (supabase as any).from("combat_participants").select("*").eq("id", targetId).maybeSingle(),
     (supabase as any).from("combat_temporary_effects")
@@ -194,7 +203,7 @@ async function resolveEnemyDamage(
       .update({ enemy_hp: newHp, is_defeated: newHp <= 0 })
       .eq("id", targetId);
     
-    if (applied > 0) {
+    if (applied > 0 && !skipLogging) {
       await pushLog(campaignId, [
         { t: "text", v: `${name} ` },
         { t: "i18n", v: { key: "combat.heal" } as any } as any,
@@ -209,7 +218,7 @@ async function resolveEnemyDamage(
   let damagePostDef = Math.max(0, raw - (useDefense ? def : 0));
   const totalMitigatedByDef = useDefense ? Math.min(raw, def) : 0;
 
-  if (useDefense && damagePostDef === 0 && raw > 0) {
+  if (useDefense && damagePostDef === 0 && raw > 0 && !skipLogging) {
     await pushLog(campaignId, [
       { t: "i18n", v: { key: "combat.defenseBlockedMsg", params: { name, amount: raw, def } } as any } as any
     ]);
@@ -232,7 +241,10 @@ async function resolveEnemyDamage(
       if (nextValue <= 0) {
         await (supabase as any).from("combat_temporary_effects").delete().eq("id", sh.id);
         shieldBroke = true;
-        await pushLog(campaignId, [{ t: "i18n", v: { key: "combat.shieldBrokenMsg", params: { name } } as any } as any]);
+        if (!skipLogging) {
+          await pushLog(campaignId, [{ t: "i18n", v: { key: "combat.shieldBrokenMsg", params: { name } } as any } as any]);
+        }
+
       } else {
         await (supabase as any).from("combat_temporary_effects").update({ value: nextValue }).eq("id", sh.id);
       }
@@ -266,11 +278,11 @@ async function resolveEnemyDamage(
     if (absorbed > 0) segments.push({ t: "text", v: ` (🛡️ -${absorbed})` });
   }
 
-  if (segments.length > 0) {
+  if (segments.length > 0 && !skipLogging) {
     await pushLog(campaignId, segments);
   }
 
-  if (defeated) {
+  if (defeated && !skipLogging) {
     await pushLog(campaignId, [{ t: "text", v: `${name} fue derrotado.` }]);
   }
 
