@@ -106,6 +106,14 @@ export function CombatList({ encounter, participants, groups, pins, selfCharacte
           <div className="space-y-2">{rows}</div>
         </SortableContext>
       </DndContext>
+      {peekPortrait && (
+        <EntityPortraitModal
+          name={peekPortrait.name}
+          icon={peekPortrait.icon}
+          customImage={peekPortrait.customImage}
+          onClose={() => setPeekPortrait(null)}
+        />
+      )}
     </div>
   );
 }
