@@ -20,25 +20,48 @@ preloadSfx([sfxVictory]);
 export function LevelUpModal({
   level,
   enabled = true,
+  characterId,
 }: {
   level: number | null | undefined;
   enabled?: boolean;
+  characterId?: string | null;
 }) {
+
+
   const { t } = useT();
   const lastLevelRef = useRef<number | null>(null);
+  const characterIdRef = useRef<string | null>(null);
   const [shownLevel, setShownLevel] = useState<number | null>(null);
+
 
   useEffect(() => {
     if (!enabled) return;
     const lvl = typeof level === "number" ? level : null;
     if (lvl == null) return;
+
+    // If character changes, reset baseline
+    if (characterId && characterId !== characterIdRef.current) {
+      characterIdRef.current = characterId;
+      lastLevelRef.current = lvl;
+      return;
+    }
+
     if (lastLevelRef.current == null) {
       lastLevelRef.current = lvl; // baseline on first read, no celebration
       return;
     }
     if (lvl > lastLevelRef.current) {
+      // Protection against duplicate modals: check if we already showed this level
+      const seenKey = `level-up-seen-${characterId}-${lvl}`;
+      if (sessionStorage.getItem(seenKey)) {
+        lastLevelRef.current = lvl;
+        return;
+      }
+
       lastLevelRef.current = lvl;
+      sessionStorage.setItem(seenKey, "1");
       setShownLevel(lvl);
+
       // One-shot victory SFX (preloaded above for instant playback).
       try { playSfx(sfxVictory); } catch { /* ignore */ }
       // fire confetti shortly after mount

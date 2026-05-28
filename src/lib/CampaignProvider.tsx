@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { getSession, setSession, type Campaign, type Character, type Item, type LogRow, type Achievement } from "./game";
 import type { CombatEncounter, CombatParticipant, CombatTurnGroup, CombatTurnPin } from "./combat";
 import { CombatEndModal } from "@/components/app/CombatEndModal";
+import { LevelUpModal } from "@/components/app/LevelUpModal";
 import { CampaignLoadingOverlay } from "@/components/app/CampaignLoadingOverlay";
+
 
 
 export type DmLabel = { name: string; color: string };
@@ -318,7 +320,16 @@ export function CampaignProvider({ children }: { children: ReactNode }) {
           onClose={() => setEndedCombatData(null)}
         />
       )}
+      {character && character.role === "player" && (
+        <LevelUpModal
+          level={(character as any).level ?? 1}
+          characterId={character.id}
+          enabled={true}
+        />
+      )}
       {children}
+
+
     </Ctx.Provider>
 
   );
