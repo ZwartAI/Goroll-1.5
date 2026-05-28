@@ -13,6 +13,7 @@ import { SkillCard, type CharacterSkill } from "@/components/app/SkillCard";
 import { SkillDetailModal } from "@/components/app/SkillDetailModal";
 import { backdropProps } from "@/lib/modalBackdrop";
 import { LevelAdjustModal } from "@/components/app/LevelAdjustModal";
+import { ConfirmDialog } from "@/components/app/ConfirmDialog";
 
 type Props = {
   characterId: string;
