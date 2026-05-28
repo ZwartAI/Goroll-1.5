@@ -176,7 +176,9 @@ export type Segment =
   | { t: "loss"; v: string }
   | { t: "enemy_skill"; v: EnemySkillLogPayload }
   | { t: "enemy_speech"; v: EnemySpeechLogPayload }
-  | { t: "player_skill"; v: PlayerSkillLogPayload };
+  | { t: "player_skill"; v: PlayerSkillLogPayload }
+  | { t: "i18n"; v: { key: string; params?: Record<string, string | number> } };
+
 
 export const SESSION_KEY = "codice.session";
 export type Session = {

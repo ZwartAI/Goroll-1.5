@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { RARITY_COLOR, type Segment } from "@/lib/game";
 import { EnemyIcon } from "@/components/app/EnemyIconPicker";
 import { StatText } from "@/components/app/StatText";
+import { useT } from "@/lib/i18n";
+
 
 type Override = { name: string; color: string };
 
@@ -19,7 +21,9 @@ export function LogSegments({
   onChar?: (id: string) => void;
   nameOverrides?: Record<string, Override>;
 }) {
+  const { t } = useT();
   const out: ReactNode[] = [];
+
   segments.forEach((s, i) => {
     if (i > 0 && s.t !== "enemy_skill" && s.t !== "enemy_speech" && s.t !== "player_skill") out.push(<span key={`sp${i}`}> </span>);
     if (s.t === "text") out.push(<span key={i} className="text-foreground/85"><StatText>{s.v}</StatText></span>);
@@ -140,6 +144,10 @@ export function LogSegments({
         </span>
       );
     }
+    else if (s.t === "i18n") {
+      out.push(<span key={i} className="text-foreground/85"><StatText>{t(s.v.key, s.v.params)}</StatText></span>);
+    }
   });
+
   return <span>{out}</span>;
 }

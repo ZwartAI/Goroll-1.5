@@ -267,21 +267,19 @@ export async function endCombat(
 
   const players = (participants || []).filter((p: any) => p.participant_type === "player" && p.character_id);
   
-  const survivors = players.filter((p: any) => (p.enemy_hp ?? 1) > 0); // For players we might need to check current_hp from characters table if we want most up to date, but usually the participant has it synced if we implemented it, wait, participants don't store player HP.
-  
   // Re-fetch character HPs to be sure
   const charIds = players.map((p: any) => p.character_id);
-  const { data: chars } = await supabase.from("characters").select("id, name, current_hp, max_hp, color, image_url").in("id", charIds);
+  const { data: chars } = await supabase.from("characters").select("id, name, current_hp, base_hp, color, image_url").in("id", charIds);
   
   const results = players.map(p => {
-    const char = (chars || []).find(c => c.id === p.character_id);
+    const char = (chars || []).find((c: any) => c.id === p.character_id);
     return {
-      id: p.character_id,
-      name: char?.name || p.display_name,
-      current_hp: char?.current_hp ?? 0,
-      max_hp: char?.max_hp ?? 1,
-      color: char?.color || p.color,
-      image_url: char?.image_url || p.image_url,
+      id: p.character_id as string,
+      name: (char?.name || p.display_name) as string,
+      current_hp: (char?.current_hp ?? 0) as number,
+      max_hp: (char?.base_hp ?? 1) as number, // Using base_hp as max_hp since there is no separate max_hp column
+      color: (char?.color || p.color) as string,
+      image_url: (char?.image_url || p.image_url) as string | null,
       is_survivor: (char?.current_hp ?? 0) > 0
     };
   });
@@ -306,12 +304,11 @@ export async function endCombat(
   await pushLog(encounter.campaign_id, [
     { t: "char", v: dm.name, color: dm.color, id: dm.id },
     { t: "text", v: " " },
-    { t: "i18n", v: logMsg as any },
+    { t: "i18n", v: logMsg as any } as any,
   ]);
 
   return { ok: true, summary: results };
 }
-
 
 export async function dmShiftTurn(
   encounter: CombatEncounter,
@@ -343,6 +340,7 @@ export async function dmShiftTurn(
       .update({ has_ended_turn: false })
       .eq("encounter_id", encounter.id);
   }
+
   await supabase
     .from("combat_encounters" as any)
     .update({
