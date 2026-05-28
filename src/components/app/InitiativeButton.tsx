@@ -17,12 +17,12 @@ import { InitiativeRollModal } from "@/components/app/InitiativeRollModal";
 import { playSfx } from "@/lib/sound";
 import sfxBtn from "@/assets/sounds/Monedero.mp3"; // Reusing button sound
 
-import esperandoTurnoEs from "@/assets/combat-buttons/esperando-turno.png";
-import terminarTurnoEs from "@/assets/combat-buttons/terminar-turno.png";
-import iniciativaEs from "@/assets/combat-buttons/iniciativa.png";
-import esperandoTurnoEn from "@/assets/combat-buttons/esperando-turno-eng.png";
-import terminarTurnoEn from "@/assets/combat-buttons/terminar-turno-eng.png";
-import iniciativaEn from "@/assets/combat-buttons/iniciativa-eng.png";
+import esperandoTurnoEs from "/uploads/esperando-turno.png";
+import terminarTurnoEs from "/uploads/terminar-turno.png";
+import iniciativaEs from "/uploads/iniciativa.png";
+import esperandoTurnoEn from "/uploads/esperando-turno-eng.png";
+import terminarTurnoEn from "/uploads/terminar-turno-eng.png";
+import iniciativaEn from "/uploads/iniciativa-eng.png";
 
 type Props = {
   character: Character;
@@ -35,7 +35,7 @@ type Props = {
 };
 
 export function InitiativeButton({ character, encounter, participants, groups, pins, online }: Props) {
-  const { t, i18n } = useT();
+  const { t, lang } = useT();
   const [open, setOpen] = useState(false);
   const status = encounter?.status ?? null;
   const myPart = participantForCharacter(participants, character.id);
@@ -43,7 +43,7 @@ export function InitiativeButton({ character, encounter, participants, groups, p
   const active = activeBlock(encounter, blocks);
   const myTurn = active ? blockContainsCharacter(active, character.id) : false;
 
-  const isEn = i18n.language === "en";
+  const isEn = lang === "en";
 
   const assets = {
     waiting: isEn ? esperandoTurnoEn : esperandoTurnoEs,
