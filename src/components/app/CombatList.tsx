@@ -76,6 +76,7 @@ export function CombatList({ encounter, participants, groups, pins, selfCharacte
       extraTurnLabel={t("combat.extraTurn")}
       enemyTurnOfLabel={t("combat.enemyTurnOf")}
       onOpenChar={onOpenChar}
+      onPeekPortrait={(name, icon, customImage) => setPeekPortrait({ name, icon, customImage })}
       draggable={!!onReorder}
     />
   ));
