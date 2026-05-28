@@ -1121,10 +1121,9 @@ export const es = {
     shieldBrokenMsg: "El escudo de {name} se rompió.",
     shieldEndedMsg: "El escudo de {name} terminó y perdió {amount} escudos restantes.",
     defenseBlockedMsg: "{name} bloqueó el daño. Daño {amount} contra DEF {def}.",
-
-    defenseBlockedMsg: "{name} bloqueó el daño. Daño {amount} contra DEF {def}.",
     ignoreDefenseShieldsHint: "Ignora defensa y escudos.",
     absorbBeforeHpHint: "Absorbe daño antes de perder HP.",
+
 
     attack: {
       title: "Enemigo ataca a jugadores",
