@@ -34,10 +34,14 @@ export async function resolveDamageAgainstEntity(args: {
   const { targetId, targetType, encounterId, campaignId, amount, mode, sourceName, skillName, skipLogging } = args;
   const raw = Math.max(0, Math.floor(amount || 0));
 
+  // Fetch log detail mode from campaign
+  const { data: campaign } = await supabase.from("campaigns").select("combat_log_detail_mode").eq("id", campaignId).maybeSingle();
+  const logMode = (campaign as any)?.combat_log_detail_mode || "normal";
+
   if (targetType === "character") {
-    return resolveCharacterDamage(targetId, encounterId, campaignId, raw, mode, sourceName, skillName, skipLogging);
+    return resolveCharacterDamage(targetId, encounterId, campaignId, raw, mode, sourceName, skillName, skipLogging, logMode);
   } else {
-    return resolveEnemyDamage(targetId, encounterId, campaignId, raw, mode, sourceName, skillName, skipLogging);
+    return resolveEnemyDamage(targetId, encounterId, campaignId, raw, mode, sourceName, skillName, skipLogging, logMode);
   }
 }
 
@@ -49,7 +53,8 @@ async function resolveCharacterDamage(
   mode: DamageMode,
   sourceName?: string,
   skillName?: string,
-  skipLogging?: boolean
+  skipLogging?: boolean,
+  logMode?: string
 ): Promise<DamageResult | null> {
   const [{ data: ch }, { data: its }, { data: shields }] = await Promise.all([
     supabase.from("characters").select("*").eq("id", targetId).maybeSingle(),
@@ -132,28 +137,40 @@ async function resolveCharacterDamage(
   await applyHpDelta(targetId, newHp, maxHp);
 
   // Logging
-  const segments: any[] = [];
-  if (sourceName) segments.push({ t: "text", v: `${sourceName} ` });
-  if (skillName) segments.push({ t: "text", v: `(${skillName}) ` });
-  
-  if (mode === "directDamage") {
-    segments.push({ t: "char", v: ch.name, color: ch.color, id: ch.id });
-    segments.push({ t: "text", v: ` ` });
-    segments.push({ t: "i18n", v: { key: "combat.directDamage" } as any } as any);
-    segments.push({ t: "text", v: `: ` });
-    segments.push({ t: "loss", v: `-${applied} HP` });
-  } else {
-    segments.push({ t: "char", v: ch.name, color: ch.color, id: ch.id });
-    segments.push({ t: "text", v: ` ` });
-    segments.push({ t: "i18n", v: { key: "combat.damageWithDefense" } as any } as any);
-    segments.push({ t: "text", v: `: ` });
-    segments.push({ t: "loss", v: `-${applied} HP` });
-    if (totalMitigatedByDef > 0) segments.push({ t: "text", v: ` (DEF ${def} -${totalMitigatedByDef})` });
-    if (absorbed > 0) segments.push({ t: "text", v: ` (🛡️ -${absorbed})` });
-  }
+  if (!skipLogging) {
+    const isDirect = mode === "directDamage";
+    const labelKey = isDirect ? "combat.directDamage" : "combat.damageWithDefense";
+    
+    const buildSegments = (detail: string) => {
+      const segs: any[] = [];
+      if (sourceName) segs.push({ t: "text", v: `${sourceName} ` });
+      if (skillName) segs.push({ t: "text", v: `(${skillName}) ` });
+      segs.push({ t: "char", v: ch.name, color: ch.color, id: ch.id });
+      segs.push({ t: "text", v: ` ` });
+      
+      if (detail === "minimal") {
+        segs.push({ t: "text", v: `fue atacado.` }); // Very minimal
+      } else if (detail === "normal") {
+        segs.push({ t: "i18n", v: { key: labelKey } as any } as any);
+        segs.push({ t: "text", v: `: ` });
+        segs.push({ t: "loss", v: `-${applied} HP` });
+      } else { // detailed
+        segs.push({ t: "i18n", v: { key: labelKey } as any } as any);
+        segs.push({ t: "text", v: `: ` });
+        segs.push({ t: "loss", v: `-${applied} HP` });
+        if (totalMitigatedByDef > 0) segs.push({ t: "text", v: ` (DEF ${def} -${totalMitigatedByDef})` });
+        if (absorbed > 0) segs.push({ t: "text", v: ` (🛡️ -${absorbed})` });
+        if (raw !== applied && detail === "detailed") segs.push({ t: "text", v: ` [Roll: ${raw}]` });
+      }
+      return segs;
+    };
 
-  if (segments.length > 0 && !skipLogging) {
-    await pushLog(campaignId, segments);
+    if (logMode === "dm_private") {
+      await pushLog(campaignId, buildSegments("minimal"));
+      await pushLog(campaignId, buildSegments("detailed"), undefined, { dmOnly: true });
+    } else {
+      await pushLog(campaignId, buildSegments(logMode || "normal"));
+    }
   }
 
   if (defeated && !skipLogging) {
@@ -171,7 +188,8 @@ async function resolveEnemyDamage(
   mode: DamageMode,
   sourceName?: string,
   skillName?: string,
-  skipLogging?: boolean
+  skipLogging?: boolean,
+  logMode?: string
 ): Promise<DamageResult | null> {
   const [{ data: p }, { data: shields }] = await Promise.all([
     (supabase as any).from("combat_participants").select("*").eq("id", targetId).maybeSingle(),
@@ -254,26 +272,39 @@ async function resolveEnemyDamage(
     .eq("id", targetId);
 
   // Logging
-  const segments: any[] = [];
-  if (sourceName) segments.push({ t: "text", v: `${sourceName} ` });
-  if (skillName) segments.push({ t: "text", v: `(${skillName}) ` });
-  
-  if (mode === "directDamage") {
-    segments.push({ t: "text", v: `${name} ` });
-    segments.push({ t: "i18n", v: { key: "combat.directDamage" } as any } as any);
-    segments.push({ t: "text", v: `: ` });
-    segments.push({ t: "loss", v: `-${applied} HP` });
-  } else {
-    segments.push({ t: "text", v: `${name} ` });
-    segments.push({ t: "i18n", v: { key: "combat.damageWithDefense" } as any } as any);
-    segments.push({ t: "text", v: `: ` });
-    segments.push({ t: "loss", v: `-${applied} HP` });
-    if (totalMitigatedByDef > 0) segments.push({ t: "text", v: ` (DEF ${def} -${totalMitigatedByDef})` });
-    if (absorbed > 0) segments.push({ t: "text", v: ` (🛡️ -${absorbed})` });
-  }
+  if (!skipLogging) {
+    const isDirect = mode === "directDamage";
+    const labelKey = isDirect ? "combat.directDamage" : "combat.damageWithDefense";
 
-  if (segments.length > 0 && !skipLogging) {
-    await pushLog(campaignId, segments);
+    const buildSegments = (detail: string) => {
+      const segs: any[] = [];
+      if (sourceName) segs.push({ t: "text", v: `${sourceName} ` });
+      if (skillName) segs.push({ t: "text", v: `(${skillName}) ` });
+      segs.push({ t: "text", v: `${name} ` });
+
+      if (detail === "minimal") {
+        segs.push({ t: "text", v: `fue atacado.` });
+      } else if (detail === "normal") {
+        segs.push({ t: "i18n", v: { key: labelKey } as any } as any);
+        segs.push({ t: "text", v: `: ` });
+        segs.push({ t: "loss", v: `-${applied} HP` });
+      } else { // detailed
+        segs.push({ t: "i18n", v: { key: labelKey } as any } as any);
+        segs.push({ t: "text", v: `: ` });
+        segs.push({ t: "loss", v: `-${applied} HP` });
+        if (totalMitigatedByDef > 0) segs.push({ t: "text", v: ` (DEF ${def} -${totalMitigatedByDef})` });
+        if (absorbed > 0) segs.push({ t: "text", v: ` (🛡️ -${absorbed})` });
+        if (raw !== applied && detail === "detailed") segs.push({ t: "text", v: ` [Roll: ${raw}]` });
+      }
+      return segs;
+    };
+
+    if (logMode === "dm_private") {
+      await pushLog(campaignId, buildSegments("minimal"));
+      await pushLog(campaignId, buildSegments("detailed"), undefined, { dmOnly: true });
+    } else {
+      await pushLog(campaignId, buildSegments(logMode || "normal"));
+    }
   }
 
   if (defeated && !skipLogging) {
