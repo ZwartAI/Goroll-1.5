@@ -13,6 +13,7 @@ import { SkillCard, type CharacterSkill } from "@/components/app/SkillCard";
 import { SkillDetailModal } from "@/components/app/SkillDetailModal";
 import { backdropProps } from "@/lib/modalBackdrop";
 import { LevelAdjustModal } from "@/components/app/LevelAdjustModal";
+import { ConfirmDialog } from "@/components/app/ConfirmDialog";
 
 type Props = {
   characterId: string;
@@ -33,6 +34,8 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
   const [boosters, setBoosters] = useState<Booster[]>([]);
   const [skills, setSkills] = useState<CharacterSkill[]>([]);
   const [skillPeek, setSkillPeek] = useState<CharacterSkill | null>(null);
+  const [lockConfirm, setLockConfirm] = useState<CharacterSkill | null>(null);
+  const [lockBusy, setLockBusy] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [vaultConfirm, setVaultConfirm] = useState<Booster | null>(null);
   const [peekBooster, setPeekBooster] = useState<Booster | null>(null);
@@ -379,6 +382,7 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
                 setSkillPeek(null);
                 reload();
               },
+              onLock: () => setLockConfirm(skillPeek),
               onDelete: async () => {
                 if (!confirm(t("skills.deleteConfirm", { name: skillPeek.name }))) return;
                 await (supabase as any).from("character_skills").delete().eq("id", skillPeek.id);
@@ -386,6 +390,47 @@ export function CharacterSheetModal({ characterId, campaignId, editor, onClose, 
                 reload();
               },
             } : undefined}
+          />
+        )}
+        {lockConfirm && character && (
+          <ConfirmDialog
+            open
+            variant="warning"
+            title={t("skills.lockConfirmTitle")}
+            description={`${t("skills.lockConfirmDesc")}\n\n• ${lockConfirm.name} (${lockConfirm.rarity})\n• ${character.name}\n• ${lockConfirm.cost} SP`}
+            confirmLabel={t("skills.lockSkill")}
+            cancelLabel={t("common.cancel")}
+            busy={lockBusy}
+            onCancel={() => setLockConfirm(null)}
+            onConfirm={async () => {
+              if (lockBusy) return;
+              setLockBusy(true);
+              try {
+                const { error } = await (supabase as any).from("character_skills")
+                  .update({ is_unlocked: false, unlocked_at: null, updated_at: new Date().toISOString() })
+                  .eq("id", lockConfirm.id)
+                  .eq("character_id", character.id)
+                  .eq("is_unlocked", true);
+                if (error) throw error;
+                if (editor) await pushLog(campaignId, [
+                  { t: "char", v: editor.name, color: editor.color, id: editor.id },
+                  { t: "text", v: t("skills.logDmLocked") },
+                  { t: "char", v: character.name, color: character.color, id: character.id },
+                  { t: "text", v: ":" },
+                  { t: "item", v: lockConfirm.name, rarity: lockConfirm.rarity, id: lockConfirm.id },
+                ]);
+                const { toast } = await import("sonner");
+                toast.success(t("skills.lockedToast"));
+                setLockConfirm(null);
+                setSkillPeek(null);
+                reload();
+              } catch (e: any) {
+                const { toast } = await import("sonner");
+                toast.error(e?.message || "Error");
+              } finally {
+                setLockBusy(false);
+              }
+            }}
           />
         )}
         {peekBooster && (
