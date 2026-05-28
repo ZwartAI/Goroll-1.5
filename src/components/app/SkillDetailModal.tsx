@@ -13,6 +13,7 @@ type Props = {
   /** When provided, shows DM actions. */
   dmActions?: {
     onUnlockFree?: () => void;
+    onLock?: () => void;
     onDelete?: () => void;
   };
   canAcquire?: boolean;
