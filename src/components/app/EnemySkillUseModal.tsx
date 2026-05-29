@@ -55,13 +55,13 @@ export function EnemySkillUseModal({
   const encounterId = combat.encounter?.id ?? null;
   const { byCharacter: shieldsByChar } = useEncounterShields(encounterId);
 
-  // Players currently in this encounter.
-  const playerParticipants = combat.participants.filter(p => p.participant_type === "player");
-  const presentCharIds = new Set(playerParticipants.map(p => p.character_id).filter(Boolean) as string[]);
-  const players = characters.filter(c => c.role === "player" && presentCharIds.has(c.id));
+  // All participants in this encounter.
+  const participants = combat.participants;
+  const sourceId = participant.id;
+  const possibleTargets = participants.filter(p => p.id !== sourceId);
 
   const [selected, setSelected] = useState<Set<string>>(
-    () => new Set((initialSelectedCharIds || []).filter(id => presentCharIds.has(id)))
+    () => new Set((initialSelectedCharIds || []).filter(id => participants.some(p => p.id === id || p.character_id === id)))
   );
   const [rollResult, setRollResult] = useState<number>(initialRollResult ?? 0);
   const [mode, setMode] = useState<DamageMode>(
@@ -80,8 +80,8 @@ export function EnemySkillUseModal({
   const color = participant.enemy_color || "var(--loss)";
   const selectedArr = useMemo(() => Array.from(selected), [selected]);
 
-  const anySelectedLinked = selectedArr.some(cid => {
-    const p = playerParticipants.find(pp => pp.character_id === cid);
+  const anySelectedLinked = selectedArr.some(id => {
+    const p = participants.find(pp => pp.id === id || pp.character_id === id);
     return !!p?.turn_group_id;
   });
 
@@ -92,7 +92,7 @@ export function EnemySkillUseModal({
       return next;
     });
   };
-  const selectAll = () => setSelected(new Set(players.map(p => p.id)));
+  const selectAll = () => setSelected(new Set(possibleTargets.map(p => p.character_id || p.id)));
   const clearAll = () => setSelected(new Set());
 
   const submit = async () => {
@@ -147,7 +147,7 @@ export function EnemySkillUseModal({
     } else if (mode === "logOnly" && !initialResolvedTargets) {
       // No damage requested: still surface the selected names in the log.
       resolvedTargetsLabel = selectedArr
-        .map(id => characters.find(c => c.id === id)?.name)
+        .map(id => participants.find(p => p.id === id || p.character_id === id)?.display_name)
         .filter(Boolean)
         .join(", ");
     }
