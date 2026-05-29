@@ -1627,8 +1627,8 @@ export const es = {
   acquireSkills: {
     title: "Adquirir habilidades",
     subtitle: "Usar Skill Points para aprender nuevas habilidades",
+  },
   combat: {
-    // ... existing combat keys
     settings: {
       logDetailTitle: "Datos de entidades en log",
       logDetail: {
@@ -1647,8 +1647,7 @@ export const es = {
   },
 };
 
-
-
 export type Dict = typeof es;
+
 
 
