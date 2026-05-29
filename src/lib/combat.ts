@@ -850,14 +850,12 @@ export async function duplicateEnemy(participant: CombatParticipant, encounter: 
   return { ok: true };
 }
 
-export async function removeEnemy(participant: CombatParticipant, encounter: CombatEncounter, dm: { id: string; name: string; color: string }) {
+export async function removeEnemy(participant: CombatParticipant, encounter: CombatEncounter, dm: { id: string; name: string; color: string }, skipTurnAdjustment = false) {
   if (!isEnemy(participant)) return { ok: false as const };
 
   const isNpc = !!(participant as any).npc_template_id;
 
   // Archive to bestiary BEFORE deleting so the enemy can be reused later.
-  // Skip archival for NPCs (they live in the NPC compendium) and for participants
-  // already spawned from a template.
   let archived = false;
   try {
     if (!isNpc && !participant.enemy_template_id) {
@@ -919,11 +917,9 @@ export async function removeEnemy(participant: CombatParticipant, encounter: Com
         }
       }
     }
-  } catch {
-    // Archival is best-effort — never block the removal itself.
-  }
+  } catch { }
 
-  // Remove linked pins first so the turn order doesn't reference a missing participant.
+  // Remove linked pins first.
   let removedPins = 0;
   try {
     const { data: linkedPins } = await (supabase as any)
@@ -934,20 +930,23 @@ export async function removeEnemy(participant: CombatParticipant, encounter: Com
       removedPins = linkedPins.length;
       await (supabase as any).from("combat_turn_pins").delete().eq("linked_participant_id", participant.id);
     }
-  } catch {
-    // best-effort
-  }
+  } catch { }
 
   const { error } = await (supabase as any).from("combat_participants").delete().eq("id", participant.id);
   if (error) return { ok: false as const, error: error.message };
-  if (encounter.status === "active") {
+
+  if (!skipTurnAdjustment && encounter.status === "active") {
     const removedOrder = participant.order_index;
-    if (removedOrder <= encounter.current_turn_index && encounter.current_turn_index > 0) {
+    // Logic: 
+    // If we remove an entity BEFORE the current one, decrement index to keep pointer on same entity.
+    // If we remove the CURRENT entity, keep index (it now points to the next entity in list).
+    if (removedOrder < encounter.current_turn_index && encounter.current_turn_index > 0) {
       await (supabase as any).from("combat_encounters")
         .update({ current_turn_index: encounter.current_turn_index - 1 })
         .eq("id", encounter.id);
     }
   }
+
   await pushLog(encounter.campaign_id, [
     { t: "char", v: dm.name, color: dm.color, id: dm.id },
     { t: "text", v: archived
@@ -955,6 +954,43 @@ export async function removeEnemy(participant: CombatParticipant, encounter: Com
         : ` retiró del combate a ${participant.display_name}.` },
   ]);
   return { ok: true as const, archived, removedPins };
+}
+
+export async function removeParticipants(participants: CombatParticipant[], encounter: CombatEncounter, dm: { id: string; name: string; color: string }) {
+  if (participants.length === 0) return { ok: true };
+  
+  // Sort by descending order_index to avoid shifting problems during deletion if we were doing it one by one with adjustment.
+  // But we will delete all and then adjust ONCE.
+  let okCount = 0;
+  let archivedCount = 0;
+  let removedPinsTotal = 0;
+
+  // We delete them one by one to trigger the individual logs and bestiary archival logic easily,
+  // but we skip the turn adjustment inside removeEnemy.
+  for (const p of participants) {
+    const r = await removeEnemy(p, encounter, dm, true);
+    if (r.ok) {
+      okCount++;
+      if (r.archived) archivedCount++;
+      removedPinsTotal += r.removedPins || 0;
+    }
+  }
+
+  // Final turn adjustment.
+  if (encounter.status === "active") {
+    // Count how many entities BEFORE the current index were removed.
+    const countBefore = participants.filter(p => p.order_index < encounter.current_turn_index).length;
+    // If the active entity itself was removed, the index will now point to a new entity.
+    // We just need to shift back by the number of entities removed BEFORE the current one.
+    if (countBefore > 0) {
+      const newIndex = Math.max(0, encounter.current_turn_index - countBefore);
+      await (supabase as any).from("combat_encounters")
+        .update({ current_turn_index: newIndex })
+        .eq("id", encounter.id);
+    }
+  }
+
+  return { ok: true, okCount, archivedCount, removedPinsTotal };
 }
 
 
