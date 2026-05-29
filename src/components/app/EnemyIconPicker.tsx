@@ -59,10 +59,10 @@ export type EnemyCustomImage = {
 export function getEnemyCustomImage(entity: any): EnemyCustomImage | null {
   if (!entity) return null;
   const url: string = entity.image_url || "";
-  if (!url) return null;
   const ox = entity.image_offset_x ?? entity.enemy_image_offset_x ?? 50;
   const oy = entity.image_offset_y ?? entity.enemy_image_offset_y ?? 50;
   const sc = entity.image_scale ?? entity.enemy_image_scale ?? 1;
+  // Return the framing even if no URL is present, so it can be applied to assets.
   return { url, offsetX: Number(ox), offsetY: Number(oy), scale: Number(sc) };
 }
 
@@ -114,34 +114,36 @@ export function EnemyIcon({
 
   const asset = getEnemyAssetUrl(name);
   if (asset) {
+    const ox = customImage?.offsetX ?? 50;
+    const oy = customImage?.offsetY ?? 50;
+    const sc = (customImage?.scale ?? 1) * assetScale;
+    const tx = `translate(${ox - 50}%, ${oy - 50}%) scale(${sc})`;
+
     if (fill) {
       return (
         <img
           src={asset}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: "center", transform: assetScale !== 1 ? `scale(${assetScale})` : undefined, transformOrigin: "center" }}
+          style={{ objectPosition: "center", transform: tx, transformOrigin: "center" }}
         />
       );
     }
-    if (assetScale !== 1) {
-      return (
-        <span
-          style={{ width: size, height: size, display: "inline-block", borderRadius: "9999px", overflow: "hidden", position: "relative" }}
-        >
-          <img
-            src={asset}
-            alt=""
-            style={{
-              position: "absolute", inset: 0, width: "100%", height: "100%",
-              objectFit: "cover", objectPosition: "center",
-              transform: `scale(${assetScale})`, transformOrigin: "center",
-            }}
-          />
-        </span>
-      );
-    }
-    return <img src={asset} alt="" style={{ width: size, height: size, objectFit: "cover", borderRadius: "9999px" }} />;
+    return (
+      <span
+        style={{ width: size, height: size, display: "inline-block", borderRadius: "9999px", overflow: "hidden", position: "relative", background: "var(--secondary)" }}
+      >
+        <img
+          src={asset}
+          alt=""
+          style={{
+            position: "absolute", inset: 0, width: "100%", height: "100%",
+            objectFit: "cover", objectPosition: "center",
+            transform: tx, transformOrigin: "center",
+          }}
+        />
+      </span>
+    );
   }
   const Icon = ENEMY_ICONS[name || "skull"] || Skull;
   return <Icon size={size} color={color} />;
