@@ -567,6 +567,7 @@ export type Database = {
       combat_encounters: {
         Row: {
           campaign_id: string
+          combat_log_detail_mode: string
           created_at: string
           current_turn_index: number
           ended_at: string | null
@@ -578,6 +579,7 @@ export type Database = {
         }
         Insert: {
           campaign_id: string
+          combat_log_detail_mode?: string
           created_at?: string
           current_turn_index?: number
           ended_at?: string | null
@@ -589,6 +591,7 @@ export type Database = {
         }
         Update: {
           campaign_id?: string
+          combat_log_detail_mode?: string
           created_at?: string
           current_turn_index?: number
           ended_at?: string | null
