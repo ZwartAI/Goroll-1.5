@@ -366,7 +366,7 @@ export function useGameData(): GameData {
   return {
     campaign: null, character: null, characters: [], items: [], logs: [], achievements: [],
     loading: true, onlineIds: new Set(), dmLabels: {}, dmCharacterIds: new Set(),
-    combat: { encounter: null, participants: [], groups: [], pins: [] },
+    combat: { encounter: null, participants: [], groups: [], pins: [], effects: [], conditions: [] },
     reload: async () => {}, loadMoreLogs: async () => {},
   };
 }
