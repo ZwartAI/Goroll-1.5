@@ -63,16 +63,15 @@ export const MapToken: React.FC<Props> = ({ participant, x, y, onSelect, isSelec
         strokeWidth={2}
       />
 
-      {/* Clip de imagen circular */}
+      {/* Clip de imagen circular con encuadre (Framing) */}
       {image ? (
         <Group clipFunc={(ctx) => ctx.arc(0, 0, radius - 1, 0, Math.PI * 2)}>
-          <Image
-            image={image}
-            x={-radius}
-            y={-radius}
-            width={radius * 2}
-            height={radius * 2}
-            imageSmoothingEnabled={true}
+          <KonvaFramedImage 
+            image={image} 
+            radius={radius} 
+            offsetX={customImg?.offsetX ?? 50} 
+            offsetY={customImg?.offsetY ?? 50} 
+            scale={customImg?.scale ?? 1} 
           />
         </Group>
       ) : (
@@ -81,3 +80,49 @@ export const MapToken: React.FC<Props> = ({ participant, x, y, onSelect, isSelec
     </Group>
   );
 };
+
+/**
+ * Componente interno para manejar el escalado y desplazamiento (Framing) en Konva.
+ * Simula el comportamiento de object-cover + transform: translate/scale.
+ */
+const KonvaFramedImage: React.FC<{
+  image: HTMLImageElement;
+  radius: number;
+  offsetX: number;
+  offsetY: number;
+  scale: number;
+}> = ({ image, radius, offsetX, offsetY, scale }) => {
+  const size = radius * 2;
+  
+  // Calcular dimensiones para simular "object-cover"
+  const imgAspect = image.width / image.height;
+  let drawW = size;
+  let drawH = size;
+  
+  if (imgAspect > 1) {
+    drawW = size * imgAspect;
+  } else {
+    drawH = size / imgAspect;
+  }
+
+  // Aplicar el encuadre (offset y scale adicional)
+  const finalW = drawW * scale;
+  const finalH = drawH * scale;
+  
+  // El offset 50,50 es el centro del recorte.
+  // Calculamos la posición relativa al centro del token (0,0)
+  const x = -finalW / 2 + (offsetX - 50) * (finalW / 100);
+  const y = -finalH / 2 + (offsetY - 50) * (finalH / 100);
+
+  return (
+    <Image
+      image={image}
+      x={x}
+      y={y}
+      width={finalW}
+      height={finalH}
+      imageSmoothingEnabled={true}
+    />
+  );
+};
+
