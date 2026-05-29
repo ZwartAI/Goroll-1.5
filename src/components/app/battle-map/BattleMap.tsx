@@ -52,7 +52,9 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
         title={headerTitle} 
         onBack={onBack} 
         onMenuToggle={() => togglePanel('participants')} 
+        onLogToggle={() => togglePanel('log')}
       />
+
 
       <main className="flex-1 relative overflow-hidden">
         {/* Panel Lateral: Participantes */}
