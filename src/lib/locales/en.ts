@@ -249,6 +249,13 @@ export const en: Dict = {
     onlineShort: "Online",
     offlineModalTitle: "Offline players",
   },
+  battleMap: {
+    title: "Battle Map",
+    backToScene: "Back to Scene",
+    participants: "Participants",
+    recentLog: "Recent Log",
+    openMap: "Battle Map",
+  },
   profile: {
     loading: "Loading...",
     logoutAria: "Log out",
