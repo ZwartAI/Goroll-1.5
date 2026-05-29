@@ -150,7 +150,7 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
         </div>
 
         {/* Panel de Configuración (DM only) */}
-        {character?.role === 'dm' && (
+        {useGameData().character?.role === 'dm' && (
           <BattleMapConfigModal config={mapConfig} onChange={setMapConfig} />
         )}
 
