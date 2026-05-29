@@ -1625,8 +1625,8 @@ export const en: Dict = {
   acquireSkills: {
     title: "Acquire skills",
     subtitle: "Use Skill Points to learn new skills",
+  },
   combat: {
-    // ... existing combat keys
     settings: {
       logDetailTitle: "Entity data in log",
       logDetail: {
@@ -1644,6 +1644,7 @@ export const en: Dict = {
     },
   },
 };
+
 
 
 
