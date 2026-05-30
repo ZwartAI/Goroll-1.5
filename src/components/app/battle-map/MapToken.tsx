@@ -98,7 +98,10 @@ export const MapToken: React.FC<Props> = ({
           scaleX: 1,
           scaleY: 1,
           duration: 0.2,
-          easing: Konva.Easings.BackEaseOut
+          easing: Konva.Easings.BackEaseOut,
+          onFinish: () => {
+            onDragEnd?.(e);
+          }
         });
       }}
     >
