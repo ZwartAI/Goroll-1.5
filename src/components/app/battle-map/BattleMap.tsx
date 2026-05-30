@@ -87,6 +87,43 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
     setActivePanel(prev => prev === 'participants' ? 'none' : 'participants');
   }, []);
 
+  // FASE 4: Chalk Handlers
+  const handleAddChalkLine = useCallback((line: ChalkLine) => {
+    setChalkLines(prev => [...prev, line]);
+  }, []);
+
+  const handleUndoChalk = useCallback(() => {
+    setChalkLines(prev => prev.slice(0, -1));
+  }, []);
+
+  const handleClearChalk = useCallback(() => {
+    if (confirm("¿Borrar todos los dibujos y notas?")) {
+      setChalkLines([]);
+      setChalkNotes([]);
+    }
+  }, []);
+
+  const handleAddNote = useCallback((x: number, y: number) => {
+    const text = prompt("Texto de la nota:");
+    if (text) {
+      const newNote: ChalkNote = {
+        id: Math.random().toString(36).substr(2, 9),
+        x,
+        y,
+        text
+      };
+      setChalkNotes(prev => [...prev, newNote]);
+    }
+  }, []);
+
+  const handleNoteUpdate = useCallback((id: string, x: number, y: number) => {
+    setChalkNotes(prev => prev.map(n => n.id === id ? { ...n, x, y } : n));
+  }, []);
+
+  const handleNoteDelete = useCallback((id: string) => {
+    setChalkNotes(prev => prev.filter(n => n.id !== id));
+  }, []);
+
   // Ordenar participantes por iniciativa para la lista lateral
   const sortedParticipants = useMemo(() => {
     return [...combat.participants].sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
