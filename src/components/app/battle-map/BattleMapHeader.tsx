@@ -11,7 +11,7 @@ interface Props {
 }
 
 
-export const BattleMapHeader: React.FC<Props> = ({ title, onBack, onMenuToggle }) => {
+export const BattleMapHeader: React.FC<Props> = ({ title, onBack, onMenuToggle, onlineCount = 0 }) => {
   const { t } = useT();
 
   return (
