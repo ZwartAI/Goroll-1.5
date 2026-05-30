@@ -257,6 +257,11 @@ export const es = {
     participants: "Participantes",
     recentLog: "Log Reciente",
     openMap: "Mapa de Batalla",
+    tokenSummoned: "Token invocado",
+    tokenRemoved: "Token retirado",
+    noMapLoaded: "No hay mapa cargado.",
+    waitingForDM: "Esperando a que el DM configure el mapa.",
+
   },
   profile: {
     loading: "Cargando...",
