@@ -255,6 +255,11 @@ export const en: Dict = {
     participants: "Participants",
     recentLog: "Recent Log",
     openMap: "Battle Map",
+    tokenSummoned: "Token summoned",
+    tokenRemoved: "Token removed",
+    noMapLoaded: "No map loaded.",
+    waitingForDM: "Waiting for DM to set up map.",
+
   },
   profile: {
     loading: "Loading...",
