@@ -38,7 +38,9 @@ interface Props {
   onProjectionUpdate?: (projection: ProjectionState | null) => void;
   role: string;
   currentUserId?: string;
+  isRulerActive?: boolean;
 }
+
 
 export type ProjectionType = 'distance' | 'area' | 'line' | 'cone';
 
