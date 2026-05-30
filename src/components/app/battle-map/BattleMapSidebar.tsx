@@ -17,7 +17,7 @@ export const BattleMapSidebar: React.FC<Props> = ({ participants, isOpen, onOpen
   if (!isOpen) return null;
 
   return (
-    <aside className="w-72 bg-[#0a0a0c]/95 border-r border-border/50 h-full flex flex-col z-20 backdrop-blur-md shadow-2xl transition-all">
+    <aside className="w-full sm:w-80 bg-[#0a0a0c]/95 border-r border-border/50 h-full flex flex-col z-20 backdrop-blur-md shadow-2xl transition-all overflow-hidden">
       <div className="p-4 border-b border-border/30 flex items-center justify-between">
         <h2 className="font-display text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
           {t('battleMap.participants')}
