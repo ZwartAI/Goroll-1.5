@@ -265,6 +265,7 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
   const handleRollDice = useCallback((selections: DieSelection[]) => {
     setIsDicePanelOpen(false);
+    playMapSound('dice');
     const newRolls: any[] = [];
     let total = 0;
     const individualResults: string[] = [];
