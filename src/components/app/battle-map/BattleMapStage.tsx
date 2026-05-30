@@ -280,6 +280,7 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
             const initialX = width / 2 + (i % 3) * gridSize - gridSize;
             const initialY = height / 2 + Math.floor(i / 3) * gridSize - gridSize;
             const isDM = role === 'dm';
+            // FASE 7: More robust owner check (using character_id)
             const isOwner = !!(currentUserId && p.character_id === currentUserId);
 
             return (
