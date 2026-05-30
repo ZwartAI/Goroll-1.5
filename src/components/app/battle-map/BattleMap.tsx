@@ -209,6 +209,7 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
   // FASE 5: Scene Management Handlers
   const handleSaveScene = useCallback(async (name: string) => {
     if (!campaign?.id) return;
+    playMapSound('click');
     
     const newScene: any = {
       campaign_id: campaign.id,
