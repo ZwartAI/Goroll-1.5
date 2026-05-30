@@ -239,7 +239,31 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
         {/* Panel de Configuración (DM only) */}
         {useGameData().character?.role === 'dm' && (
-          <BattleMapConfigModal config={mapConfig} onChange={setMapConfig} />
+          <>
+            <BattleMapConfigModal config={mapConfig} onChange={setMapConfig} />
+            
+            {/* FASE 4: Botón de Tiza y Controles */}
+            {!isChalkMode ? (
+              <button
+                onClick={() => setIsChalkMode(true)}
+                className="absolute bottom-20 right-4 z-40 bg-[#1a1a1e]/90 hover:bg-[var(--gold)] hover:text-black border border-white/10 p-4 rounded-full shadow-2xl transition-all group"
+              >
+                <Pencil className="w-6 h-6 text-[var(--gold)] group-hover:text-black" />
+              </button>
+            ) : (
+              <BattleMapChalkControls
+                activeTool={chalkTool}
+                onToolChange={setChalkTool}
+                currentColor={chalkColor}
+                onColorChange={setChalkColor}
+                currentSize={chalkSize}
+                onSizeChange={setChalkSize}
+                onUndo={handleUndoChalk}
+                onClear={handleClearChalk}
+                onExit={() => setIsChalkMode(false)}
+              />
+            )}
+          </>
         )}
 
         {/* Dados Flotantes */}
