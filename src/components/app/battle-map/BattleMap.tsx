@@ -343,8 +343,28 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
         </div>
 
         {/* Overlay */}
-        {(activePanel !== 'none' || isScenesPanelOpen) && (
-          <div className="absolute inset-0 bg-black/40 z-30 transition-opacity animate-in fade-in" onClick={() => { setActivePanel('none'); setIsScenesPanelOpen(false); }} />
+        {(activePanel !== 'none' || isScenesPanelOpen || isDicePanelOpen) && (
+          <div className="absolute inset-0 bg-black/40 z-30 transition-opacity animate-in fade-in" onClick={() => { 
+            setActivePanel('none'); 
+            setIsScenesPanelOpen(false); 
+            setIsDicePanelOpen(false);
+          }} />
+        )}
+
+        {/* Panel Dados (Fase 6) */}
+        {isDicePanelOpen && (
+          <BattleMapDicePanel 
+            onClose={() => setIsDicePanelOpen(false)}
+            onRoll={handleRollDice}
+          />
+        )}
+
+        {/* Animación de Dados (Fase 6) */}
+        {activeDiceRolls && (
+          <BattleMapDiceAnimation 
+            dice={activeDiceRolls} 
+            onComplete={() => setActiveDiceRolls(null)} 
+          />
         )}
 
         {/* Panel Escenas */}
