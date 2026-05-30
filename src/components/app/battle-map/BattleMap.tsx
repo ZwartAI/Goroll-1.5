@@ -617,10 +617,11 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
           onOpenChar={onOpenChar} 
         />
 
-        {/* Bottom Bar Buttons */}
-        <div className="absolute bottom-12 right-3 z-[45]">
+        {/* Floating Dice Button */}
+        <div className="fixed bottom-20 right-4 z-[70] animate-in slide-in-from-right-5 duration-500">
           <BattleMapDiceButton onClick={handleDiceClick} />
         </div>
+
       </main>
 
       {/* New Fixed Player Bottom Bar */}
