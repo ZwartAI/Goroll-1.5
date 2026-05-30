@@ -74,6 +74,9 @@ export type CombatParticipant = {
   enemy_image_offset_x: number | null;
   enemy_image_offset_y: number | null;
   enemy_image_scale: number | null;
+  tier: string | null;
+  npc_template_id: string | null;
+  npc_disposition: "ally" | "neutral" | "hostile" | null;
 };
 
 export function isEnemy(p: CombatParticipant): boolean {
