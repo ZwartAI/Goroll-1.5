@@ -317,7 +317,7 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
         className={isChalkMode ? (chalkTool === 'pencil' ? 'cursor-crosshair' : 'cursor-text') : 'cursor-grab active:cursor-grabbing'}
       >
         <Layer ref={layerRef}>
-          <Rect x={-2500} y={-2500} width={5000} height={5000} fill="#0f0f12" />
+          <Rect x={-5000} y={-5000} width={10000} height={10000} fill="#050507" />
           {config.backgroundUrl && (config.backgroundType === 'video' ? (
             <KonvaImage image={videoRef.current!} x={0} y={0} width={gridSize * 20 * config.backgroundScale} height={gridSize * 20 * config.backgroundScale} opacity={config.backgroundOpacity} />
           ) : bgImage && (
