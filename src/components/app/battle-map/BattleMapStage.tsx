@@ -60,7 +60,13 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
   onAddChalkLine,
   onAddNote,
   onNoteUpdate,
-  onNoteClick
+  onNoteClick,
+  remoteTokenPositions = {},
+  remoteProjections = {},
+  onTokenMove,
+  onTokenMoveEnd,
+  onProjectionUpdate,
+  role
 }) => {
   const stageRef = useRef<Konva.Stage>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
