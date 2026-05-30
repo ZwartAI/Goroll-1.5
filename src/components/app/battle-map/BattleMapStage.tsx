@@ -168,114 +168,16 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
   // Calculations for projection visuals
   const projectionVisuals = useMemo(() => {
     if (!projection) return null;
-    const { type, origin, current } = projection;
-    const dx = current.x - origin.x;
-    const dy = current.y - origin.y;
-    const distPx = Math.sqrt(dx * dx + dy * dy);
-    const distFeet = Math.floor(distPx / gridSize) * 5;
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    return renderProjection(projection);
+  }, [projection, renderProjection]);
 
-    const commonProps = {
-      stroke: 'rgba(234, 179, 8, 0.6)',
-      strokeWidth: 2,
-      fill: 'rgba(234, 179, 8, 0.1)',
-      shadowBlur: 10,
-      shadowColor: 'rgba(234, 179, 8, 0.5)',
-    };
-
-    const label = (
-      <Group x={(origin.x + current.x) / 2} y={(origin.y + current.y) / 2 - 20}>
-        <Rect
-          width={60}
-          height={20}
-          fill="rgba(0,0,0,0.8)"
-          cornerRadius={4}
-          offsetX={30}
-          offsetY={10}
-        />
-        <Text
-          text={`${distFeet} ft`}
-          fill="var(--gold)"
-          fontSize={10}
-          fontFamily="monospace"
-          width={60}
-          align="center"
-          offsetX={30}
-          offsetY={5}
-        />
-      </Group>
-    );
-
-    switch (type) {
-      case 'distance':
-        return (
-          <Group>
-            <Line
-              points={[origin.x, origin.y, current.x, current.y]}
-              {...commonProps}
-              dash={[10, 5]}
-            />
-            <KonvaCircle x={current.x} y={current.y} radius={5} fill="var(--gold)" />
-            {label}
-          </Group>
-        );
-      case 'area':
-        return (
-          <Group>
-            <KonvaCircle x={origin.x} y={origin.y} radius={distPx} {...commonProps} />
-            <Text
-              x={origin.x}
-              y={origin.y - distPx - 20}
-              text={`${distFeet} ft radius`}
-              fill="var(--gold)"
-              fontSize={10}
-              align="center"
-              offsetX={30}
-            />
-          </Group>
-        );
-      case 'line':
-        return (
-          <Group>
-            <Line
-              points={[origin.x, origin.y, current.x, current.y]}
-              {...commonProps}
-              strokeWidth={gridSize}
-              lineCap="round"
-              opacity={0.3}
-            />
-            <Line
-              points={[origin.x, origin.y, current.x, current.y]}
-              {...commonProps}
-            />
-            {label}
-          </Group>
-        );
-      case 'cone':
-        return (
-          <Group>
-            <Wedge
-              x={origin.x}
-              y={origin.y}
-              radius={distPx}
-              angle={60}
-              rotation={angle - 30}
-              {...commonProps}
-            />
-            <Text
-              x={current.x}
-              y={current.y - 20}
-              text={`${distFeet} ft cone`}
-              fill="var(--gold)"
-              fontSize={10}
-              offsetX={30}
-            />
-          </Group>
-        );
-      default:
-        return null;
-    }
-  }, [projection, gridSize]);
+  const remoteProjectionVisuals = useMemo(() => {
+    return Object.entries(remoteProjections).map(([userId, proj]) => {
+      if (!proj) return null;
+      // Use a slightly different color or opacity for remote projections if desired
+      return renderProjection(proj, 'rgba(100, 149, 237, 0.5)'); // CornflowerBlue for others
+    });
+  }, [remoteProjections, renderProjection]);
 
   // FASE 5: Helper to render any projection state
   const renderProjection = useCallback((proj: ProjectionState, colorScale: string = 'var(--gold)') => {
