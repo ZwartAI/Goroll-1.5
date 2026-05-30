@@ -81,6 +81,19 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
   const [_, setVideoTick] = useState(0);
   const [projection, setProjection] = useState<ProjectionState | null>(null);
 
+  // FASE 7: Subtle particles
+  const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, size: number}>>([]);
+  
+  useEffect(() => {
+    const initialParticles = Array.from({ length: 30 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 5000 - 2500,
+      y: Math.random() * 5000 - 2500,
+      size: Math.random() * 2 + 1
+    }));
+    setParticles(initialParticles);
+  }, []);
+
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentLinePoints, setCurrentLinePoints] = useState<number[]>([]);
 
