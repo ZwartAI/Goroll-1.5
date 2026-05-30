@@ -24,6 +24,7 @@ export interface BattleMapScene {
   is_active: boolean;
 }
 
+interface Props {
   scenes: BattleMapScene[];
   activeSceneId?: string;
   hasBackground: boolean;
