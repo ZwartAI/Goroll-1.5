@@ -17,10 +17,14 @@ interface Props {
   isSelected?: boolean;
   onLongPress?: (x: number, y: number) => void;
   onProjectionStart?: (type: 'distance' | 'area' | 'line' | 'cone', origin: { x: number; y: number }) => void;
+  draggable?: boolean;
+  onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
 }
 
 export const MapToken: React.FC<Props> = ({ 
-  participant, x, y, gridSize, onSelect, isSelected, onLongPress, onProjectionStart 
+  participant, x, y, gridSize, onSelect, isSelected, onLongPress, onProjectionStart,
+  draggable, onDragMove, onDragEnd
 }) => {
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   // Obtener la imagen (custom o asset)
@@ -43,7 +47,8 @@ export const MapToken: React.FC<Props> = ({
       y={y} 
       name="token-group"
       participantId={participant.id}
-      draggable 
+      draggable={draggable} 
+      onDragMove={onDragMove}
       onClick={onSelect}
       onTap={onSelect}
       onMouseDown={(e) => {
@@ -93,7 +98,10 @@ export const MapToken: React.FC<Props> = ({
           scaleX: 1,
           scaleY: 1,
           duration: 0.2,
-          easing: Konva.Easings.BackEaseOut
+          easing: Konva.Easings.BackEaseOut,
+          onFinish: () => {
+            onDragEnd?.(e);
+          }
         });
       }}
     >
