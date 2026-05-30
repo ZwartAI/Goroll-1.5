@@ -334,7 +334,7 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
       <BattleMapHeader 
         title={headerTitle} 
         onBack={async () => {
-          await handleUpdateCurrentSceneState();
+          if (isDM) await handleUpdateCurrentSceneState();
           onBack();
         }} 
         onMenuToggle={toggleParticipants} 
