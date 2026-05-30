@@ -340,18 +340,23 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
         </Layer>
         <Layer listening={false}>{gridLines}</Layer>
         <Layer id="tokens-layer">
-          {participants.map((p, i) => {
+          {isReady && participants.map((p, i) => {
             const remotePos = remoteTokenPositions[p.id];
-            const initialX = width / 2 + (i % 3) * gridSize - gridSize;
-            const initialY = height / 2 + Math.floor(i / 3) * gridSize - gridSize;
+            
+            // FASE 7: Posicionamiento inicial centrado en viewport real corregido por stage transform
+            const initialX = (width / 2 + (i % 3) * gridSize - gridSize - position.x) / scale;
+            const initialY = (height / 2 + Math.floor(i / 3) * gridSize - gridSize - position.y) / scale;
+            
+            const finalX = remotePos?.x ?? initialX;
+            const finalY = remotePos?.y ?? initialY;
+
             const isDM = role === 'dm';
-            // FASE 7: More robust owner check (using character_id)
             const isOwner = !!(currentUserId && p.character_id === currentUserId);
 
             return (
               <MapToken 
                 key={p.id} participant={p} 
-                x={remotePos?.x ?? initialX} y={remotePos?.y ?? initialY}
+                x={finalX} y={finalY}
                 gridSize={gridSize}
                 onLongPress={(px, py) => onLongPressToken?.(p.id, px, py)}
                 draggable={isDM || isOwner}
@@ -361,6 +366,7 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
             );
           })}
         </Layer>
+
         <Layer id="chalk-layer">
           <BattleMapChalkLayer lines={chalkLines} notes={chalkNotes} onNoteDragEnd={onNoteUpdate} onNoteClick={onNoteClick} />
         </Layer>
