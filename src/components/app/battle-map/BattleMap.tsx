@@ -311,6 +311,7 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
   const handleAddNote = useCallback((x: number, y: number) => {
     const text = prompt("Texto de la nota:");
     if (text) {
+      playMapSound('chalk');
       setChalkNotes(prev => [...prev, { id: Math.random().toString(36).substr(2, 9), x, y, text }]);
     }
   }, []);
