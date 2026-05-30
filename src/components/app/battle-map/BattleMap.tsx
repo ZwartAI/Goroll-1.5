@@ -331,7 +331,15 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#0a0a0c] flex flex-col overflow-hidden text-foreground animate-in fade-in duration-300">
-      <BattleMapHeader title={headerTitle} onBack={onBack} onMenuToggle={toggleParticipants} />
+      <BattleMapHeader 
+        title={headerTitle} 
+        onBack={async () => {
+          await handleUpdateCurrentSceneState();
+          onBack();
+        }} 
+        onMenuToggle={toggleParticipants} 
+        onlineCount={onlineIds.size}
+      />
 
       <main className="flex-1 relative overflow-hidden">
         {/* Turn Tracker */}
