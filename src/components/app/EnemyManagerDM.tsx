@@ -72,59 +72,83 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
     pinsByEnemy.set(p.linked_participant_id, arr);
   }
 
-  // Visual sort: keep the active entity (or the linked entity of an active pin)
-  // at the top of the DM grid. Does NOT mutate combat order.
+  // Identify active entity
   const activeEntityId =
     active?.kind === "solo" && isEnemy(active.participant) ? active.participant.id
     : active?.kind === "pin" ? active.linked.id
     : null;
-  const sortedEnemies = activeEntityId
-    ? [...enemies].sort((a, b) => {
-        if (a.id === activeEntityId) return -1;
-        if (b.id === activeEntityId) return 1;
-        return a.order_index - b.order_index;
-      })
-    : enemies;
+
+  const activeParticipant = activeEntityId ? enemies.find(e => e.id === activeEntityId) : null;
+  const waitingEnemies = enemies.filter(e => e.id !== activeEntityId);
 
   return (
-    <div className="space-y-2">
-      <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">
-        {t("combat.enemies")}
-      </p>
-      <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-        {sortedEnemies.map(p => {
-          const isActiveSolo = active?.kind === "solo" && active.participant.id === p.id;
-          const myPins = pinsByEnemy.get(p.id) || [];
-          const activePin = active?.kind === "pin" && active.linked.id === p.id ? active.pin : null;
-          const isActive = isActiveSolo || !!activePin;
-          return (
-            <EnemyCardCompact
-              key={p.id}
-              p={p}
-              shield={shieldByEnemy[p.id] || 0}
-              isActive={isActive}
-              isExtraTurnActive={!!activePin}
-              encounter={encounter}
-              blocks={blocks}
-              pins={myPins}
-              actionsOpen={openActionsId === p.id}
-              onToggleActions={() => setOpenActionsId(prev => (prev === p.id ? null : p.id))}
-              onEdit={() => setEditing(p)}
-              onDamage={() => setAttacking(p)}
-              onHeal={() => setHealing(p)}
-              onSheet={() => setSheet(p)}
-              onDuplicate={() => setDuplicating(p)}
-              onRemove={() => setRemoving(p)}
-              onDeletePin={(pin) => setRemovingPin(pin)}
-              onAddPin={async () => {
-                const r = await addTurnPin(encounter, p);
-                if (!r.ok) toast.error(t("combat.saveError"));
-                else toast.success(t("combat.pinAdded"));
-              }}
-            />
-          );
-        })}
-      </div>
+    <div className="space-y-6">
+      {/* FASE 7: ACTIVE ENTITY SECTION */}
+      {activeParticipant && (
+        <div className="space-y-2">
+          <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">
+            {t("combat.manager.activeSection")}
+          </p>
+          <ActiveEnemyCombatCard
+            p={activeParticipant}
+            shield={shieldByEnemy[activeParticipant.id] || 0}
+            encounter={encounter}
+            blocks={blocks}
+            pins={pinsByEnemy.get(activeParticipant.id) || []}
+            isExtraTurnActive={active?.kind === "pin" && active.linked.id === activeParticipant.id}
+            onEdit={() => setEditing(activeParticipant)}
+            onDamage={() => setAttacking(activeParticipant)}
+            onHeal={() => setHealing(activeParticipant)}
+            onSheet={() => setSheet(activeParticipant)}
+            onDuplicate={() => setDuplicating(activeParticipant)}
+            onRemove={() => setRemoving(activeParticipant)}
+            onDeletePin={(pin) => setRemovingPin(pin)}
+            onAddPin={async () => {
+              const r = await addTurnPin(encounter, activeParticipant);
+              if (!r.ok) toast.error(t("combat.saveError"));
+              else toast.success(t("combat.pinAdded"));
+            }}
+          />
+        </div>
+      )}
+
+      {/* FASE 7: WAITING ENTITIES SECTION */}
+      {waitingEnemies.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">
+            {t("combat.manager.waitingSection")}
+          </p>
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {waitingEnemies.map(p => {
+              const myPins = pinsByEnemy.get(p.id) || [];
+              return (
+                <CompactEnemyCombatCard
+                  key={p.id}
+                  p={p}
+                  shield={shieldByEnemy[p.id] || 0}
+                  encounter={encounter}
+                  pins={myPins}
+                  isExpanded={openActionsId === p.id}
+                  onToggleActions={() => setOpenActionsId(prev => (prev === p.id ? null : p.id))}
+                  onEdit={() => setEditing(p)}
+                  onDamage={() => setAttacking(p)}
+                  onHeal={() => setHealing(p)}
+                  onSheet={() => setSheet(p)}
+                  onDuplicate={() => setDuplicating(p)}
+                  onRemove={() => setRemoving(p)}
+                  onDeletePin={(pin) => setRemovingPin(pin)}
+                  onAddPin={async () => {
+                    const r = await addTurnPin(encounter, p);
+                    if (!r.ok) toast.error(t("combat.saveError"));
+                    else toast.success(t("combat.pinAdded"));
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+... (modals remain the same)
 
       {editing && (
         <EnemyEditorModal encounter={encounter} dm={dm} editing={editing} onClose={() => setEditing(null)} />
