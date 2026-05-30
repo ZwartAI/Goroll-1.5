@@ -77,9 +77,38 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
   const layerRef = useRef<Konva.Layer>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [bgImage] = useImage(config.backgroundType === 'image' ? config.backgroundUrl : '');
+  const [bgImage, status] = useImage(config.backgroundType === 'image' ? config.backgroundUrl : '');
   const [_, setVideoTick] = useState(0);
   const [projection, setProjection] = useState<ProjectionState | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  // FASE 7: Auto-recentrar mapa cuando se carga imagen
+  useEffect(() => {
+    if (status === 'loaded' && bgImage) {
+      const stage = stageRef.current;
+      if (stage) {
+        const stageWidth = stage.width();
+        const stageHeight = stage.height();
+        
+        // Centrar imagen
+        const mapWidth = bgImage.width * config.backgroundScale;
+        const mapHeight = bgImage.height * config.backgroundScale;
+        
+        const newScale = Math.min(stageWidth / mapWidth, stageHeight / mapHeight) * 0.9;
+        const newX = (stageWidth - mapWidth * newScale) / 2;
+        const newY = (stageHeight - mapHeight * newScale) / 2;
+        
+        stage.scale({ x: newScale, y: newScale });
+        stage.position({ x: newX, y: newY });
+        setScale(newScale);
+        setPosition({ x: newX, y: newY });
+        setIsReady(true);
+      }
+    } else if (status === 'failed' || !config.backgroundUrl) {
+      setIsReady(true);
+    }
+  }, [status, bgImage, config.backgroundScale, config.backgroundUrl]);
+
 
   // FASE 7: Subtle particles
   const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, size: number}>>([]);
@@ -260,13 +289,22 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
   const gridLines = useMemo(() => {
     if (!config.showGrid) return null;
     const lines = [];
-    const size = 5000;
+    const size = 10000; // Aumentar tamaño para evitar cortes al navegar
+    const offset = -5000; // Centrar el grid relativo al origen 0,0
+    
+    // Líneas verticales
     for (let i = 0; i <= size / gridSize; i++) {
-      lines.push(<Line key={`v-${i}`} points={[i * gridSize, 0, i * gridSize, size]} stroke={config.gridColor} strokeWidth={1} opacity={config.gridOpacity} />);
-      lines.push(<Line key={`h-${i}`} points={[0, i * gridSize, size, i * gridSize]} stroke={config.gridColor} strokeWidth={1} opacity={config.gridOpacity} />);
+      const x = offset + i * gridSize;
+      lines.push(<Line key={`v-${i}`} points={[x, offset, x, offset + size]} stroke={config.gridColor} strokeWidth={1} opacity={config.gridOpacity} listening={false} />);
+    }
+    // Líneas horizontales
+    for (let i = 0; i <= size / gridSize; i++) {
+      const y = offset + i * gridSize;
+      lines.push(<Line key={`h-${i}`} points={[offset, y, offset + size, y]} stroke={config.gridColor} strokeWidth={1} opacity={config.gridOpacity} listening={false} />);
     }
     return lines;
   }, [gridSize, config.gridColor, config.gridOpacity, config.showGrid]);
+
 
   return (
     <div className="w-full h-full bg-[#0a0a0c] relative overflow-hidden">
@@ -279,11 +317,23 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
         className={isChalkMode ? (chalkTool === 'pencil' ? 'cursor-crosshair' : 'cursor-text') : 'cursor-grab active:cursor-grabbing'}
       >
         <Layer ref={layerRef}>
-          <Rect x={-2500} y={-2500} width={5000} height={5000} fill="#0f0f12" />
+          <Rect x={-5000} y={-5000} width={10000} height={10000} fill="#050507" />
           {config.backgroundUrl && (config.backgroundType === 'video' ? (
-            <KonvaImage image={videoRef.current!} x={0} y={0} width={gridSize * 20 * config.backgroundScale} height={gridSize * 20 * config.backgroundScale} opacity={config.backgroundOpacity} />
+            <KonvaImage 
+              image={videoRef.current!} 
+              x={0} y={0} 
+              width={videoRef.current ? videoRef.current.videoWidth * config.backgroundScale : gridSize * 20} 
+              height={videoRef.current ? videoRef.current.videoHeight * config.backgroundScale : gridSize * 20} 
+              opacity={config.backgroundOpacity} 
+            />
           ) : bgImage && (
-            <KonvaImage image={bgImage} x={0} y={0} width={bgImage.width * config.backgroundScale} height={bgImage.height * config.backgroundScale} opacity={config.backgroundOpacity} />
+            <KonvaImage 
+              image={bgImage} 
+              x={0} y={0} 
+              width={bgImage.width * config.backgroundScale} 
+              height={bgImage.height * config.backgroundScale} 
+              opacity={config.backgroundOpacity} 
+            />
           ))}
           
           {/* FASE 7: Floating magical particles */}
@@ -302,18 +352,23 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
         </Layer>
         <Layer listening={false}>{gridLines}</Layer>
         <Layer id="tokens-layer">
-          {participants.map((p, i) => {
+          {isReady && participants.map((p, i) => {
             const remotePos = remoteTokenPositions[p.id];
-            const initialX = width / 2 + (i % 3) * gridSize - gridSize;
-            const initialY = height / 2 + Math.floor(i / 3) * gridSize - gridSize;
+            
+            // FASE 7: Posicionamiento inicial centrado en viewport real corregido por stage transform
+            const initialX = (width / 2 + (i % 3) * gridSize - gridSize - position.x) / scale;
+            const initialY = (height / 2 + Math.floor(i / 3) * gridSize - gridSize - position.y) / scale;
+            
+            const finalX = remotePos?.x ?? initialX;
+            const finalY = remotePos?.y ?? initialY;
+
             const isDM = role === 'dm';
-            // FASE 7: More robust owner check (using character_id)
             const isOwner = !!(currentUserId && p.character_id === currentUserId);
 
             return (
               <MapToken 
                 key={p.id} participant={p} 
-                x={remotePos?.x ?? initialX} y={remotePos?.y ?? initialY}
+                x={finalX} y={finalY}
                 gridSize={gridSize}
                 onLongPress={(px, py) => onLongPressToken?.(p.id, px, py)}
                 draggable={isDM || isOwner}
@@ -323,6 +378,7 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
             );
           })}
         </Layer>
+
         <Layer id="chalk-layer">
           <BattleMapChalkLayer lines={chalkLines} notes={chalkNotes} onNoteDragEnd={onNoteUpdate} onNoteClick={onNoteClick} />
         </Layer>
