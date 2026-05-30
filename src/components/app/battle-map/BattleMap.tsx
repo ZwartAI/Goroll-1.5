@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil, Layers, LogOut } from 'lucide-react';
 import { useGameData } from '@/lib/useGame';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { useT } from '@/lib/i18n';
 import type { LogRow } from '@/lib/game';
 import { BattleMapHeader } from './BattleMapHeader';
