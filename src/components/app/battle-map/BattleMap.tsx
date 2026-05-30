@@ -40,7 +40,7 @@ interface Props {
 }
 
 const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar }) => {
-  const { combat, campaign, character } = useGameData();
+  const { combat, campaign, character, onlineIds } = useGameData();
   const { t } = useT();
   const [activePanel, setActivePanel] = useState<'none' | 'participants'>('none');
   const [isScenesPanelOpen, setIsScenesPanelOpen] = useState(false);
