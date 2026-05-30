@@ -77,9 +77,38 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
   const layerRef = useRef<Konva.Layer>(null);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [bgImage] = useImage(config.backgroundType === 'image' ? config.backgroundUrl : '');
+  const [bgImage, status] = useImage(config.backgroundType === 'image' ? config.backgroundUrl : '');
   const [_, setVideoTick] = useState(0);
   const [projection, setProjection] = useState<ProjectionState | null>(null);
+  const [isReady, setIsReady] = useState(false);
+
+  // FASE 7: Auto-recentrar mapa cuando se carga imagen
+  useEffect(() => {
+    if (status === 'loaded' && bgImage) {
+      const stage = stageRef.current;
+      if (stage) {
+        const stageWidth = stage.width();
+        const stageHeight = stage.height();
+        
+        // Centrar imagen
+        const mapWidth = bgImage.width * config.backgroundScale;
+        const mapHeight = bgImage.height * config.backgroundScale;
+        
+        const newScale = Math.min(stageWidth / mapWidth, stageHeight / mapHeight) * 0.9;
+        const newX = (stageWidth - mapWidth * newScale) / 2;
+        const newY = (stageHeight - mapHeight * newScale) / 2;
+        
+        stage.scale({ x: newScale, y: newScale });
+        stage.position({ x: newX, y: newY });
+        setScale(newScale);
+        setPosition({ x: newX, y: newY });
+        setIsReady(true);
+      }
+    } else if (status === 'failed' || !config.backgroundUrl) {
+      setIsReady(true);
+    }
+  }, [status, bgImage, config.backgroundScale, config.backgroundUrl]);
+
 
   // FASE 7: Subtle particles
   const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, size: number}>>([]);
@@ -260,13 +289,22 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
   const gridLines = useMemo(() => {
     if (!config.showGrid) return null;
     const lines = [];
-    const size = 5000;
+    const size = 10000; // Aumentar tamaño para evitar cortes al navegar
+    const offset = -5000; // Centrar el grid relativo al origen 0,0
+    
+    // Líneas verticales
     for (let i = 0; i <= size / gridSize; i++) {
-      lines.push(<Line key={`v-${i}`} points={[i * gridSize, 0, i * gridSize, size]} stroke={config.gridColor} strokeWidth={1} opacity={config.gridOpacity} />);
-      lines.push(<Line key={`h-${i}`} points={[0, i * gridSize, size, i * gridSize]} stroke={config.gridColor} strokeWidth={1} opacity={config.gridOpacity} />);
+      const x = offset + i * gridSize;
+      lines.push(<Line key={`v-${i}`} points={[x, offset, x, offset + size]} stroke={config.gridColor} strokeWidth={1} opacity={config.gridOpacity} listening={false} />);
+    }
+    // Líneas horizontales
+    for (let i = 0; i <= size / gridSize; i++) {
+      const y = offset + i * gridSize;
+      lines.push(<Line key={`h-${i}`} points={[offset, y, offset + size, y]} stroke={config.gridColor} strokeWidth={1} opacity={config.gridOpacity} listening={false} />);
     }
     return lines;
   }, [gridSize, config.gridColor, config.gridOpacity, config.showGrid]);
+
 
   return (
     <div className="w-full h-full bg-[#0a0a0c] relative overflow-hidden">
