@@ -285,6 +285,20 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
           ) : bgImage && (
             <KonvaImage image={bgImage} x={0} y={0} width={bgImage.width * config.backgroundScale} height={bgImage.height * config.backgroundScale} opacity={config.backgroundOpacity} />
           ))}
+          
+          {/* FASE 7: Floating magical particles */}
+          {particles.map(p => (
+            <KonvaCircle
+              key={p.id}
+              x={p.x}
+              y={p.y}
+              radius={p.size}
+              fill="rgba(234, 179, 8, 0.2)"
+              shadowBlur={5}
+              shadowColor="var(--gold)"
+              listening={false}
+            />
+          ))}
         </Layer>
         <Layer listening={false}>{gridLines}</Layer>
         <Layer id="tokens-layer">
