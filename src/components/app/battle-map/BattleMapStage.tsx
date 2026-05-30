@@ -4,6 +4,8 @@ import Konva from 'konva';
 import { MapToken } from './MapToken';
 import type { CombatParticipant } from '@/lib/combat';
 import type { MapConfig } from './BattleMap';
+import { BattleMapChalkLayer, type ChalkLine, type ChalkNote } from './BattleMapChalkLayer';
+import { type ChalkTool, type ChalkColor, type ChalkSize } from './BattleMapChalkControls';
 import useImage from 'use-image';
 
 // FASE 2: Background + Grid configurable + Snap
@@ -15,6 +17,17 @@ interface Props {
   participants: CombatParticipant[];
   config: MapConfig;
   onLongPressToken?: (id: string, x: number, y: number) => void;
+  // FASE 4 Props
+  isChalkMode?: boolean;
+  chalkTool?: ChalkTool;
+  chalkColor?: ChalkColor;
+  chalkSize?: ChalkSize;
+  chalkLines: ChalkLine[];
+  chalkNotes: ChalkNote[];
+  onAddChalkLine?: (line: ChalkLine) => void;
+  onAddNote?: (x: number, y: number) => void;
+  onNoteUpdate?: (id: string, x: number, y: number) => void;
+  onNoteClick?: (id: string) => void;
 }
 
 export type ProjectionType = 'distance' | 'area' | 'line' | 'cone';
@@ -25,7 +38,23 @@ export interface ProjectionState {
   current: { x: number; y: number };
 }
 
-export const BattleMapStage: React.FC<Props> = React.memo(({ width, height, participants, config, onLongPressToken }) => {
+export const BattleMapStage: React.FC<Props> = React.memo(({ 
+  width, 
+  height, 
+  participants, 
+  config, 
+  onLongPressToken,
+  isChalkMode = false,
+  chalkTool = 'pencil',
+  chalkColor = '#ffffff',
+  chalkSize = 5,
+  chalkLines,
+  chalkNotes,
+  onAddChalkLine,
+  onAddNote,
+  onNoteUpdate,
+  onNoteClick
+}) => {
   const stageRef = useRef<Konva.Stage>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const layerRef = useRef<Konva.Layer>(null);
@@ -35,6 +64,10 @@ export const BattleMapStage: React.FC<Props> = React.memo(({ width, height, part
   const [_, setVideoTick] = useState(0);
   const [projection, setProjection] = useState<ProjectionState | null>(null);
 
+  // FASE 4: Local state for drawing
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [currentLinePoints, setCurrentLinePoints] = useState<number[]>([]);
+
   // Sistema de Grid
   const gridSize = config.gridSize;
 
@@ -43,25 +76,64 @@ export const BattleMapStage: React.FC<Props> = React.memo(({ width, height, part
     setProjection({ type, origin, current: origin });
   }, []);
 
-  const handleStageMouseMove = useCallback((e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
-    if (!projection) return;
+  const handleStageMouseDown = useCallback((e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
+    if (!isChalkMode) return;
+    
     const stage = e.target.getStage();
     if (!stage) return;
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
-    // Transform stage pointer to layer coordinates
+    // Transform pointer to layer coordinates
     const layer = layerRef.current;
     if (!layer) return;
     const transform = layer.getAbsoluteTransform().copy().invert();
-    const current = transform.point(pointer);
+    const pos = transform.point(pointer);
 
-    setProjection(prev => prev ? { ...prev, current } : null);
-  }, [projection]);
+    if (chalkTool === 'pencil') {
+      setIsDrawing(true);
+      setCurrentLinePoints([pos.x, pos.y]);
+    } else if (chalkTool === 'note') {
+      onAddNote?.(pos.x, pos.y);
+    }
+  }, [isChalkMode, chalkTool, onAddNote]);
+
+  const handleStageMouseMove = useCallback((e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
+    const stage = e.target.getStage();
+    if (!stage) return;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
+
+    // Transform pointer to layer coordinates
+    const layer = layerRef.current;
+    if (!layer) return;
+    const transform = layer.getAbsoluteTransform().copy().invert();
+    const pos = transform.point(pointer);
+
+    if (projection) {
+      setProjection(prev => prev ? { ...prev, current: pos } : null);
+      return;
+    }
+
+    if (isDrawing && chalkTool === 'pencil') {
+      setCurrentLinePoints(prev => [...prev, pos.x, pos.y]);
+    }
+  }, [projection, isDrawing, chalkTool]);
 
   const handleStageMouseUp = useCallback(() => {
+    if (isDrawing) {
+      setIsDrawing(false);
+      if (currentLinePoints.length > 2) {
+        onAddChalkLine?.({
+          points: currentLinePoints,
+          color: chalkColor,
+          size: chalkSize
+        });
+      }
+      setCurrentLinePoints([]);
+    }
     setProjection(null);
-  }, []);
+  }, [isDrawing, currentLinePoints, onAddChalkLine, chalkColor, chalkSize]);
 
   // Exposed for the parent component to trigger via ref if needed, 
   // or via parent's state management. For Phase 3 we'll use local state if possible.
@@ -314,11 +386,15 @@ export const BattleMapStage: React.FC<Props> = React.memo(({ width, height, part
         height={height}
         ref={stageRef}
         onWheel={handleWheel}
-        draggable
+        draggable={!isChalkMode && !isDrawing}
         onDragEnd={(e) => setPosition(e.target.position())}
+        onMouseDown={handleStageMouseDown}
+        onTouchStart={handleStageMouseDown}
         onMouseMove={handleStageMouseMove}
         onTouchMove={handleStageMouseMove}
-        className="cursor-grab active:cursor-grabbing"
+        onMouseUp={handleStageMouseUp}
+        onTouchEnd={handleStageMouseUp}
+        className={isChalkMode ? (chalkTool === 'pencil' ? 'cursor-crosshair' : 'cursor-text') : 'cursor-grab active:cursor-grabbing'}
       >
         {/* Capa de Fondo (Video o Imagen) */}
         <Layer ref={layerRef}>
@@ -373,6 +449,31 @@ export const BattleMapStage: React.FC<Props> = React.memo(({ width, height, part
             />
           ))}
         </Layer>
+
+        {/* FASE 4: Capa de Tiza y Notas */}
+        <BattleMapChalkLayer 
+          lines={chalkLines} 
+          notes={chalkNotes} 
+          onNoteDragEnd={onNoteUpdate}
+          onNoteClick={onNoteClick}
+        />
+
+        {/* Línea actual en dibujo */}
+        {isDrawing && currentLinePoints.length > 2 && (
+          <Layer listening={false}>
+            <Line
+              points={currentLinePoints}
+              stroke={chalkColor}
+              strokeWidth={chalkSize}
+              tension={0.5}
+              lineCap="round"
+              lineJoin="round"
+              shadowBlur={chalkSize * 0.8}
+              shadowColor={chalkColor}
+              opacity={0.8}
+            />
+          </Layer>
+        )}
 
         {/* FASE 3: Capa de Proyecciones Temporales */}
         <Layer id="projections-layer" listening={false}>

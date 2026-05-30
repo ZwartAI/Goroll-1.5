@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Pencil } from 'lucide-react';
 import { useGameData } from '@/lib/useGame';
 import { useT } from '@/lib/i18n';
 import type { LogRow } from '@/lib/game';
@@ -9,6 +10,8 @@ import { BattleMapDiceButton } from './BattleMapDiceButton';
 import { BattleMapLog } from './BattleMapLog';
 import { BattleMapConfigModal } from './BattleMapConfigModal';
 import { BattleMapProjectionMenu } from './BattleMapProjectionMenu';
+import { BattleMapChalkControls, type ChalkTool, type ChalkColor, type ChalkSize } from './BattleMapChalkControls';
+import { type ChalkLine, type ChalkNote } from './BattleMapChalkLayer';
 import type { ProjectionType } from './BattleMapStage';
 
 // FASE 2: MapConfig interface
@@ -52,6 +55,15 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
     showGrid: true
   });
   const [projectionMenu, setProjectionMenu] = useState<{ x: number, y: number, tokenId: string } | null>(null);
+  
+  // FASE 4: Chalk state
+  const [isChalkMode, setIsChalkMode] = useState(false);
+  const [chalkTool, setChalkTool] = useState<ChalkTool>('pencil');
+  const [chalkColor, setChalkColor] = useState<ChalkColor>('#ffffff');
+  const [chalkSize, setChalkSize] = useState<ChalkSize>(5);
+  const [chalkLines, setChalkLines] = useState<ChalkLine[]>([]);
+  const [chalkNotes, setChalkNotes] = useState<ChalkNote[]>([]);
+
   const stageRef = useRef<any>(null); // For future direct interaction if needed
 
   // Ajuste reactivo del tamaño del canvas
@@ -74,6 +86,43 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
   const toggleParticipants = useCallback(() => {
     setActivePanel(prev => prev === 'participants' ? 'none' : 'participants');
+  }, []);
+
+  // FASE 4: Chalk Handlers
+  const handleAddChalkLine = useCallback((line: ChalkLine) => {
+    setChalkLines(prev => [...prev, line]);
+  }, []);
+
+  const handleUndoChalk = useCallback(() => {
+    setChalkLines(prev => prev.slice(0, -1));
+  }, []);
+
+  const handleClearChalk = useCallback(() => {
+    if (confirm("¿Borrar todos los dibujos y notas?")) {
+      setChalkLines([]);
+      setChalkNotes([]);
+    }
+  }, []);
+
+  const handleAddNote = useCallback((x: number, y: number) => {
+    const text = prompt("Texto de la nota:");
+    if (text) {
+      const newNote: ChalkNote = {
+        id: Math.random().toString(36).substr(2, 9),
+        x,
+        y,
+        text
+      };
+      setChalkNotes(prev => [...prev, newNote]);
+    }
+  }, []);
+
+  const handleNoteUpdate = useCallback((id: string, x: number, y: number) => {
+    setChalkNotes(prev => prev.map(n => n.id === id ? { ...n, x, y } : n));
+  }, []);
+
+  const handleNoteDelete = useCallback((id: string) => {
+    setChalkNotes(prev => prev.filter(n => n.id !== id));
   }, []);
 
   // Ordenar participantes por iniciativa para la lista lateral
@@ -151,6 +200,17 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
             participants={combat.participants}
             config={mapConfig}
             onLongPressToken={(tokenId, x, y) => setProjectionMenu({ tokenId, x, y })}
+            // FASE 4 Props
+            isChalkMode={isChalkMode}
+            chalkTool={chalkTool}
+            chalkColor={chalkColor}
+            chalkSize={chalkSize}
+            chalkLines={chalkLines}
+            chalkNotes={chalkNotes}
+            onAddChalkLine={handleAddChalkLine}
+            onAddNote={handleAddNote}
+            onNoteUpdate={handleNoteUpdate}
+            onNoteClick={handleNoteDelete}
           />
         </div>
 
@@ -180,7 +240,31 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
         {/* Panel de Configuración (DM only) */}
         {useGameData().character?.role === 'dm' && (
-          <BattleMapConfigModal config={mapConfig} onChange={setMapConfig} />
+          <>
+            <BattleMapConfigModal config={mapConfig} onChange={setMapConfig} />
+            
+            {/* FASE 4: Botón de Tiza y Controles */}
+            {!isChalkMode ? (
+              <button
+                onClick={() => setIsChalkMode(true)}
+                className="absolute bottom-20 right-4 z-40 bg-[#1a1a1e]/90 hover:bg-[var(--gold)] hover:text-black border border-white/10 p-4 rounded-full shadow-2xl transition-all group"
+              >
+                <Pencil className="w-6 h-6 text-[var(--gold)] group-hover:text-black" />
+              </button>
+            ) : (
+              <BattleMapChalkControls
+                activeTool={chalkTool}
+                onToolChange={setChalkTool}
+                currentColor={chalkColor}
+                onColorChange={setChalkColor}
+                currentSize={chalkSize}
+                onSizeChange={setChalkSize}
+                onUndo={handleUndoChalk}
+                onClear={handleClearChalk}
+                onExit={() => setIsChalkMode(false)}
+              />
+            )}
+          </>
         )}
 
         {/* Dados Flotantes */}
