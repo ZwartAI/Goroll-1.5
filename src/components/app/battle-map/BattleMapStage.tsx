@@ -4,6 +4,8 @@ import Konva from 'konva';
 import { MapToken } from './MapToken';
 import type { CombatParticipant } from '@/lib/combat';
 import type { MapConfig } from './BattleMap';
+import { BattleMapChalkLayer, type ChalkLine, type ChalkNote } from './BattleMapChalkLayer';
+import { type ChalkTool, type ChalkColor, type ChalkSize } from './BattleMapChalkControls';
 import useImage from 'use-image';
 
 // FASE 2: Background + Grid configurable + Snap
