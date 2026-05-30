@@ -1052,6 +1052,8 @@ export const es = {
       selectedCount: "{n} seleccionados",
       empty: "No hay entidades invocadas que coincidan.",
       activeBadge: "En turno",
+      activeSection: "ENEMIGOS EN TURNO",
+      waitingSection: "ESPERANDO TURNO",
       extraTurnsShort: "turnos extra",
       removeSelected: "Retirar seleccionados",
       confirmTitle: "Retirar entidades del combate",

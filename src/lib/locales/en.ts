@@ -1050,6 +1050,8 @@ export const en: Dict = {
       selectedCount: "{n} selected",
       empty: "No matching summoned entities.",
       activeBadge: "Active",
+      activeSection: "ENEMIES IN TURN",
+      waitingSection: "WAITING TURN",
       extraTurnsShort: "extra turns",
       removeSelected: "Remove selected",
       confirmTitle: "Remove entities from combat",

@@ -72,59 +72,82 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
     pinsByEnemy.set(p.linked_participant_id, arr);
   }
 
-  // Visual sort: keep the active entity (or the linked entity of an active pin)
-  // at the top of the DM grid. Does NOT mutate combat order.
+  // FASE 7: Identify active entity
   const activeEntityId =
     active?.kind === "solo" && isEnemy(active.participant) ? active.participant.id
     : active?.kind === "pin" ? active.linked.id
     : null;
-  const sortedEnemies = activeEntityId
-    ? [...enemies].sort((a, b) => {
-        if (a.id === activeEntityId) return -1;
-        if (b.id === activeEntityId) return 1;
-        return a.order_index - b.order_index;
-      })
-    : enemies;
+
+  const activeParticipant = activeEntityId ? enemies.find(e => e.id === activeEntityId) : null;
+  const waitingEnemies = enemies.filter(e => e.id !== activeEntityId);
 
   return (
-    <div className="space-y-2">
-      <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">
-        {t("combat.enemies")}
-      </p>
-      <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
-        {sortedEnemies.map(p => {
-          const isActiveSolo = active?.kind === "solo" && active.participant.id === p.id;
-          const myPins = pinsByEnemy.get(p.id) || [];
-          const activePin = active?.kind === "pin" && active.linked.id === p.id ? active.pin : null;
-          const isActive = isActiveSolo || !!activePin;
-          return (
-            <EnemyCardCompact
-              key={p.id}
-              p={p}
-              shield={shieldByEnemy[p.id] || 0}
-              isActive={isActive}
-              isExtraTurnActive={!!activePin}
-              encounter={encounter}
-              blocks={blocks}
-              pins={myPins}
-              actionsOpen={openActionsId === p.id}
-              onToggleActions={() => setOpenActionsId(prev => (prev === p.id ? null : p.id))}
-              onEdit={() => setEditing(p)}
-              onDamage={() => setAttacking(p)}
-              onHeal={() => setHealing(p)}
-              onSheet={() => setSheet(p)}
-              onDuplicate={() => setDuplicating(p)}
-              onRemove={() => setRemoving(p)}
-              onDeletePin={(pin) => setRemovingPin(pin)}
-              onAddPin={async () => {
-                const r = await addTurnPin(encounter, p);
-                if (!r.ok) toast.error(t("combat.saveError"));
-                else toast.success(t("combat.pinAdded"));
-              }}
-            />
-          );
-        })}
-      </div>
+    <div className="space-y-6">
+      {/* FASE 7: ACTIVE ENTITY SECTION */}
+      {activeParticipant && (
+        <div className="space-y-2">
+          <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">
+            {t("combat.manager.activeSection")}
+          </p>
+          <ActiveEnemyCombatCard
+            p={activeParticipant}
+            shield={shieldByEnemy[activeParticipant.id] || 0}
+            encounter={encounter}
+            blocks={blocks}
+            pins={pinsByEnemy.get(activeParticipant.id) || []}
+            isExtraTurnActive={active?.kind === "pin" && active.linked.id === activeParticipant.id}
+            onEdit={() => setEditing(activeParticipant)}
+            onDamage={() => setAttacking(activeParticipant)}
+            onHeal={() => setHealing(activeParticipant)}
+            onSheet={() => setSheet(activeParticipant)}
+            onDuplicate={() => setDuplicating(activeParticipant)}
+            onRemove={() => setRemoving(activeParticipant)}
+            onDeletePin={(pin: CombatTurnPin) => setRemovingPin(pin)}
+            onAddPin={async () => {
+              const r = await addTurnPin(encounter, activeParticipant);
+              if (!r.ok) toast.error(t("combat.saveError"));
+              else toast.success(t("combat.pinAdded"));
+            }}
+          />
+        </div>
+      )}
+
+      {/* FASE 7: WAITING ENTITIES SECTION */}
+      {waitingEnemies.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-[10px] font-display uppercase tracking-widest text-muted-foreground">
+            {t("combat.manager.waitingSection")}
+          </p>
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {waitingEnemies.map(p => {
+              const myPins = pinsByEnemy.get(p.id) || [];
+              return (
+                <CompactEnemyCombatCard
+                  key={p.id}
+                  p={p}
+                  shield={shieldByEnemy[p.id] || 0}
+                  encounter={encounter}
+                  pins={myPins}
+                  isExpanded={openActionsId === p.id}
+                  onToggleActions={() => setOpenActionsId(prev => (prev === p.id ? null : p.id))}
+                  onEdit={() => setEditing(p)}
+                  onDamage={() => setAttacking(p)}
+                  onHeal={() => setHealing(p)}
+                  onSheet={() => setSheet(p)}
+                  onDuplicate={() => setDuplicating(p)}
+                  onRemove={() => setRemoving(p)}
+                  onDeletePin={(pin: CombatTurnPin) => setRemovingPin(pin)}
+                  onAddPin={async () => {
+                    const r = await addTurnPin(encounter, p);
+                    if (!r.ok) toast.error(t("combat.saveError"));
+                    else toast.success(t("combat.pinAdded"));
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {editing && (
         <EnemyEditorModal encounter={encounter} dm={dm} editing={editing} onClose={() => setEditing(null)} />
@@ -194,30 +217,168 @@ export function EnemyManagerDM({ encounter, participants, groups, pins = [], dm 
 }
 
 /** Maps an enemy participant to its glow accent color (npc disposition aware). */
-function accentColorFor(p: CombatParticipant): string {
-  const npcId = (p as any).npc_template_id as string | null | undefined;
-  const disp = (p as any).npc_disposition as ("ally" | "neutral" | "hostile" | null | undefined);
-  if (npcId) {
-    if (disp === "hostile") return "var(--loss)";
-    if (disp === "ally") return "var(--gain)";
-    return "var(--gold)";
+function accentColorFor(p: CombatParticipant): { color: string; intense: boolean } {
+  const isBoss = p.tier?.toLowerCase() === "boss" || p.tier?.toLowerCase() === "god";
+  
+  if (p.npc_template_id) {
+    if (p.npc_disposition === "hostile") return { color: "var(--loss)", intense: isBoss };
+    if (p.npc_disposition === "ally") return { color: "var(--gain)", intense: isBoss };
+    return { color: "var(--gold)", intense: isBoss };
   }
-  return p.enemy_color || "var(--loss)";
+  
+  return { color: p.enemy_color || "var(--loss)", intense: isBoss };
 }
 
-function EnemyCardCompact({
-  p, shield, isActive, isExtraTurnActive, encounter, blocks, pins,
-  actionsOpen, onToggleActions,
+/** FASE 7: Large card for the active entity */
+function ActiveEnemyCombatCard({
+  p, shield, encounter, blocks, pins, isExtraTurnActive,
   onEdit, onDamage, onHeal, onSheet, onDuplicate, onRemove, onAddPin, onDeletePin,
 }: {
   p: CombatParticipant;
   shield: number;
-  isActive: boolean;
-  isExtraTurnActive: boolean;
   encounter: CombatEncounter;
   blocks: ReturnType<typeof buildOrderedTurns>;
   pins: CombatTurnPin[];
-  actionsOpen: boolean;
+  isExtraTurnActive: boolean;
+  onEdit: () => void; onDamage: () => void; onHeal: () => void; onSheet: () => void;
+  onDuplicate: () => void; onRemove: () => void; onAddPin: () => void;
+  onDeletePin: (pin: CombatTurnPin) => void;
+}) {
+  const { t } = useT();
+  const max = p.enemy_max_hp || 1;
+  const cur = p.enemy_hp || 0;
+  const baseColor = p.enemy_color || "var(--loss)";
+  const accent = accentColorFor(p);
+  const lp = useLongPress(onSheet, 450);
+  const customImg = getEnemyCustomImage(p);
+  const isTierAsset = !!customImg || !!getEnemyAssetUrl(p.enemy_icon);
+  const isNpc = !!p.npc_template_id;
+  const disp = p.npc_disposition;
+
+  // FASE 7: Enhanced glow for active card
+  const glowStyle: React.CSSProperties = {
+    borderColor: accent.color,
+    background: `linear-gradient(180deg, color-mix(in oklab, ${accent.color} 18%, var(--card)), var(--card))`,
+    boxShadow: `0 0 0 ${accent.intense ? '3px' : '2px'} ${accent.color}, 0 0 ${accent.intense ? '40px' : '20px'} color-mix(in oklab, ${accent.color} 55%, transparent), inset 0 0 24px color-mix(in oklab, ${accent.color} 14%, transparent)`,
+    opacity: p.is_defeated ? 0.55 : 1,
+  };
+
+  return (
+    <div className="ornate-card !p-4 transition flex flex-col gap-4" style={glowStyle}>
+      <div className="flex items-center gap-4">
+        <button
+          type="button"
+          className="relative w-20 h-20 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 select-none"
+          style={{ borderColor: baseColor, color: baseColor }}
+          onMouseDown={lp.onMouseDown}
+          onMouseUp={lp.onMouseUp}
+          onMouseLeave={lp.onMouseLeave}
+          onTouchStart={lp.onTouchStart}
+          onTouchEnd={lp.onTouchEnd}
+          onTouchCancel={lp.onTouchCancel}
+          onClick={() => { if (!lp.didLongPress()) onSheet(); }}
+        >
+          <EnemyIcon name={p.enemy_icon} size={48} fill={isTierAsset} customImage={customImg} />
+        </button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-display text-xl leading-tight truncate flex-1" style={{ color: baseColor }}>
+              {p.display_name}
+            </h3>
+            <span className="font-display text-sm px-2 py-0.5 rounded border border-[var(--gold)]/60 text-[var(--gold)] bg-card shrink-0">
+              {p.initiative}
+            </span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            <span className="text-[10px] font-display uppercase tracking-widest px-2 py-0.5 rounded"
+              style={isNpc
+                ? { background: `color-mix(in oklab, ${accent.color} 22%, transparent)`, color: accent.color, border: `1px solid ${accent.color}` }
+                : { background: "color-mix(in oklab, var(--loss) 22%, transparent)", color: "var(--loss)" }}>
+              {isNpc ? t("combat.npcLabel") : t("combat.enemyLabel")}
+            </span>
+            {isNpc && disp && (
+              <span className="text-[10px] font-display uppercase tracking-widest px-2 py-0.5 rounded"
+                style={{ background: `color-mix(in oklab, ${accent.color} 14%, transparent)`, color: accent.color, border: `1px solid ${accent.color}` }}>
+                {t(`npcs.disp_${disp}`)}
+              </span>
+            )}
+            <span className="text-[10px] font-display uppercase tracking-widest px-2 py-0.5 rounded-full bg-white text-black font-bold">
+              {t("combat.manager.activeBadge")}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground font-display uppercase tracking-wider">
+            DEF {p.enemy_defense || 0} · SPD {p.enemy_speed || "—"}
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <HpShieldBar current={cur} max={max} shield={shield} height={12} hideLabel />
+        <div className="flex justify-between text-xs text-muted-foreground font-display">
+          <span>{cur} / {max} HP</span>
+          {shield > 0 && <span className="text-cyan-300">🛡️ +{shield}</span>}
+        </div>
+      </div>
+
+      <EnemyEffectsStrip participantId={p.id} encounterId={encounter.id} />
+
+      {pins.length > 0 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          {pins.map(pin => {
+            const pinActive = isExtraTurnActive && (blocks.some(b => b.kind === "pin" && b.pin.id === pin.id));
+            return (
+              <span key={pin.id}
+                className="inline-flex items-center gap-2 text-xs font-display px-2 py-1 rounded-full border"
+                style={pinActive
+                  ? { background: `color-mix(in oklab, ${accent.color} 30%, transparent)`, color: "white", borderColor: accent.color }
+                  : { background: "var(--card)", color: baseColor, borderColor: `color-mix(in oklab, ${baseColor} 55%, transparent)` }}>
+                <Pin size={12} />
+                {pin.initiative}
+                <button type="button" onClick={() => onDeletePin(pin)} className="opacity-70 hover:opacity-100">
+                  <X size={12} />
+                </button>
+              </span>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 gap-2 mt-2">
+        <button
+          className="btn-fantasy py-2 flex items-center justify-center gap-2 font-display text-sm"
+          style={{ background: "var(--gradient-gold)", color: "black" }}
+          onClick={() => dmEndEnemyTurn(encounter, blocks)}>
+          <FastForward size={16} /> {t("combat.endEnemyTurn")}
+        </button>
+        <button
+          className="btn-fantasy py-2 flex items-center justify-center gap-2 font-display text-sm border-dashed"
+          style={{ background: "transparent", borderColor: accent.color, color: accent.color }}
+          onClick={onAddPin}>
+          <Pin size={16} /> {t("combat.addTurnPin")}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-5 gap-2">
+        <IconBtn label={t("combat.damage")} icon={<Sword className="w-5 h-5" />} bg="color-mix(in oklab, var(--loss) 70%, var(--card))" onClick={onDamage} />
+        <IconBtn label={t("combat.heal")} icon={<Heart className="w-5 h-5" />} bg="color-mix(in oklab, var(--gain) 70%, var(--card))" onClick={onHeal} />
+        <IconBtn label={t("combat.edit")} icon={<Edit3 className="w-5 h-5" />} bg="color-mix(in oklab, oklch(0.55 0.12 240) 55%, var(--card))" onClick={onEdit} />
+        <IconBtn label={t("combat.duplicate.label")} icon={<Copy className="w-5 h-5" />} bg="color-mix(in oklab, oklch(0.45 0.10 240) 60%, var(--card))" onClick={onDuplicate} />
+        <IconBtn label={t("combat.remove")} icon={<Trash2 className="w-5 h-5" />} bg="color-mix(in oklab, var(--loss) 55%, black)" onClick={onRemove} />
+      </div>
+    </div>
+  );
+}
+
+/** FASE 7: Compact card for the waiting entities */
+function CompactEnemyCombatCard({
+  p, shield, encounter, pins, isExpanded, onToggleActions,
+  onEdit, onDamage, onHeal, onSheet, onDuplicate, onRemove, onAddPin, onDeletePin,
+}: {
+  p: CombatParticipant;
+  shield: number;
+  encounter: CombatEncounter;
+  pins: CombatTurnPin[];
+  isExpanded: boolean;
   onToggleActions: () => void;
   onEdit: () => void; onDamage: () => void; onHeal: () => void; onSheet: () => void;
   onDuplicate: () => void; onRemove: () => void; onAddPin: () => void;
@@ -231,170 +392,103 @@ function EnemyCardCompact({
   const lp = useLongPress(onSheet, 450);
   const customImg = getEnemyCustomImage(p);
   const isTierAsset = !!customImg || !!getEnemyAssetUrl(p.enemy_icon);
-  const isNpc = !!(p as any).npc_template_id;
-  const disp = (p as any).npc_disposition as ("ally" | "neutral" | "hostile" | null | undefined);
+  const isNpc = !!p.npc_template_id;
 
-  // Subdued styling for inactive cards; bold styling for active.
-  const cardStyle: React.CSSProperties = isActive
-    ? {
-        borderColor: accent,
-        background: `linear-gradient(180deg, color-mix(in oklab, ${accent} 18%, var(--card)), var(--card))`,
-        boxShadow: `0 0 0 2px ${accent}, 0 0 20px color-mix(in oklab, ${accent} 55%, transparent), inset 0 0 24px color-mix(in oklab, ${accent} 14%, transparent)`,
-        opacity: p.is_defeated ? 0.55 : 1,
-      }
-    : {
-        borderColor: `color-mix(in oklab, ${baseColor} 45%, transparent)`,
-        opacity: p.is_defeated ? 0.5 : 0.97,
-      };
-
-  return (
-    <div className="ornate-card !p-2 transition flex flex-col gap-1.5" style={cardStyle}>
-      {/* Header: avatar + name + INI + ACTIVE badge */}
-      <div className="flex items-start gap-2">
+  if (isExpanded) {
+    return (
+      <div className="ornate-card !p-3 transition flex flex-col gap-2"
+        style={{ borderColor: accent.color, opacity: p.is_defeated ? 0.6 : 1 }}>
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 rounded-full border overflow-hidden flex items-center justify-center shrink-0"
+            style={{ borderColor: baseColor }}>
+            <EnemyIcon name={p.enemy_icon} size={24} fill={isTierAsset} customImage={customImg} />
+          </div>
+          <p className="font-display text-sm truncate flex-1" style={{ color: baseColor }}>{p.display_name}</p>
+          <button type="button" onClick={onToggleActions} className="text-muted-foreground hover:text-white">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="grid grid-cols-5 gap-1.5">
+          <IconBtn label={t("combat.damage")} icon={<Sword className="w-4 h-4" />} bg="color-mix(in oklab, var(--loss) 70%, var(--card))" onClick={onDamage} />
+          <IconBtn label={t("combat.heal")} icon={<Heart className="w-4 h-4" />} bg="color-mix(in oklab, var(--gain) 70%, var(--card))" onClick={onHeal} />
+          <IconBtn label={t("combat.edit")} icon={<Edit3 className="w-4 h-4" />} bg="color-mix(in oklab, oklch(0.55 0.12 240) 55%, var(--card))" onClick={onEdit} />
+          <IconBtn label={t("combat.duplicate.label")} icon={<Copy className="w-4 h-4" />} bg="color-mix(in oklab, oklch(0.45 0.10 240) 60%, var(--card))" onClick={onDuplicate} />
+          <IconBtn label={t("combat.remove")} icon={<Trash2 className="w-4 h-4" />} bg="color-mix(in oklab, var(--loss) 55%, black)" onClick={onRemove} />
+        </div>
         <button
           type="button"
-          className="relative w-[52px] h-[52px] rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 select-none"
-          style={{ borderColor: baseColor, color: baseColor }}
-          {...{ onMouseDown: lp.onMouseDown, onMouseUp: lp.onMouseUp, onMouseLeave: lp.onMouseLeave, onTouchStart: lp.onTouchStart, onTouchEnd: lp.onTouchEnd, onTouchCancel: lp.onTouchCancel }}
-          onClick={() => { if (!lp.didLongPress()) onSheet(); }}
-          title={t("combat.enemy.openSheet")}
+          className="btn-fantasy w-full text-[10px] py-1 font-display uppercase tracking-widest border-dashed"
+          style={{ background: "transparent", color: "var(--muted-foreground)" }}
+          onClick={onToggleActions}
         >
-          <EnemyIcon name={p.enemy_icon} size={30} fill={isTierAsset} customImage={customImg} />
+          {t("combat.hideActions")}
         </button>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1">
-            <p className="font-display text-sm leading-tight truncate flex-1" style={{ color: baseColor }}>
-              {p.display_name}
-            </p>
-            <span className="font-display text-[11px] px-1.5 py-0.5 rounded border border-[var(--gold)]/60 text-[var(--gold)] bg-card shrink-0">
-              {p.initiative}
-            </span>
-          </div>
-          <div className="flex items-center gap-1 mt-0.5 flex-wrap">
-            <span
-              className="text-[9px] font-display uppercase tracking-widest px-1.5 py-0.5 rounded"
-              style={isNpc
-                ? { background: `color-mix(in oklab, ${accent} 22%, transparent)`, color: accent, border: `1px solid ${accent}` }
-                : { background: "color-mix(in oklab, var(--loss) 22%, transparent)", color: "var(--loss)" }}
-            >
-              {isNpc ? t("combat.npcLabel") : t("combat.enemyLabel")}
-            </span>
-            {isNpc && disp && (
-              <span className="text-[9px] font-display uppercase tracking-widest px-1.5 py-0.5 rounded"
-                style={{ background: `color-mix(in oklab, ${accent} 14%, transparent)`, color: accent, border: `1px solid ${accent}` }}>
-                {t(`npcs.disp_${disp}`)}
-              </span>
-            )}
-            {isActive && (
-              <span className="text-[9px] font-display uppercase tracking-widest px-1.5 py-0.5 rounded-full whitespace-nowrap"
-                style={{ background: accent, color: "white" }}>
-                {t("combat.activeTurnBadge")}
-              </span>
-            )}
-          </div>
-          <p className="text-[10px] text-muted-foreground font-display uppercase tracking-wider mt-0.5">
+      </div>
+    );
+  }
+
+  return (
+    <div className="ornate-card !p-2 transition flex flex-col gap-1.5"
+      style={{ borderColor: `color-mix(in oklab, ${baseColor} 30%, transparent)`, opacity: p.is_defeated ? 0.5 : 1 }}>
+      <p className="font-display text-xs truncate" style={{ color: baseColor }}>{p.display_name}</p>
+
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="relative w-10 h-10 rounded-full border overflow-hidden flex items-center justify-center bg-card shrink-0"
+          style={{ borderColor: baseColor, color: baseColor }}
+          onMouseDown={lp.onMouseDown}
+          onMouseUp={lp.onMouseUp}
+          onMouseLeave={lp.onMouseLeave}
+          onTouchStart={lp.onTouchStart}
+          onTouchEnd={lp.onTouchEnd}
+          onTouchCancel={lp.onTouchCancel}
+          onClick={() => { if (!lp.didLongPress()) onSheet(); }}
+        >
+          <EnemyIcon name={p.enemy_icon} size={24} fill={isTierAsset} customImage={customImg} />
+        </button>
+        <div className="flex-1 min-w-0">
+          <p className="text-[9px] text-muted-foreground font-display uppercase tracking-wider">
             DEF {p.enemy_defense || 0} · SPD {p.enemy_speed || "—"}
           </p>
-        </div>
-      </div>
-
-      {/* HP bar with inline text */}
-      <div className="space-y-0.5">
-        <HpShieldBar current={cur} max={max} shield={shield} height={8} hideLabel />
-        <p className="text-[10px] text-muted-foreground font-display text-center leading-none">
-          {cur} / {max} HP{shield > 0 && <span className="ml-1.5 text-cyan-300">· 🛡️ +{shield}</span>}
-        </p>
-      </div>
-
-      {/* Effects strip */}
-      <EnemyEffectsStrip participantId={p.id} encounterId={encounter.id} />
-
-      {/* Extra-turn chips */}
-      {pins.length > 0 && (
-        <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-[9px] font-display uppercase tracking-widest text-muted-foreground">
-            {pins.length === 1 ? t("combat.extraTurnsCountOne") : t("combat.extraTurnsCount", { n: pins.length })}
-          </span>
-          {pins.map(pin => {
-            const pinActive = isExtraTurnActive && pins.find(x => x.id === pin.id) && (blocks.some(b => b.kind === "pin" && b.pin.id === pin.id));
-            return (
-              <span key={pin.id}
-                className="inline-flex items-center gap-1 text-[10px] font-display px-1.5 py-0.5 rounded-full border"
-                style={pinActive
-                  ? { background: `color-mix(in oklab, ${accent} 30%, transparent)`, color: "white", borderColor: accent }
-                  : { background: "color-mix(in oklab, var(--card) 80%, transparent)", color: baseColor, borderColor: `color-mix(in oklab, ${baseColor} 55%, transparent)` }}>
-                <Pin size={10} />
-                {pin.initiative}
-                <button type="button" onClick={() => onDeletePin(pin)} title={t("combat.deletePin")} className="opacity-70 hover:opacity-100">
-                  <X size={10} />
-                </button>
-              </span>
-            );
-          })}
-          {isExtraTurnActive && (
-            <span className="text-[9px] font-display uppercase tracking-widest px-1.5 py-0.5 rounded"
-              style={{ background: accent, color: "white" }}>
-              {t("combat.extraTurnActive")}
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* End-turn button (prominent when active) */}
-      {isActive && !p.is_defeated && (
-        <button
-          className="btn-fantasy w-full text-xs py-1.5 flex items-center justify-center gap-1.5 font-display"
-          style={{ background: "var(--gradient-gold)", color: "oklch(0.15 0.03 25)" }}
-          onClick={() => dmEndEnemyTurn(encounter, blocks)}>
-          <FastForward size={13} /> {t("combat.endEnemyTurn")}
-        </button>
-      )}
-
-      {/* Compact action row: Actions toggle + Add extra turn */}
-      {!actionsOpen ? (
-        <div className="grid grid-cols-2 gap-1.5">
-          <button
-            type="button"
-            className="btn-fantasy text-[11px] py-1 flex items-center justify-center gap-1 font-display uppercase tracking-wider"
-            style={{
-              background: "linear-gradient(180deg, oklch(0.32 0.10 250), oklch(0.22 0.08 250))",
-              color: "white",
-              borderColor: "oklch(0.45 0.10 240)",
-            }}
-            onClick={onToggleActions}
-            aria-expanded={false}
-          >
-            <ChevronDown size={12} /> {t("combat.actions")}
-          </button>
-          <button
-            type="button"
-            className="btn-fantasy text-[11px] py-1 flex items-center justify-center gap-1 font-display uppercase tracking-wider border border-dashed"
-            style={{ background: "transparent", borderColor: `color-mix(in oklab, ${baseColor} 55%, transparent)`, color: baseColor }}
-            onClick={onAddPin}
-            title={t("combat.addTurnPinHint")}
-          >
-            <Pin size={12} /> {t("combat.addTurnPin")}
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-1">
-          <div className="grid grid-cols-5 gap-1">
-            <IconBtn label={t("combat.damage")} icon={<Sword className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--loss) 70%, var(--card))" onClick={onDamage} />
-            <IconBtn label={t("combat.heal")} icon={<Heart className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--gain) 70%, var(--card))" onClick={onHeal} />
-            <IconBtn label={t("combat.edit")} icon={<Edit3 className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, oklch(0.55 0.12 240) 55%, var(--card))" onClick={onEdit} />
-            <IconBtn label={t("combat.duplicate.label")} icon={<Copy className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, oklch(0.45 0.10 240) 60%, var(--card))" onClick={onDuplicate} />
-            <IconBtn label={t("combat.remove")} icon={<Trash2 className="w-[55%] h-[55%]" strokeWidth={2.2} />} bg="color-mix(in oklab, var(--loss) 55%, black)" onClick={onRemove} />
+          <div className="mt-1">
+            <HpShieldBar current={cur} max={max} shield={shield} height={6} hideLabel />
+            <p className="text-[9px] text-muted-foreground font-display text-center mt-0.5">
+              {cur} / {max} HP
+            </p>
           </div>
-          <button
-            type="button"
-            className="btn-fantasy w-full text-[10px] py-1 flex items-center justify-center gap-1 font-display uppercase tracking-wider"
-            style={{ background: "transparent", borderStyle: "dashed", color: "var(--muted-foreground)" }}
-            onClick={onToggleActions}
-          >
-            <X size={11} /> {t("combat.hideActions")}
-          </button>
         </div>
-      )}
+      </div>
+
+      <div className="flex items-center gap-1 flex-wrap mt-0.5 min-h-[16px]">
+        <span className="text-[8px] font-display uppercase px-1 rounded border"
+          style={{ background: `color-mix(in oklab, ${accent.color} 20%, transparent)`, color: accent.color, borderColor: accent.color }}>
+          {isNpc ? t("combat.npcLabel") : t("combat.enemyLabel")}
+        </span>
+        <span className="text-[8px] font-display px-1 rounded border border-[var(--gold)]/40 text-[var(--gold)]">
+          {p.initiative}
+        </span>
+        <EnemyEffectMiniChips participantId={p.id} encounterId={encounter.id} />
+      </div>
+
+      <div className="grid grid-cols-5 gap-1 pt-1">
+        <button
+          type="button"
+          className="col-span-4 btn-fantasy text-[9px] py-0.5 flex items-center justify-center gap-1 font-display uppercase tracking-widest"
+          style={{ background: "linear-gradient(180deg, oklch(0.32 0.10 250), oklch(0.22 0.08 250))", color: "white" }}
+          onClick={onToggleActions}
+        >
+          {t("combat.actions")}
+        </button>
+        <button
+          type="button"
+          className="btn-fantasy !p-0 flex items-center justify-center border-dashed"
+          style={{ background: "transparent", borderColor: `color-mix(in oklab, ${baseColor} 40%, transparent)`, color: baseColor }}
+          onClick={onAddPin}
+        >
+          <Pin size={10} />
+        </button>
+      </div>
     </div>
   );
 }
@@ -426,7 +520,8 @@ function emojiForEffect(e: EffectRow): string {
   const raw = (e.label || "").trim();
   if (raw) {
     // Take the first whitespace-separated token. It should be the emoji.
-    const first = raw.split(/\s+/)[0] || "";
+    const parts = raw.split(/\s+/);
+    const first = parts[0] || "";
     // Heuristic: if it contains no ASCII letters/digits, treat as the emoji.
     if (first && !/[a-z0-9]/i.test(first)) return first;
   }
@@ -500,6 +595,45 @@ function EnemyEffectsStrip({ participantId, encounterId }: { participantId: stri
   );
 }
 
+/** FASE 7: Mini version of effects for compact cards */
+function EnemyEffectMiniChips({ participantId, encounterId }: { participantId: string; encounterId: string }) {
+  const [effects, setEffects] = useState<EffectRow[]>([]);
+
+  const load = async () => {
+    const rows = await listEffectsForEnemy(participantId);
+    setEffects(rows);
+  };
+
+  useEffect(() => {
+    load();
+    const ch = supabase
+      .channel(`enemy-fx-mini-${participantId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "combat_temporary_effects", filter: `encounter_id=eq.${encounterId}` },
+        () => { load(); },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [participantId, encounterId]);
+
+  if (effects.length === 0) return null;
+
+  // Show max 3 icons then +N
+  const visible = effects.slice(0, 3);
+  const extra = effects.length > 3 ? effects.length - 3 : 0;
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {visible.map(e => (
+        <span key={e.id} className="text-[10px]" title={e.label || ""}>{emojiForEffect(e)}</span>
+      ))}
+      {extra > 0 && <span className="text-[8px] text-muted-foreground">+{extra}</span>}
+    </div>
+  );
+}
+
 function EnemyEffectChip({
   row, disabled, onTick, onInfo, tickLabel,
 }: {
@@ -540,4 +674,3 @@ function EnemyEffectChip({
     </button>
   );
 }
-
