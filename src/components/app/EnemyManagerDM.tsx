@@ -269,7 +269,12 @@ function ActiveEnemyCombatCard({
           type="button"
           className="relative w-20 h-20 rounded-full border-2 overflow-hidden flex items-center justify-center bg-card shrink-0 select-none"
           style={{ borderColor: baseColor, color: baseColor }}
-          {...lp.props}
+          onMouseDown={lp.onMouseDown}
+          onMouseUp={lp.onMouseUp}
+          onMouseLeave={lp.onMouseLeave}
+          onTouchStart={lp.onTouchStart}
+          onTouchEnd={lp.onTouchEnd}
+          onTouchCancel={lp.onTouchCancel}
           onClick={() => { if (!lp.didLongPress()) onSheet(); }}
         >
           <EnemyIcon name={p.enemy_icon} size={48} fill={isTierAsset} customImage={customImg} />
@@ -431,7 +436,12 @@ function CompactEnemyCombatCard({
           type="button"
           className="relative w-10 h-10 rounded-full border overflow-hidden flex items-center justify-center bg-card shrink-0"
           style={{ borderColor: baseColor, color: baseColor }}
-          {...lp.props}
+          onMouseDown={lp.onMouseDown}
+          onMouseUp={lp.onMouseUp}
+          onMouseLeave={lp.onMouseLeave}
+          onTouchStart={lp.onTouchStart}
+          onTouchEnd={lp.onTouchEnd}
+          onTouchCancel={lp.onTouchCancel}
           onClick={() => { if (!lp.didLongPress()) onSheet(); }}
         >
           <EnemyIcon name={p.enemy_icon} size={24} fill={isTierAsset} customImage={customImg} />
@@ -644,7 +654,12 @@ function EnemyEffectChip({
       disabled={disabled}
       onClick={() => { if (!lp.didLongPress()) onTick(); }}
       onContextMenu={(ev) => { ev.preventDefault(); onInfo(); }}
-      {...lp.props}
+      onMouseDown={lp.onMouseDown}
+      onMouseUp={lp.onMouseUp}
+      onMouseLeave={lp.onMouseLeave}
+      onTouchStart={lp.onTouchStart}
+      onTouchEnd={lp.onTouchEnd}
+      onTouchCancel={lp.onTouchCancel}
       className="relative w-8 h-8 rounded-md border border-border bg-card hover:border-[var(--gold)]/60 flex items-center justify-center text-base leading-none disabled:opacity-50"
       title={title}
       aria-label={title}
