@@ -15,6 +15,8 @@ import { BattleMapProjectionMenu } from './BattleMapProjectionMenu';
 import { BattleMapChalkControls, type ChalkTool, type ChalkColor, type ChalkSize } from './BattleMapChalkControls';
 import { type ChalkLine, type ChalkNote } from './BattleMapChalkLayer';
 import { BattleMapScenesPanel, type BattleMapScene } from './BattleMapScenesPanel';
+import { BattleMapDicePanel, type DieSelection } from './BattleMapDicePanel';
+import { BattleMapDiceAnimation } from './BattleMapDiceAnimation';
 
 // FASE 2: MapConfig interface
 export interface MapConfig {
@@ -41,6 +43,8 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
   const { t } = useT();
   const [activePanel, setActivePanel] = useState<'none' | 'participants'>('none');
   const [isScenesPanelOpen, setIsScenesPanelOpen] = useState(false);
+  const [isDicePanelOpen, setIsDicePanelOpen] = useState(false);
+  const [activeDiceRolls, setActiveDiceRolls] = useState<any[] | null>(null);
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
   const [isLogExpanded, setIsLogExpanded] = useState(false);
   
@@ -254,7 +258,37 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
   const headerTitle = useMemo(() => campaign?.name || 'Campaña', [campaign?.name]);
 
-  const handleDiceClick = useCallback(() => console.log("Abrir panel de dados"), []);
+  const handleDiceClick = useCallback(() => setIsDicePanelOpen(true), []);
+
+  const handleRollDice = useCallback((selections: DieSelection[]) => {
+    setIsDicePanelOpen(false);
+    const newRolls: any[] = [];
+    let total = 0;
+    const individualResults: string[] = [];
+
+    selections.forEach(sel => {
+      const sides = parseInt(sel.type.substring(1));
+      for (let i = 0; i < sel.count; i++) {
+        const res = Math.floor(Math.random() * sides) + 1;
+        total += res;
+        individualResults.push(`${sel.type}: ${res}`);
+        newRolls.push({
+          id: Math.random().toString(36).substring(2, 9),
+          type: sel.type,
+          sides,
+          result: res,
+          // Random scatter positions
+          x: (Math.random() - 0.5) * (dimensions.width * 0.6),
+          y: (Math.random() - 0.5) * (dimensions.height * 0.6)
+        });
+      }
+    });
+
+    setActiveDiceRolls(newRolls);
+
+    // TODO: Phase 6 Integration with actual combat log
+    console.log(`Tirada: ${individualResults.join(', ')} | Total: ${total}`);
+  }, [dimensions]);
 
   const toggleParticipants = useCallback(() => setActivePanel(prev => prev === 'participants' ? 'none' : 'participants'), []);
 
@@ -309,8 +343,28 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
         </div>
 
         {/* Overlay */}
-        {(activePanel !== 'none' || isScenesPanelOpen) && (
-          <div className="absolute inset-0 bg-black/40 z-30 transition-opacity animate-in fade-in" onClick={() => { setActivePanel('none'); setIsScenesPanelOpen(false); }} />
+        {(activePanel !== 'none' || isScenesPanelOpen || isDicePanelOpen) && (
+          <div className="absolute inset-0 bg-black/40 z-30 transition-opacity animate-in fade-in" onClick={() => { 
+            setActivePanel('none'); 
+            setIsScenesPanelOpen(false); 
+            setIsDicePanelOpen(false);
+          }} />
+        )}
+
+        {/* Panel Dados (Fase 6) */}
+        {isDicePanelOpen && (
+          <BattleMapDicePanel 
+            onClose={() => setIsDicePanelOpen(false)}
+            onRoll={handleRollDice}
+          />
+        )}
+
+        {/* Animación de Dados (Fase 6) */}
+        {activeDiceRolls && (
+          <BattleMapDiceAnimation 
+            dice={activeDiceRolls} 
+            onComplete={() => setActiveDiceRolls(null)} 
+          />
         )}
 
         {/* Panel Escenas */}
