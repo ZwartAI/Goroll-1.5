@@ -450,6 +450,31 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
           ))}
         </Layer>
 
+        {/* FASE 4: Capa de Tiza y Notas */}
+        <BattleMapChalkLayer 
+          lines={chalkLines} 
+          notes={chalkNotes} 
+          onNoteDragEnd={onNoteUpdate}
+          onNoteClick={onNoteClick}
+        />
+
+        {/* Línea actual en dibujo */}
+        {isDrawing && currentLinePoints.length > 2 && (
+          <Layer listening={false}>
+            <Line
+              points={currentLinePoints}
+              stroke={chalkColor}
+              strokeWidth={chalkSize}
+              tension={0.5}
+              lineCap="round"
+              lineJoin="round"
+              shadowBlur={chalkSize * 0.8}
+              shadowColor={chalkColor}
+              opacity={0.8}
+            />
+          </Layer>
+        )}
+
         {/* FASE 3: Capa de Proyecciones Temporales */}
         <Layer id="projections-layer" listening={false}>
           {projectionVisuals}
