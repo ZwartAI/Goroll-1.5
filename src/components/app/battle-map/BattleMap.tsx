@@ -472,14 +472,31 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
         )}
 
         {/* FASE 7: Turn Rail (Left Side) */}
-        <BattleMapTurnRail 
-          blocks={orderedTurns} 
-          activeBlockIndex={activeBlockIndex} 
-        />
+        {orderedTurns.length > 0 && (
+          <BattleMapTurnRail 
+            blocks={orderedTurns} 
+            activeBlockIndex={activeBlockIndex} 
+          />
+        )}
 
 
-        {/* Unified Tool Group */}
-        <div className="absolute top-4 right-4 z-40 flex flex-col gap-3 items-end">
+        {/* Sidebar / Tools */}
+        <div className="absolute top-20 right-4 z-40 flex flex-col gap-3 items-end">
+            <BattleMapToolbar 
+              isDM={isDM}
+              isChalkMode={isChalkMode}
+              chalkTool={chalkTool}
+              onToggleChalk={() => setIsChalkMode(!isChalkMode)}
+              onChalkToolChange={setChalkTool}
+              hasToken={!!(character?.id && remoteTokenPositions[character.id])}
+              onToggleToken={handleToggleMyToken}
+              isRulerActive={isRulerActive}
+              onToggleRuler={() => {
+                setIsRulerActive(!isRulerActive);
+                if (isChalkMode) setIsChalkMode(false);
+              }}
+            />
+
             {isDM && (
                 <>
                     <button
@@ -488,14 +505,6 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
                       title="Escenas"
                     >
                       <Layers className="w-5 h-5" />
-                    </button>
-
-                    <button
-                      onClick={() => setIsChalkMode(!isChalkMode)}
-                      className={`w-12 h-12 rounded-2xl shadow-2xl transition-all group flex items-center justify-center border ${isChalkMode ? 'bg-[var(--gold)] text-black border-[var(--gold)]' : 'bg-black/60 backdrop-blur-md text-[var(--gold)] border-white/10 hover:bg-white/5'}`}
-                      title="Pintar"
-                    >
-                      <Pencil className="w-5 h-5" />
                     </button>
                     
                     <button
@@ -512,24 +521,9 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
                       isOpen={isConfigModalOpen} 
                       onClose={() => setIsConfigModalOpen(false)} 
                     />
-
                 </>
             )}
         </div>
-
-        {/* Floating Dice Button - Positioned relative to Log */}
-        <div 
-          className="fixed right-3 z-[45] transition-all duration-300"
-          style={{ 
-            bottom: isLogExpanded 
-              ? (dimensions.width >= 640 ? '268px' : 'calc(40vh + 12px)')
-              : '60px'
-          }}
-        >
-
-          <BattleMapDiceButton onClick={handleDiceClick} />
-        </div>
-
 
         {/* Panels / Overlays */}
         {(activePanel !== 'none' || isScenesPanelOpen || isDicePanelOpen) && (
@@ -597,7 +591,7 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
         {/* Sidebar Participantes */}
         <div className={`absolute left-0 top-0 h-full z-50 transition-transform duration-300 transform ${activePanel === 'participants' ? 'translate-x-0' : '-translate-x-full'}`}>
-          <BattleMapSidebar participants={combat.participants} isOpen={true} onOpenChar={onOpenChar} onClose={() => setActivePanel('none')} />
+          <BattleMapSidebar participants={displayParticipants} isOpen={true} onOpenChar={onOpenChar} onClose={() => setActivePanel('none')} />
         </div>
 
         {/* Projection Menu */}
@@ -630,6 +624,18 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
           <div className="h-[calc(100%-2rem)] overflow-hidden">
              <BattleMapLog logs={logs} nameOverrides={nameOverrides} onOpenChar={onOpenChar} isExpanded={isLogExpanded} />
           </div>
+        </div>
+
+        {/* Floating Dice Button - Positioned relative to Log */}
+        <div 
+          className="fixed right-3 z-[45] transition-all duration-300"
+          style={{ 
+            bottom: isLogExpanded 
+              ? (dimensions.width >= 640 ? '268px' : 'calc(40vh + 12px)')
+              : '60px'
+          }}
+        >
+          <BattleMapDiceButton onClick={handleDiceClick} />
         </div>
       </main>
     </div>
