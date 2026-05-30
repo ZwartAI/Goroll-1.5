@@ -354,15 +354,17 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
             onAddNote={(x, y) => { handleAddNote(x, y); handleUpdateCurrentSceneState(); }}
             onNoteUpdate={(id, x, y) => { handleNoteUpdate(id, x, y); handleUpdateCurrentSceneState(); }}
             onNoteClick={handleNoteDelete}
+            // FASE 5 Props
             remoteTokenPositions={remoteTokenPositions}
             remoteProjections={remoteProjections}
-            onTokenMove={(id, x, y) => {
+            onTokenMove={(id: string, x: number, y: number) => {
               setRemoteTokenPositions(prev => ({ ...prev, [id]: { x, y } }));
               handleBroadcastMove(id, x, y);
             }}
             onTokenMoveEnd={handleUpdateCurrentSceneState}
             onProjectionUpdate={handleBroadcastProjection}
             role={character?.role || 'spectator'}
+            currentUserId={character?.id}
           />
         </div>
 
