@@ -17,6 +17,9 @@ interface Props {
   isSelected?: boolean;
   onLongPress?: (x: number, y: number) => void;
   onProjectionStart?: (type: 'distance' | 'area' | 'line' | 'cone', origin: { x: number; y: number }) => void;
+  draggable?: boolean;
+  onDragMove?: (e: Konva.KonvaEventObject<DragEvent>) => void;
+  onDragEnd?: (e: Konva.KonvaEventObject<DragEvent>) => void;
 }
 
 export const MapToken: React.FC<Props> = ({ 
