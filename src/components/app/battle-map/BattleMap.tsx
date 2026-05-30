@@ -5,10 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useT } from '@/lib/i18n';
 import type { LogRow } from '@/lib/game';
+import { buildOrderedTurns } from '@/lib/combat';
 import { BattleMapHeader } from './BattleMapHeader';
 import { BattleMapSidebar } from './BattleMapSidebar';
+import { BattleMapTurnRail } from './BattleMapTurnRail';
 import { BattleMapStage, type ProjectionType, type ProjectionState } from './BattleMapStage';
 import { BattleMapDiceButton } from './BattleMapDiceButton';
+
 import { BattleMapLog } from './BattleMapLog';
 import { BattleMapConfigModal } from './BattleMapConfigModal';
 import { BattleMapProjectionMenu } from './BattleMapProjectionMenu';
@@ -325,11 +328,15 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
   const handleNoteDelete = useCallback((id: string) => setChalkNotes(prev => prev.filter(n => n.id !== id)), []);
 
-  const sortedParticipants = useMemo(() => {
-    return [...combat.participants].sort((a, b) => (b.initiative || 0) - (a.initiative || 0));
-  }, [combat.participants]);
+  const orderedTurns = useMemo(() => {
+    return buildOrderedTurns(combat.participants, combat.groups, combat.pins);
+  }, [combat.participants, combat.groups, combat.pins]);
 
-  const currentTurnId = sortedParticipants[0]?.id;
+  const activeBlockIndex = useMemo(() => {
+    if (!combat.encounter || combat.encounter.status !== 'active' || orderedTurns.length === 0) return -1;
+    return ((combat.encounter.current_turn_index % orderedTurns.length) + orderedTurns.length) % orderedTurns.length;
+  }, [combat.encounter, orderedTurns]);
+
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#0a0a0c] flex flex-col overflow-hidden text-foreground animate-in fade-in duration-300">
@@ -397,21 +404,12 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
           </div>
         )}
 
-        {/* Turn Tracker Overlay */}
-        <div className="absolute left-0 top-1/4 z-20 flex flex-col gap-1 pointer-events-none">
-          {sortedParticipants.slice(0, 12).map((p, idx) => {
-            const isTurn = p.id === currentTurnId;
-            const color = p.enemy_color || p.color || "var(--gold)";
-            return (
-              <div key={p.id} className={`pointer-events-auto group flex items-center transition-all duration-300 transform ${isTurn ? 'translate-x-0' : '-translate-x-[85%] hover:translate-x-0'}`}>
-                <div className={`px-2.5 py-1.5 rounded-r-full font-display text-[9px] uppercase tracking-widest shadow-lg flex items-center gap-2 ${isTurn ? 'bg-secondary/90 border-y border-r border-white/20' : 'bg-black/60 border-y border-r border-white/10 opacity-60 hover:opacity-100'}`} style={{ borderRightColor: color }}>
-                  <div className={`w-4 h-4 rounded-full flex items-center justify-center border border-white/20 ${isTurn ? 'bg-[var(--gold)] text-black' : 'bg-black/40 text-muted-foreground'}`}>{idx + 1}</div>
-                  <span className="truncate max-w-[60px]" style={{ color }}>{p.display_name}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {/* FASE 7: Turn Rail (Left Side) */}
+        <BattleMapTurnRail 
+          blocks={orderedTurns} 
+          activeBlockIndex={activeBlockIndex} 
+        />
+
 
         {/* Unified Tool Group */}
         <div className="absolute top-4 right-4 z-40 flex flex-col gap-3 items-end">
@@ -450,9 +448,20 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
                 </>
             )}
-
-            <BattleMapDiceButton onClick={handleDiceClick} />
         </div>
+
+        {/* Floating Dice Button - Positioned relative to Log */}
+        <div 
+          className="fixed right-3 z-[45] transition-all duration-300"
+          style={{ 
+            bottom: isLogExpanded 
+              ? 'calc(max(40vh, 256px) + 12px)' // 40vh or 256px (sm:h-64)
+              : '60px' // 48px log height + 12px margin
+          }}
+        >
+          <BattleMapDiceButton onClick={handleDiceClick} />
+        </div>
+
 
         {/* Panels / Overlays */}
         {(activePanel !== 'none' || isScenesPanelOpen || isDicePanelOpen) && (
@@ -520,7 +529,7 @@ const BattleMap: React.FC<Props> = ({ onBack, logs, nameOverrides, onOpenChar })
 
         {/* Sidebar Participantes */}
         <div className={`absolute left-0 top-0 h-full z-50 transition-transform duration-300 transform ${activePanel === 'participants' ? 'translate-x-0' : '-translate-x-full'}`}>
-          <BattleMapSidebar participants={sortedParticipants} isOpen={true} onOpenChar={onOpenChar} onClose={() => setActivePanel('none')} />
+          <BattleMapSidebar participants={combat.participants} isOpen={true} onOpenChar={onOpenChar} onClose={() => setActivePanel('none')} />
         </div>
 
         {/* Projection Menu */}
