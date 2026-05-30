@@ -150,7 +150,8 @@ export const BattleMapStage: React.FC<Props> = React.memo(({
       setCurrentLinePoints([]);
     }
     setProjection(null);
-  }, [isDrawing, currentLinePoints, onAddChalkLine, chalkColor, chalkSize]);
+    onProjectionUpdate?.(null);
+  }, [isDrawing, currentLinePoints, onAddChalkLine, chalkColor, chalkSize, onProjectionUpdate]);
 
   // Exposed for the parent component to trigger via ref if needed, 
   // or via parent's state management. For Phase 3 we'll use local state if possible.
